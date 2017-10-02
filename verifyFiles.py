@@ -340,6 +340,7 @@ def Ldiff_print(Diff,conditions_dict):
     bDiff=Diff
     No_pair_con=len(bDiff.keys())
     Ldiff={}
+    tSpark={}
     list_subjects=bDiff[bDiff.keys()[0]].keys()
     list_paths= conditions_dict.values()[0].values()[0].keys()
     Cons_value=[]
@@ -366,21 +367,44 @@ def Ldiff_print(Diff,conditions_dict):
                        Cons_value=[]
     for subject in Ldiff.keys():
         for path in Ldiff[subject].keys():
-            path_list.append([subject,path,Ldiff[subject][path],first_subject[path].st_mtime])
-    #------------ Print the path_list list ---------------
-  #  i=0
-  #  while i < len(path_list):
-  #       flag=True
-  #       while flag:
-  #           j=len (path_list[0][:])-1 # find the number of elements in path_list to be printed (except the st_mtime)
-  #           print path_list[i][0:j]
-  #           flag=False
-  #  	     i+=1
-    #------------ Print the Matrix -----------------------
-    print " >>> Conditions order : ",bDiff.keys() 
+            path_list.append([subject,path,Ldiff[subject][path],first_subject[path].st_mtime])   
+    #-------binary_matrix_print--------
+    print "\n\n  >>> Conditions order : ",bDiff.keys(), "\n" 
     df = pd.DataFrame([[col1,col2,col3] for col1, d in Ldiff.items() for col2, col3 in d.items()],columns=['Subject','File','Results'])
-    pd.set_option('display.max_rows', None)    
-    return df
+    pd.set_option('display.max_rows', None)
+    return df 
+    #-----
+    text_files (bDiff,conditions_dict)
+
+# making output textfile of the binary matrix (matrix.txt, row_index.txt, column_index.txt)  
+def text_files (bDiff,conditions_dict):  
+    row=0
+    c=0
+    ro = open("row_index.txt", "w+")
+    co = open("column_index.txt","w+")
+    matrix = open("matrix.txt","w+")
+    for condition in bDiff.keys():
+            co.write(str(c))
+            co.write(";")
+            co.write(str(condition))
+            co.write("\n")
+            for subject in bDiff[bDiff.keys()[c]].keys():
+        	for path in conditions_dict.values()[c].values()[c].keys():
+        		matrix.write(str(row))
+        		matrix.write(";")
+        		matrix.write(str(c))
+        		matrix.write(";")	
+        		matrix.write(str(bDiff[condition][subject][path]))
+        		matrix.write("\n")
+        		ro.write(str(row))
+        		ro.write(";")
+        		ro.write(str(subject))
+        		ro.write(";")
+        		ro.write(str(path))
+       	        	ro.write("\n")
+                	row+=1
+            row=0
+            c+=1
 
 def pretty_string(diff_dict,conditions_dict):
     output_string=""
@@ -429,8 +453,6 @@ def pretty_string(diff_dict,conditions_dict):
         output_string+="\n"
     return output_string
 
-
-#------
 # Returns a string containing a 'pretty' matrix representation of the
 # dictionary returned by n_differences_across_subjects
 # Method check_subjects checks if the subject_folders under different conditions are the same. If not , it stops the execution of the script.
@@ -438,7 +460,7 @@ def check_subjects(conditions_dict):
     subject_names=set()
     for condition in conditions_dict.keys():
 	subject_names.update(conditions_dict[condition].keys())
-   # Iterate over each soubject in every condition and stop the execution if some subject is missing
+    # Iterate over each soubject in every condition and stop the execution if some subject is missing
     for subject in subject_names:
        for condition in conditions_dict.keys():
           if not subject in conditions_dict[condition].keys():
