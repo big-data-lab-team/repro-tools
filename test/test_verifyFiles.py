@@ -2,10 +2,10 @@ import os
 import pytest
 import commands
 import filecmp
-from verifyFiles import get_dir_dict,read_metrics_file
-from verifyFiles import checksum 
-from verifyFiles import read_file_contents
-from verifyFiles import get_conditions_dict,get_conditions_checksum_dict
+from reprotools.verifyFiles import get_dir_dict,read_metrics_file
+from reprotools.verifyFiles import checksum 
+from reprotools.verifyFiles import read_file_contents
+from reprotools.verifyFiles import get_conditions_dict,get_conditions_checksum_dict
 
 def test_checksum():
   assert checksum("test/condition4") == "45a021d9910102aac726dd222a898334"

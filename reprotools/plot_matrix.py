@@ -29,8 +29,13 @@ def main():
     n = np.zeros(shape=(max(a)+1,max(b)+1))
     for i, x in enumerate(c):
         n[a[i],b[i]] = c[i]
-    
+
+    m = np.zeros(shape=(max(a)+1,max(b)+1))
+    for i, x in enumerate(c):
+        m[a[i],b[i]] = c[i]+1
+
     plt.imshow(n, cmap='hot', interpolation='none', aspect='auto')
+    plt.imshow(m, cmap='Reds', interpolation='none', aspect='auto', alpha='0.5')
     plt.colorbar()
     plt.savefig(args.output_file)
 
