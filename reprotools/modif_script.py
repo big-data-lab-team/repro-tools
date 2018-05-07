@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import argparse
 import subprocess
 import sys
 import fileinput
@@ -53,20 +54,25 @@ def csv_parser(cfile):
          command_parsed[command]=f_list
       return command_parsed
 
-if __name__ == '__main__':
-
-# updated commands refer to the single processes that create errors
-# common_cmd refers to the multi-write processes that create errors
-   with open( "/home/ubuntu/repro-tools/test/peds_test/updated_commands.txt", 'r') as cfile:
+def main(args=None):
+   parser = argparse.ArgumentParser(description="Script modifier")
+   parser.add_argument("updated_commands", action="store",
+                        help="Updated comments.")
+   parser.add_argument("common_cmd", action="store",
+                        help="Common cmd.")
+   results = parser.parse_args(args)
+   # updated commands refer to the single processes that create errors
+   # common_cmd refers to the multi-write processes that create errors
+   with open(results.updated_commands, 'r') as cfile:
        commands = csv_parser(cfile)
    try:
-       with open( "/home/ubuntu/repro-tools/test/peds_test/common_cmd.txt", 'r')as multi_write_file:
+       with open(results.common_cmd, 'r')as multi_write_file:
            multi_write_commands = csv_parser(multi_write_file)
    except: multi_write_commands=[]
 
    input_arg_cmd = sys.argv[0]
    current_script_name = __file__
-   if "modif_script.py" in current_script_name:
+   if "modif_script" in current_script_name:
       for pipe_com, pipe_val in commands.items():
          pipeline_commad = pipe_com.split(' ')
          pipe_cmd = pipeline_commad[0].split('/')[-1:][0]
@@ -79,7 +85,7 @@ if __name__ == '__main__':
             bash_command = "sudo cp " + "/home/ubuntu/repro-tools/bin/modif_script.py " + str(which(pipeline_commad[0]))
             os.system(bash_command)
 
-   if "modif_script.py" not in current_script_name:
+   if "modif_script" not in current_script_name:
       i = 1
       cmd_name = current_script_name.split('/')[-1:][0]
       command = '/home/ubuntu/repro-tools/test/peds_test/backup_scripts/'+str(cmd_name)
@@ -123,3 +129,7 @@ if __name__ == '__main__':
                os.system(my_bash_command)
             break
          else: continue
+
+
+if __name__ == '__main__':
+      main()
