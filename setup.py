@@ -3,7 +3,7 @@ from setuptools import setup
 import sys
 
 VERSION = "0.0.1"
-DEPS = ["pandas", "graphviz", "commands"]
+DEPS = ["pandas", "graphviz"]
 
 setup(name="reprotool",
       version=VERSION,
@@ -18,7 +18,6 @@ setup(name="reprotool",
                 "Programming Language :: Python :: 3.6",
                 "Programming Language :: Python :: 3.7",
                 "Programming Language :: Python :: Implementation :: PyPy",
-                "License :: OSI Approved :: MIT License",
                 "Topic :: Software Development :: Libraries :: Python Modules",
                 "Operating System :: OS Independent",
                 "Natural Language :: English"
