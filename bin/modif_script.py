@@ -7,11 +7,9 @@ import csv
 import re
 import os.path
 
-'''
-Modification Step: In order to make appropriate file copy to fix processes artificially, 
-first, we replace the current script with the main pipeline process that create errors.
-after that, script will make a copy of file if arguments are the same with backup command-lines.
-'''
+#Modification Step: In order to make appropriate file copy to fix processes artificially, 
+#first, we replace the current script with the main pipeline process that create errors.
+#after that, script will make a copy of file if arguments are the same with backup command-lines.
 
 def is_intstring(s):
     try:
