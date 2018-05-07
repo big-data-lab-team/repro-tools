@@ -11,11 +11,11 @@
 #(5) if command_line list is empty: break; else go step (1)
 
 # Start Modification Loop
-while [ -s /home/ubuntu/PEDS/test/peds_test/command_lines.txt ]
+while [ -s /home/ubuntu/repro-tools/test/peds_test/command_lines.txt ]
 do
 
 #(1) Start the Pipeline execution
-cd /home/ubuntu/PEDS/test/peds_test/centos7/test
+cd /home/ubuntu/repro-tools/test/peds_test/centos7/test
 sh test_script.sh input_file.txt
 cd ../..
 
