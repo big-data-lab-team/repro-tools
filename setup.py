@@ -26,6 +26,6 @@ setup(name="reprotool",
       include_package_data=True,
       test_suite="pytest",
       tests_require=["pytest"],
-      setup_requires=DEPS,
+      setup_requires=["commands","pandas","graphviz"],
       install_requires=DEPS,
       zip_safe=False)
