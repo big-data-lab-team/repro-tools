@@ -1,9 +1,21 @@
 import pytest
 import commands
-
+import subprocess, os
+   
 def test_peds():
-    command_line = "python peds.py -db test/peds_test/tracePFS.sqlite3 -ofile test/peds_test/diff_file_centos6-7.txt"
-    return_value, output = commands.getstatusoutput(command_line)
-    assert not return_value, output
+    command_line = "python ./bin/peds.py -db ./test/peds_test/trace.sqlite3 -ofile ./test/peds_test/error_matrix.txt"
+    process = subprocess.Popen(command_line, shell=True,stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    code=process.wait()
+    assert(not code), "Command failed"
 
-
+def test_auto_peds():
+    command="sh ./bin/auto_peds.sh"
+    process = subprocess.Popen(command, shell=True,stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output,error = process.communicate()
+    if output:
+        print "ret> ",process.returncode
+        print "OK> output ",output
+    if error:
+        print "ret> ",process.returncode
+        print "Error> error ",error.strip()
+    assert(open("./test/peds_test/updated_commands.txt","r").read()==open("./test/peds_test/result_modif.txt","r").read())

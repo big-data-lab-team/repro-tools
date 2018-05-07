@@ -1,0 +1,6 @@
+line0: we are in centos7
+line1: 
+line2: 
+line3: we are in centos6
+line4: 
+line5: 
