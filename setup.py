@@ -28,5 +28,4 @@ setup(name="reprotool",
       tests_require=["pytest"],
       setup_requires=DEPS,
       install_requires=DEPS,
-      packages=['commands'],
       zip_safe=False)
