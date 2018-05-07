@@ -21,7 +21,7 @@ before_install:
 install:
 - pip install --upgrade setuptools
 - pip install coveralls pytest pytest-runner pycodestyle
-- pip install .
+#- pip install .
 
 script:
 - pycodestyle --max-line-length=80 
