@@ -40,4 +40,3 @@ fi
 python ../../bin/modif_script.py updated_commands.txt
 
 done
-
