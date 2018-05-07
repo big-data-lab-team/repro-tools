@@ -57,10 +57,10 @@ if __name__ == '__main__':
 
 # updated commands refer to the single processes that create errors
 # common_cmd refers to the multi-write processes that create errors
-   with open( "/home/ubuntu/PEDS/test/peds_test/updated_commands.txt", 'r') as cfile:
+   with open( "/home/ubuntu/repro-tools/test/peds_test/updated_commands.txt", 'r') as cfile:
        commands = csv_parser(cfile)
    try:
-       with open( "/home/ubuntu/PEDS/test/peds_test/common_cmd.txt", 'r')as multi_write_file:
+       with open( "/home/ubuntu/repro-tools/test/peds_test/common_cmd.txt", 'r')as multi_write_file:
            multi_write_commands = csv_parser(multi_write_file)
    except: multi_write_commands=[]
 
@@ -74,15 +74,15 @@ if __name__ == '__main__':
          # check the backup folder and then make cope from input_arg_cmd to that folder if doesn't exist
          my_path = 'backup_scripts/'+str(pipe_cmd)
          if os.path.exists(my_path)==False:
-            bash_command = "cp " + str(which(pipeline_commad[0])) +" "+ "/home/ubuntu/PEDS/test/peds_test/backup_scripts/"+str(pipe_cmd)
+            bash_command = "cp " + str(which(pipeline_commad[0])) +" "+ "/home/ubuntu/repro-tools/test/peds_test/backup_scripts/"+str(pipe_cmd)
             os.system(bash_command)
-            bash_command = "sudo cp " + "/home/ubuntu/PEDS/bin/modif_script.py " + str(which(pipeline_commad[0]))
+            bash_command = "sudo cp " + "/home/ubuntu/repro-tools/bin/modif_script.py " + str(which(pipeline_commad[0]))
             os.system(bash_command)
 
    if "modif_script.py" not in current_script_name:
       i = 1
       cmd_name = current_script_name.split('/')[-1:][0]
-      command = '/home/ubuntu/PEDS/test/peds_test/backup_scripts/'+str(cmd_name)
+      command = '/home/ubuntu/repro-tools/test/peds_test/backup_scripts/'+str(cmd_name)
       while i<len(sys.argv):
          command += " "+sys.argv[i]
          i +=1
@@ -90,8 +90,8 @@ if __name__ == '__main__':
       
       proc_list = multi_write_commands.keys()
       counter = 0
-      WD_ref = "/home/ubuntu/PEDS/test/peds_test/centos6/test/"
-      WD_cur = "/home/ubuntu/PEDS/test/peds_test/centos7/test/"
+      WD_ref = "/home/ubuntu/repro-tools/test/peds_test/centos6/test/"
+      WD_cur = "/home/ubuntu/repro-tools/test/peds_test/centos7/test/"
       WD_ref_saved = "centos6_common_files/"
       WD_cur_save = "centos7_common_files/"
       for pipe_com, pipe_files in commands.items():
