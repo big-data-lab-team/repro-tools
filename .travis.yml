@@ -2,9 +2,6 @@ dist: trusty
 sudo: required
 language: python
 
-env:
-- PYTHONPATH=${PYTHONPATH}:${pwd}
-
 python:
 - 2.7
 - 3.4
@@ -25,6 +22,9 @@ install:
 - pip install --upgrade setuptools
 - pip install coveralls pytest pytest-runner pycodestyle
 - pip install .
+
+env:
+- PYTHONPATH=${PYTHONPATH}:${pwd}
 
 script:
 - pycodestyle --max-line-length=80 
