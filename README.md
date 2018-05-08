@@ -1,5 +1,4 @@
 [![Build Status](https://travis-ci.org/ali4006/repro-tools.svg?branch=auto-peds)](https://travis-ci.org/ali4006/repro-tools)
-
 [![CircleCI](https://circleci.com/gh/big-data-lab-team/repro-tools.svg?style=svg)](https://circleci.com/gh/big-data-lab-team/repro-tools)
 [![codecov](https://codecov.io/gh/big-data-lab-team/repro-tools/branch/master/graph/badge.svg)](https://codecov.io/gh/big-data-lab-team/repro-tools)
 
