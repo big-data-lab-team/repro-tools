@@ -2,7 +2,7 @@
 
 if [ $# != 1 ]
 then
-    echo "usage: $0 <input_file.txt>"
+    echo "usage: $0 <input_file.txt> <output_folder>"
     exit 1
 fi
 

@@ -1,3 +1,4 @@
+#!/usr/bin/python
 
 import os, re
 import argparse
@@ -394,8 +395,8 @@ def main():
 
 ## INITIALIZE THE PROGRAM
     graph = Di('Graph', filename='GraphModel', format='dot', strict=False)
-    write_files = open("complete_file.txt", 'w')
-    write_proc = open("all_processes", 'w')
+    #write_files = open("complete_file.txt", 'w')
+    #write_proc = open("all_processes", 'w')
     write_total_tmp = ['000']
     write_total_tmp2 = ['000']
     node_label = 0
@@ -670,13 +671,13 @@ def main():
                 [node_label, proc.id, len(proc.data), count_diff_r, count_nodiff_r, count_tmp_r, count_diff_w,
                  count_nodiff_w, count_tmp_w, proc.name])
             node_label += 1
-        write_to_file(write_diff_list, read_diff_list, read_tmp_list, write_tmp_list, write_files, proc, count_diff_w,
-                      count_diff_r, count_tmp_r, count_tmp_w)
+        #write_to_file(write_diff_list, read_diff_list, read_tmp_list, write_tmp_list, write_files, proc, count_diff_w,
+        #              count_diff_r, count_tmp_r, count_tmp_w)
 
-    wproc = pd.DataFrame(proc_list, columns = ['node', 'process_ID', 'total_R/W', 'read_diff', 'read_no_diff',
-                                             'read_temp', 'write_diff', 'write_no_diff',
-                                             'wite_temp', 'process_name'])
-    wproc.to_csv(write_proc, sep ='\t', index = False)
+    #wproc = pd.DataFrame(proc_list, columns = ['node', 'process_ID', 'total_R/W', 'read_diff', 'read_no_diff',
+    #                                         'read_temp', 'write_diff', 'write_no_diff',
+    #                                         'wite_temp', 'process_name'])
+    #wproc.to_csv(write_proc, sep ='\t', index = False)
     #graph.render()
     #graph.view()
     
@@ -684,25 +685,28 @@ def main():
 ####### WRITE OUTPUT FILES
 #####
     write_commands = open("command_lines.txt", 'w')
+    write_total_commands = open("total_commands.txt", 'a+')
     write_commons = open("common_cmd.txt", 'a+')
-    write_temp_commands = open("total_tmp_files.txt", 'w')
-    write_interesting_nodes = open("interesting_nodes.txt", 'a+')
+    #write_temp_commands = open("total_tmp_files.txt", 'w')
+    #write_interesting_nodes = open("interesting_nodes.txt", 'a+')
     # write temporary file
-    for key , val in temp_commands.items():
-        write_temp_commands.write(str(key) +"##"+ str(val)+"\n")
+    #for key , val in temp_commands.items():
+    #    write_temp_commands.write(str(key) +"##"+ str(val)+"\n")
     
     for key, val in command_lines.items():
         key = key.replace('\x00' or ' ',' ')
         #print(str(key) +"##"+ str(val))
         write_commands.write(str(key) +"##"+ str(val)+"\n")
+        write_total_commands.write(str(key) +"##"+ str(val)+"\n")
     with open("common_cmd.txt", 'r') as c_proc:
         write_commands.write(c_proc.read())
+        write_total_commands.write(c_proc.read())
 
     for key, val in multi_commands.items():
         write_commons.write(str(key) +"##"+ str(val)+"\n")
     #for key, val in interesting_nodes.items():
-    write_interesting_nodes.write("red nodes: "+str(red_nodes) +"\n"+"blue nodes: "+ str(blue_nodes)+"\n"+"common processes: "+ str(common_processes)+ "\n")
-    write_interesting_nodes.write("#### NEXT ITERATION ####\n\n")
+    #write_interesting_nodes.write("red nodes: "+str(red_nodes) +"\n"+"blue nodes: "+ str(blue_nodes)+"\n"+"common processes: "+ str(common_processes)+ "\n")
+    #write_interesting_nodes.write("#### NEXT ITERATION ####\n\n")
 
 if __name__=='__main__':
     main();
