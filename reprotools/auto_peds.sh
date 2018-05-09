@@ -13,6 +13,7 @@ set -u
 #(4) Modification step to fix the detected processes with error artificially
 #(5) if command_line list is empty: break; else go step (1)
 
+
 pipeline_script=$1
 input_file=$2
 command_lines_file="command_lines.txt"
