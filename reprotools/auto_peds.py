@@ -61,7 +61,7 @@ def replace_script(line, WD, WD_test):
 
 
 def main(args=None):
-
+    WD = os.environ['PYTHONPATH']
     WD = os.environ['reprotool']
     WD_test = os.environ['pedsfolder']
     pipeline_script = sys.argv[1]
