@@ -435,20 +435,20 @@ def main():
 
 ## FINDING ALL THE PROCESSES WITH MULTI-WRITE IN PIPELINE
     origin = print_writtn_files_by_several_process(pipeline_files, written_files_list, pipeline_graph)
-    '''
-    # Add the common processes based on the common files with differences to prevent of propagating errors with various processes
-    write_total_commons = open("total_common_cmd.txt", 'w')
-    for key, values in origin.items():
-        # if proc.id in values:
-        for v in values:
-            common_file = []
-            proc_name = pipeline_graph.get_name(v)
-            if proc_name[0][1] in command_lines.keys(): common_file = command_lines[proc_name[0][1]]
-            common_file.append(str(key))
-            command_lines[(proc_name[0][1])] = common_file
-    for key, val in command_lines.items():
-        write_total_commons.write(str(key) + "##" + str(val) + "\n")
-    '''
+ #   '''
+ #   # Add the common processes based on the common files with differences to prevent of propagating errors with various processes
+ #   write_total_commons = open("total_common_cmd.txt", 'w')
+ #   for key, values in origin.items():
+ #       # if proc.id in values:
+ #       for v in values:
+ #           common_file = []
+ #           proc_name = pipeline_graph.get_name(v)
+ #           if proc_name[0][1] in command_lines.keys(): common_file = command_lines[proc_name[0][1]]
+ #           common_file.append(str(key))
+ #           command_lines[(proc_name[0][1])] = common_file
+ #   for key, val in command_lines.items():
+ #       write_total_commons.write(str(key) + "##" + str(val) + "\n")
+ #   '''
 ## PROCESS CLASSIFICATION USING CREATED PROCESS TREE
     for proc in total_pipe_proc:
         count_diff_w = 0
