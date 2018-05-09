@@ -3,9 +3,10 @@ sudo: required
 language: python
 
 env:
-- reprotool=${PWD}
-- PEDSFOLDER=${PWD}/test/peds_test
-- PYTHONPATH=${PYTHONPATH}:${pwd}
+  global:
+    - reprotool=${PWD}
+    - pedsfolder=${PWD}/test/peds_test
+    - PYTHONPATH=${PYTHONPATH}:${pwd}
 
 python:
 - 2.7
