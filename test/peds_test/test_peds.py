@@ -13,9 +13,9 @@ def test_auto_peds():
     process = subprocess.Popen(command, shell=True,stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output,error = process.communicate()
     if output:
-        print "ret> ",process.returncode
-        print "OK> output ",output
+        print ("ret> ",process.returncode)
+        print ("OK> output ",output)
     if error:
-        print "ret> ",process.returncode
-        print "Error> error ",error.strip()
+        print ("ret> ",process.returncode)
+        print ("Error> error ",error.strip())
     assert(open("./test/peds_test/total_commands.txt","r").read()==open("./test/peds_test/result_modif.txt","r").read())
