@@ -3,9 +3,9 @@ sudo: required
 language: python
 
 env:
-- PYTHONPATH=${PYTHONPATH}:${pwd}
 - REPROTOOL=${PWD}
 - PEDSFOLDER=${PWD}/test/peds_test
+- PYTHONPATH=${PYTHONPATH}:${pwd}
 
 python:
 - 2.7
