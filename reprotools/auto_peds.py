@@ -18,11 +18,6 @@ import os.path
 #(4) Modification step to fix the detected processes with error artificially
 #(5) if command_line list is empty: break; else go step (1)"
 
-
-#Modification Step: In order to make appropriate file copy to fix processes artificially, 
-#first, we replace the current script with the main pipeline process that create errors.
-#after that, script will make a copy of file if arguments are the same with backup command-lines.
-
 # INITIALIZATION
 ## set env: export reprotool=${PWD}
 ## set env: export pedsfolder=${PWD}/test/peds_test
