@@ -55,14 +55,8 @@ def csv_parser(cfile):
       return command_parsed
 
 def main(args=None):
-#   parser = argparse.ArgumentParser(description="Script modifier")
-#   parser.add_argument("updated_commands", action="store",
-#                        help="Updated comments.")
-#   parser.add_argument("common_cmd", action="store",
-#                        help="Common cmd.")
-#   results = parser.parse_args(args)
 
-## set env: export PATH=to/my/backup/folder:$PATH
+## set env: export pedsfolder=${PWD}/test/peds_test/
 ## set env: export reprotool=${PWD}
    WD = os.environ['reprotool']
    WD_test = os.environ['pedsfolder']
@@ -78,23 +72,21 @@ def main(args=None):
 
    input_arg_cmd = sys.argv[0]
    current_script_name = __file__
-
-   i = 1
    cmd_name = current_script_name.split('/')[-1:][0]
    command = WD_test+'/backup_scripts/'+str(cmd_name)
+   i = 1
    while i<len(sys.argv):
       command += " "+sys.argv[i]
       i +=1
-   os.system(command)
-      
+   os.system(command) 
+
    WD_ref = WD_test+"/centos6/test/"
    WD_cur = WD_test+"/centos7/test/"
-   WD_ref_saved = WD_test+"/centos6_common_files/"
-   WD_cur_save = WD_test+"/centos7_common_files/"
+   #WD_ref_saved = WD_test+"/centos6_common_files/"
+   #WD_cur_save = WD_test+"/centos7_common_files/"
    for pipe_com, pipe_files in commands.items():
       check = False
       pipeline_commad = pipe_com.split(' ')
-      file_name = str(pipeline_commad[0].split('/')[-1])+"_" ##
       if str(which(pipeline_commad[0])) == str(which(input_arg_cmd)):
          if len(pipeline_commad)-1 == len(sys.argv):
             check = True
@@ -102,22 +94,32 @@ def main(args=None):
             while i < len(sys.argv):
                if pipeline_commad[i] != sys.argv[i] and is_intstring(sys.argv[i]):
                   check=False
-                  break 
+                  break
                i +=1
       if check==True:
          for file in pipe_files:
-            f_ = file.split('/')[-1] ##
-
             from_path = WD_ref + file
             To_path = WD_cur + file
-            from_saved_path = WD_ref_saved + file_name + f_
-            To_save_path = WD_cur_save + file_name + f_ ##
-
-            if pipe_com in proc_list:
-               bash_command = "cp " + from_saved_path + " " + To_save_path
-               os.system(bash_command)
             my_bash_command = "cp " + from_path + " " + To_path
             os.system(my_bash_command)
+
+            #f_ = file.split('/')[-1]
+            #_f = file.split('/')[:-1]
+            #if pipe_com in common_list:
+            #   proc_fname = str(pipeline_commad[0].split('/')[-1])+"_" #for common file add proc name:  'procname_filename'
+            #   #from_common_file = WD_ref + _f + proc_fname + f_
+            #   To_common_file = WD_cur + _f + proc_fname + f_ ##
+            #  # bash_command = "cp " + from_common_file + " " + To_common_file
+            #   bash_command = "cp " + from_path + " " + To_common_file
+            #   os.system(bash_command)
+
+            #if pipe_com in temp_list:
+            #  # from_temp_file = WD_ref + _f + "temp_" + f_ #for common file add temp:  'temp_filename'
+            #   To_temp_file = WD_cur + _f + "temp_" + f_
+            #  # bash_command = "cp " + from_temp_file + " " + To_temp_file
+            #   bash_command = "cp " + from_path + " " + To_temp_file
+            #   os.system(bash_command)
+            
          break
       else: continue
 
