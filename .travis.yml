@@ -4,8 +4,8 @@ language: python
 
 env:
 - PYTHONPATH=${PYTHONPATH}:${pwd}
-- reprotool=${PWD}
-- pedsfolder=${PWD}/test/peds_test
+- REPROTOOL=${PWD}
+- PEDSFOLDER=${PWD}/test/peds_test
 
 python:
 - 2.7
