@@ -36,9 +36,9 @@ setup(name="reprotools",
       tests_require=["pytest"],
       entry_points={
         "console_scripts": [
-            "verifyFiles=reprotools:verifyFiles",
+            "verify_files=reprotools:verify_files",
             "peds=reprotools:peds",
-            "modif_script=reprotools:modif_script"
+            "auto_peds=reprotools:auto_peds"
         ]
       },
       setup_requires=DEPS,

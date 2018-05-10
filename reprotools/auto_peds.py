@@ -60,6 +60,8 @@ def replace_script(line, WD, WD_test):
 
 def main(args=None):
 
+    # Use argparse
+
     WD = os.environ['reprotool']
     WD_test = os.environ['pedsfolder']
     pipeline_script = sys.argv[1]
@@ -72,15 +74,21 @@ def main(args=None):
 # Start Modification Loop
     while True :
 #(1) Start the Pipeline execution
+        # use popen instead of system. Pass the working directory to popen
         pipeline_command = "(cd "+output_folder+"; sh "+pipeline_script+" "+input_file+")"
         os.system(pipeline_command)
+        # check the return code of popen
 #(2) Start to create the error matrix file
-        verify_command = WD+'/reprotools/verifyFiles.py '+ WD_test+'/conditions.txt test '+WD_test+'/result'
+        # use os.path.join instead of '/'
+        # pass conditions.txt as an argument
+        verify_command = 'verify_files '+ WD_test+'/conditions.txt test '+WD_test+'/result'
         os.system(verify_command)
+        # do it in Python instead of awk
         command = "awk '{print $1,$2}' "+ WD_test+"/result/test_differences_subject_total.txt | tail -n +2 >"+WD_test+"/error_matrix.txt"
         os.system(command)
 
 #(3) Start the classification
+        # call peds directly in Python instead of doing a system call
         peds_command = "(cd "+WD_test+"; "+WD+'/reprotools/peds.py -db '+ WD_test+'/trace.sqlite3 -ofile '+WD_test+'/error_matrix.txt)'
         os.system(peds_command)
 

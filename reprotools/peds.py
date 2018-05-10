@@ -387,10 +387,10 @@ def print_writtn_files_by_several_process(pipeline_files, written_files_list, pi
 
 def main():
     parser = argparse.ArgumentParser(description='Classification of the pipeline processes and making its graph')
-    parser.add_argument("-db", "--sqliteDB",
-                        help="The path to the sqlite file which is created by reprozip trace and includes all pipeline process")
-    parser.add_argument("-ofile", "--openedFiles",
-                        help="refers to the matrix file of output of the 'repro-tools' script")
+    parser.add_argument("-d", "--sqlite-db",
+                        help="sqlite file created by reprozip, includes all pipeline processes")
+    parser.add_argument("-m", "--matrix",
+                        help="matrix file produced by verify_files")
     args = parser.parse_args()
 
 ## INITIALIZE THE PROGRAM
@@ -408,8 +408,8 @@ def main():
     blue_nodes = []
     common_processes = []
     
-    db_path = args.sqliteDB
-    read_matrix_file = args.openedFiles
+    db_path = args.sqlite_db
+    read_matrix_file = args.matrix
     # read the pipeline files
     with open(read_matrix_file, 'r') as pfiles:
         pipeline_files = pfiles.readlines()
