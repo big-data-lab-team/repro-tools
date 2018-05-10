@@ -1,5 +1,5 @@
-[![CircleCI](https://circleci.com/gh/big-data-lab-team/repro-tools.svg?style=svg)](https://circleci.com/gh/big-data-lab-team/repro-tools)
-[![codecov](https://codecov.io/gh/big-data-lab-team/repro-tools/branch/master/graph/badge.svg)](https://codecov.io/gh/big-data-lab-team/repro-tools)
+[![Build Status](https://travis-ci.org/big-data-lab-team/repro-tools.svg?branch=master)](https://travis-ci.org/big-data-lab-team/repro-tools)
+[![Coverage Status](https://coveralls.io/repos/github/big-data-lab-team/repro-tools/badge.svg?branch=master)](https://coveralls.io/github/big-data-lab-team/repro-tools?branch=master)
 
 # repro-tools
 A set of tools to evaluate the reproducibility of computations.
