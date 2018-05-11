@@ -7,6 +7,7 @@ import fileinput
 import csv
 import re
 import os.path
+from shutil import copyfile
 
 # Pre-processing: after preparing the result of first condition (CentOS6)
 # and getting the processes tree of pipeline using reprozip (db_sqlite),
@@ -39,34 +40,35 @@ def which(exe=None):
     return None
 
 
-def bash_executor(self, command):
-    process = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)
+def bash_executor(execution_dir, command):
+    process = subprocess.Popen(command,
+                               shell=True,
+                               stderr=subprocess.PIPE,
+                               cwd=execution_dir)
     output, error = process.communicate()
-    if error:
-        print("returnCode> ", process.returncode)
-        print("Error> ", error.strip())
+    if(process.returncode):
+        if output:
+            print(output)
+        if error:
+            print(error)
+        raise Exception("Pipeline execution failed")
 
 
-def replace_script(line, WD, peds_data_path):
+def replace_script(line, peds_data_path):
     commands = str(line).split('##')[:1]
-    pipe_com = str(commands[0].replace('\x00', ' '))
-    pipeline_commad = pipe_com.split(' ')
-    pipe_cmd = pipeline_commad[0].split('/')[-1:][0]
+    pipeline_command = commands[0].replace('\x00', ' ').split(' ')[0]
     # Make a copy of process to backup folder if doesn't exist
-    backup_path = os.path.join(peds_data_path, 'backup_scripts', str(pipe_cmd))
-    if os.path.exists(backup_path) is False:
-        cp_pipe_process = "cp " + str(which(pipeline_commad[0])) \
-                           + " " + backup_path
-        bash_executor(cp_pipe_process)
-        replace_command = "cp " + os.path.join(WD, 'reprotools/make_copy.py')\
-                          + ' ' + str(which(pipeline_commad[0]))
-        bash_executor(replace_command)
-
+    backup_path = os.path.join(peds_data_path, 'backup_scripts', pipeline_command)
+    if not os.path.exists(backup_path):
+        if not os.path.exists(os.dirname(backup_path)):
+            os.makedirs(os.dirname(backup_path))
+        copyfile(which(pipeline_command), backup_path)
+        copyfile(os.path.join(os.path.dirname(__file__), 'reprotools/make_copy.py'), which(pipeline_command))
 
 def main(args=None):
-
     # Use argparse
     parser = argparse.ArgumentParser(description='Automation of pipeline error detection')
+    parser.add_argument("output_directory", help="directory where to store the output")
     parser.add_argument("-p", "--pipe_exec",
                         help="executions file of the pipeline")
     parser.add_argument("-i", "--pipe_input",
@@ -81,29 +83,27 @@ def main(args=None):
                         help="sqlite file created by reprozip")
 
     args = parser.parse_args()
-    # P = subprocess.Popen('pwd', shell=True, stderr=subprocess.PIPE)
-    # (WD, err) = P.communicate()
-    WD = os.getcwd()
-    peds_data_path = os.path.join(WD, "test/peds_test_data/")
-    pipe_exec = args.pipe_exec
-    pipe_input = args.pipe_input
-    pipe_output = args.pipe_output
+    peds_data_path = os.path.abspath(args.output_directory)
+    pipe_exec = os.path.abspath(args.pipe_exec)
+    pipe_input = os.path.abspath(args.pipe_input)
+    pipe_output = os.path.abspath(args.pipe_output)
     verify_cond = args.verify_condition
     verify_output = args.verify_output
-    sqlite_db = args.sqlite_db
+    sqlite_db = os.path.abspath(args.sqlite_db)
 
 # Start Modification Loop
     while True:
-# (1) Start the Pipeline execution
+        # (1) Start the Pipeline execution
         # use popen instead of system. Pass the working directory to popen
-        pipeline_command = "(cd "+pipe_output+"; sh "+pipe_exec+" "+pipe_input+")"
-        bash_executor(pipeline_command)
+        pipeline_command = pipe_exec+" "+pipe_input
+        bash_executor(pipe_output, pipeline_command)
         # check the return code of popen
-# (2) Start to create the error matrix file
+
+        # (2) Start to create the error matrix file
         # use os.path.join instead of '/'
         # pass conditions.txt as an argument
         verify_command = 'verify_files ' + verify_cond + ' test ' + verify_output
-        bash_executor(verify_command)
+        bash_executor(os.getcwd(), verify_command)
 
         with open(os.path.join(verify_output, 'test_differences_subject_total.txt'), 'r') as mfile:
             lines = mfile.readlines()
@@ -114,17 +114,17 @@ def main(args=None):
         write_matrix = open(os.path.join(peds_data_path, 'error_matrix.txt'), 'w')
         write_matrix.write(sample)
 
-# (3) Start the classification
+        # (3) Start the classification
         # call peds directly in Python instead of doing a system call
-        peds_command = "(cd " + peds_data_path + "; peds -d " + sqlite_db + " -m error_matrix.txt)"
-        bash_executor(peds_command)
+        peds_command = "peds -d " + sqlite_db + " -m error_matrix.txt"
+        bash_executor(peds_data_path, peds_command)
 
-# (4) Start the modification
+        # (4) Start the modification
         if os.stat(os.path.join(peds_data_path, 'command_lines.txt')).st_size > 0:
             with open(os.path.join(peds_data_path, 'command_lines.txt'), 'r') as cfile:
                 lines = cfile.readlines()
                 for line in lines:
-                    replace_script(line, WD, peds_data_path)
+                    replace_script(line, peds_data_path)
         else: break
 
 
