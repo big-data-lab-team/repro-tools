@@ -6,12 +6,13 @@ import os
 
 def test_peds():
     command_line = ("peds "
-                    "-d ./test/peds_test_data/trace.sqlite3 "
-                    "-m ./test/peds_test_data/error_matrix.txt")
+                    "-d trace.sqlite3 "
+                    "-m error_matrix.txt")
     process = subprocess.Popen(command_line,
                                shell=True,
                                stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
+                               stderr=subprocess.PIPE,
+                               cwd='./test/peds_test_data')
     code = process.wait()
     print(process.stdout.read())
     print(process.stderr.read())
@@ -19,7 +20,7 @@ def test_peds():
 
 
 def test_auto_peds():
-    command = ("auto_peds ./test/peds_test/data -p ./test/peds_test_data/centos7/test/test_script.sh"
+    command = ("auto_peds ./test/peds_test_data -p ./test/peds_test_data/centos7/test/test_script.sh"
                " -i ./test/peds_test_data/centos7/test/input_file.txt "
                " -o ./test/peds_test_data/centos7/test "
                "-c ./test/peds_test_data/conditions.txt "

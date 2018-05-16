@@ -20,10 +20,6 @@ from shutil import copyfile
 # (4) Modification step to fix the detected processes with error artificially
 # (5) if command_line list is empty: break; else go step (1)"
 
-# INITIALIZATION
-# set env: export reprotool=${PWD}
-# set env: export pedsfolder=${PWD}/test/peds_test
-
 
 def which(exe=None):
     '''
@@ -60,10 +56,10 @@ def replace_script(line, peds_data_path):
     # Make a copy of process to backup folder if doesn't exist
     backup_path = os.path.join(peds_data_path, 'backup_scripts', pipeline_command)
     if not os.path.exists(backup_path):
-        if not os.path.exists(os.dirname(backup_path)):
-            os.makedirs(os.dirname(backup_path))
+        if not os.path.exists(os.path.dirname(backup_path)):
+            os.makedirs(os.path.dirname(backup_path))
         copyfile(which(pipeline_command), backup_path)
-        copyfile(os.path.join(os.path.dirname(__file__), 'reprotools/make_copy.py'), which(pipeline_command))
+        copyfile(os.path.join(os.path.dirname(__file__), 'make_copy.py'), which(pipeline_command))
 
 def main(args=None):
     # Use argparse
@@ -90,18 +86,15 @@ def main(args=None):
     verify_cond = args.verify_condition
     verify_output = args.verify_output
     sqlite_db = os.path.abspath(args.sqlite_db)
-
+    first_iter = True
 # Start Modification Loop
     while True:
+
         # (1) Start the Pipeline execution
-        # use popen instead of system. Pass the working directory to popen
         pipeline_command = pipe_exec+" "+pipe_input
         bash_executor(pipe_output, pipeline_command)
-        # check the return code of popen
 
         # (2) Start to create the error matrix file
-        # use os.path.join instead of '/'
-        # pass conditions.txt as an argument
         verify_command = 'verify_files ' + verify_cond + ' test ' + verify_output
         bash_executor(os.getcwd(), verify_command)
 
@@ -113,9 +106,12 @@ def main(args=None):
             sample += (splitedLine[0].replace(' ', '') + " " + str(int(splitedLine[1]))+"\n")
         write_matrix = open(os.path.join(peds_data_path, 'error_matrix.txt'), 'w')
         write_matrix.write(sample)
+        write_matrix.close()
 
         # (3) Start the classification
-        # call peds directly in Python instead of doing a system call
+#        if first_iter is True:
+#            os.remove(os.path.join(peds_data_path, 'total_commands.txt'))
+#            first_iter = False
         peds_command = "peds -d " + sqlite_db + " -m error_matrix.txt"
         bash_executor(peds_data_path, peds_command)
 

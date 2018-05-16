@@ -7,6 +7,8 @@ import fileinput
 import csv
 import re
 import os.path
+from reprotools import __file__ as path
+from shutil import copyfile
 
 #Modification Step: In order to make appropriate file copy to fix processes artificially, 
 #first, we replace the current script with the main pipeline process that create errors.
@@ -39,13 +41,12 @@ def which(exe=None):
 def csv_parser(cfile):
     command_parsed = {}
     for line in cfile:
-        f_list = []
+        fname_list = []
         command = str(line).split('##')[:1]
-        command = str(command[0].replace('\x00' or ' ', ' '))
+        command = str(command[0].replace('\x00', ' '))
         file_name = str(line).split('##')[1:]
-        file_name = file_name[0][2:-3].replace("'", '')
-        file_name_list = file_name.split(',')
-        for file in file_name_list:
+        flist = file_name[0][2:-3].replace("'", '').split(',')
+        for file in flist:
             count = 0
             for f in file.split('/'):
             #  if f == "exec":
@@ -53,22 +54,21 @@ def csv_parser(cfile):
                     count += 1
                     break
                 else: count += 1
-            f_list.append("/".join(file.split('/')[count:]))
-        command_parsed[command] = f_list
+            fname_list.append("/".join(file.split('/')[count:]))
+        command_parsed[command] = fname_list
     return command_parsed
 
 
 def main(args=None):
-## set env: export pedsfolder=${PWD}/test/peds_test/
-## set env: export reprotool=${PWD}
-    WD = os.environ['reprotool']
-    WD_test = os.environ['pedsfolder']
+
+    WD_test = os.path.join(os.path.dirname(os.path.abspath(path)), '../test/peds_test_data')
+    #WD_test = '/home/ali/Desktop/git_repo/repro-tools/test/peds_test_data'
     # updated commands refer to the single processes that create errors
     # common_cmd refers to the multi-write processes that create errors
-    with open(WD_test + '/total_commands.txt', 'r') as cfile:
+    with open(os.path.join(WD_test, 'total_commands.txt'), 'r') as cfile:
         commands = csv_parser(cfile)
     try:
-        with open(WD_test + '/common_cmd.txt', 'r')as multi_write_file:
+        with open(os.path.join(WD_test, 'common_cmd.txt'), 'r')as multi_write_file:
             multi_write_commands = csv_parser(multi_write_file)
     except: multi_write_commands = []
     proc_list = multi_write_commands.keys()
@@ -76,35 +76,37 @@ def main(args=None):
     input_arg_cmd = sys.argv[0]
     current_script_name = __file__
     cmd_name = current_script_name.split('/')[-1:][0]
-    command = WD_test + '/backup_scripts/' + str(cmd_name)
+    command = os.path.join(WD_test, 'backup_scripts', str(cmd_name))
     i = 1
     while i<len(sys.argv):
         command += " " + sys.argv[i]
         i += 1
     subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)
 
-    WD_ref = WD_test+"/centos6/test/"
-    WD_cur = WD_test+"/centos7/test/"
+    WD_ref = os.path.join(WD_test, "centos6/test")
+    WD_cur = os.path.join(WD_test, "centos7/test")
     # WD_ref_saved = WD_test+"/centos6_common_files/"
     # WD_cur_save = WD_test+"/centos7_common_files/"
     for pipe_com, pipe_files in commands.items():
         check = False
         pipeline_commad = pipe_com.split(' ')
-        if str(which(pipeline_commad[0])) == str(which(input_arg_cmd)):
+        if which(pipeline_commad[0]) == which(input_arg_cmd):
             if len(pipeline_commad)-1 == len(sys.argv):
                 check = True
                 i = 1
                 while i < len(sys.argv):
-                    if pipeline_commad[i] != sys.argv[i] and is_intstring(sys.argv[i]):
+                    if pipeline_commad[i] != os.path.basename(sys.argv[i]) and is_intstring(sys.argv[i]):
                         check = False
                         break
                     i += 1
         if check is True:
             for file in pipe_files:
-                from_path = WD_ref + file
-                To_path = WD_cur + file
+                from_path = os.path.join(WD_ref, file)
+                To_path = os.path.join(WD_cur, file)
                 cp_command = "cp " + from_path + " " + To_path
                 subprocess.Popen(cp_command, shell=True, stderr=subprocess.PIPE)
+               # copyfile(from_path, To_path)
+
                 # f_ = file.split('/')[-1]
                 # _f = file.split('/')[:-1]
                 # if pipe_com in common_list:
