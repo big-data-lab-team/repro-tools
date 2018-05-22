@@ -1,0 +1,51 @@
+{
+	"command-line": "mkdir -p [OUTPUT_FILE];sh test_script.sh [INPUT_FILES] [OUTPUT_FILE]", 
+	"container-image": {
+		"image": "salari/peds:centos7-test2", 
+		"type": "docker"
+	},
+	"description": "Test Script for auto peds", 
+	"inputs": [{
+		"description": "input files", 
+		"id": "input_file", 
+		"name": "input file", 
+		"optional": false, 
+		"type": "File", 
+		"value-key": "[INPUT_FILES]"
+		},
+		 {
+		"description": "outputt files", 
+		"id": "output_file", 
+		"name": "output file", 
+		"optional": false, 
+		"type": "String", 
+		"value-key": "[OUTPUT_FILE]"
+		}], 
+	"invocation-schema": {
+		"$schema": "http://json-schema.org/draft-04/schema#", 
+		"additionalProperties": false, 
+		"dependencies": {}, 
+		"description": "Invocation schema for test script for auto peds.", 
+		"properties": {
+			"input_file": {
+				"type": "string"
+					}, 
+			"output_file": {
+				"type": "string"
+					}
+				}, 
+		"required": ["input_file", "output_file"], 
+		"title": "Test Script for auto peds.invocationSchema", 
+		"type": "object"
+		}, 
+	"name": "Test Script for auto peds", 
+	"output-files": [{
+		"description": "output folder path", 
+		"id": "output_folder", 
+		"name": "results", 
+		"optional": false, 
+		"path-template": "[OUTPUT_FILE]"
+		}], 
+	"schema-version": "0.5", 
+	"tool-version": "3.19.0-centos7"
+}

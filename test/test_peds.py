@@ -25,7 +25,9 @@ def test_auto_peds():
                " -o ./test/peds_test_data/centos7/test "
                "-c ./test/peds_test_data/conditions.txt "
                "-r ./test/peds_test_data "
-               "-s ./test/peds_test_data/trace.sqlite3")
+               "-s ./test/peds_test_data/trace.sqlite3 "
+               "-d ./test/peds_test_data/descriptor.json "
+               "-in ./test/peds_test_data/invocation.json")
     process = subprocess.Popen(command,
                                shell=True,
                                stdout=subprocess.PIPE,

@@ -8,6 +8,9 @@ import csv
 import re
 import os.path
 from shutil import copyfile
+import json
+import boutiques
+import docker
 
 # Pre-processing: after preparing the result of first condition (CentOS6)
 # and getting the processes tree of pipeline using reprozip (db_sqlite),
@@ -50,16 +53,46 @@ def bash_executor(execution_dir, command):
         raise Exception("Pipeline execution failed")
 
 
-def replace_script(line, peds_data_path):
-    commands = str(line).split('##')[:1]
-    pipeline_command = commands[0].replace('\x00', ' ').split(' ')[0]
-    # Make a copy of process to backup folder if doesn't exist
-    backup_path = os.path.join(peds_data_path, 'backup_scripts', pipeline_command)
-    if not os.path.exists(backup_path):
-        if not os.path.exists(os.path.dirname(backup_path)):
-            os.makedirs(os.path.dirname(backup_path))
-        copyfile(which(pipeline_command), backup_path)
-        copyfile(os.path.join(os.path.dirname(__file__), 'make_copy.py'), which(pipeline_command))
+def replace_script(peds_data_path):
+    with open(os.path.join(peds_data_path, 'command_lines.txt'), 'r') as cfile:
+        lines = cfile.readlines()
+        for line in lines:
+            command_list = []
+            commands = str(line).split('##')[:1]
+            pipeline_command = commands[0].replace('\x00', ' ').split(' ')[0]
+            # Make a copy of process to backup folder if doesn't exist
+            backup_path = os.path.join(peds_data_path, 'backup_scripts', pipeline_command)
+            if not os.path.exists(backup_path):
+                if not os.path.exists(os.path.dirname(backup_path)):
+                    os.makedirs(os.path.dirname(backup_path))
+                command_list.append('cp '+which(pipeline_command)+' '+ backup_path)
+                command_list.append('cp '+os.path.join(os.path.dirname(__file__), 'make_copy.py')+' '+ which(pipeline_command))
+#                copyfile(which(pipeline_command), backup_path)
+#                copyfile(os.path.join(os.path.dirname(__file__), 'make_copy.py'), which(pipeline_command))
+    return command_list
+
+
+def modify_docker_image(descriptor, cmd_list):
+#image_name = "salari/peds:centos7-test2"
+    with open (descriptor, 'r') as jsonFile:
+        data = json.load(jsonFile)
+    image_name = data["container-image"]["image"]
+
+    client = docker.from_env()
+    container = client.containers.run(image_name, 
+                                      command=cmd_list, 
+                                      volumes={os.getcwd(): {'bind': os.getcwd(), 'mode': 'rw'}}, 
+                                      detach=True)
+    #ctr = c.containers.run(image_name, command="bash -c ' for((i=1;i<=10;i+=2)); do echo Welcome $i times; sleep 10; done'", detach=True) 
+    container.wait()
+    new_img_name = image_name.split(':')[0]+"_"+"3" #"new_tag=12345"
+    image = container.commit(new_img_name)
+    print image.id
+
+    data["container-image"]["image"] = new_img_name   
+    with open (descriptor, 'w+') as jsonFile:
+        json.dump(data, jsonFile)
+
 
 def main(args=None):
     # Use argparse
@@ -77,8 +110,13 @@ def main(args=None):
                         help="path of verify_file outputs")
     parser.add_argument("-s", "--sqlite_db",
                         help="sqlite file created by reprozip")
-
+    parser.add_argument("-d", "--descriptor",
+                        help="Boutiques descriptor")
+    parser.add_argument("-in", "--invocation",
+                        help="Boutiques invocation")
     args = parser.parse_args()
+    descriptor = args.descriptor
+    invocation = args.invocation
     peds_data_path = os.path.abspath(args.output_directory)
     pipe_exec = os.path.abspath(args.pipe_exec)
     pipe_input = os.path.abspath(args.pipe_input)
@@ -91,8 +129,36 @@ def main(args=None):
     while True:
 
         # (1) Start the Pipeline execution
-        pipeline_command = pipe_exec+" "+pipe_input
-        bash_executor(pipe_output, pipeline_command)
+        # pipeline_command = pipe_exec+" "+pipe_input
+        # bash_executor(pipe_output, pipeline_command)
+        # (A) get a Boutiques descriptor and invocation. Check that Boutiques descriptor has a Docker container (not Singularity, not no container)
+        with open (descriptor, 'r') as jsonFile:
+            data = json.load(jsonFile)
+        if data["container-image"]["type"] != 'docker':
+            sys.exit("Container should be a docker image!")
+
+# set invocation parameters entered by user
+        with open (invocation, 'r') as invocJson:
+            invoc_data = json.load(invocJson)
+        invoc_data["input_file"] = pipe_input
+        invoc_data["output_file"] = pipe_output
+        with open (invocation, 'w+') as invocJson:
+            json.dump(invoc_data, invocJson)
+        # (B) run the pipeline using bosh. 
+        #      from boutiques import bosh
+        #      output_object = bosh.execute("launch", descriptor, invocation)
+        #      check that execution succeeded in output_object
+        try:
+            output_object = boutiques.execute("launch", descriptor, invocation)
+        except SystemExit as e:
+            return(e.code)
+
+        #  (C) do your analysis, modify the Docker container in the Boutiques descriptor:
+        #        1. run a container and modify it
+        #        2. commit the container with a new image name, e.g., <init_name>_peds_1234. Use the Docker Python API for it: https://docker-py.readthedocs.io/en/stable/containers.html
+        #        3. Modify the Boutiques descriptor to use the new image
+        #  (D) GOTO (B)
+
 
         # (2) Start to create the error matrix file
         verify_command = 'verify_files ' + verify_cond + ' test ' + verify_output
@@ -117,10 +183,9 @@ def main(args=None):
 
         # (4) Start the modification
         if os.stat(os.path.join(peds_data_path, 'command_lines.txt')).st_size > 0:
-            with open(os.path.join(peds_data_path, 'command_lines.txt'), 'r') as cfile:
-                lines = cfile.readlines()
-                for line in lines:
-                    replace_script(line, peds_data_path)
+            cmd_list = replace_script(peds_data_path)
+            modify_docker_image(descriptor, cmd_list)
+
         else: break
 
 
