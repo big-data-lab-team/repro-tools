@@ -1,7 +1,7 @@
 {
 	"command-line": "mkdir -p [OUTPUT_FILE];sh test_script.sh [INPUT_FILES] [OUTPUT_FILE]", 
 	"container-image": {
-		"image": "salari/peds:centos7-test2", 
+		"image": "peds", 
 		"type": "docker"
 	},
 	"description": "Test Script for auto peds", 

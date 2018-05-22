@@ -6,7 +6,7 @@ import sys
 import fileinput
 import csv
 import re
-import os.path
+import os.path as op
 from shutil import copyfile
 import json
 import boutiques
@@ -50,7 +50,7 @@ def bash_executor(execution_dir, command):
             print(output)
         if error:
             print(error)
-        raise Exception("Pipeline execution failed")
+        raise Exception("Command execution failed")
 
 
 def replace_script(peds_data_path):
@@ -61,66 +61,69 @@ def replace_script(peds_data_path):
             commands = str(line).split('##')[:1]
             pipeline_command = commands[0].replace('\x00', ' ').split(' ')[0]
             # Make a copy of process to backup folder if doesn't exist
-            backup_path = os.path.join(peds_data_path, 'backup_scripts', pipeline_command)
+            backup_path = os.path.join(peds_data_path,
+                                       'backup_scripts',
+                                       pipeline_command)
             if not os.path.exists(backup_path):
                 if not os.path.exists(os.path.dirname(backup_path)):
                     os.makedirs(os.path.dirname(backup_path))
-                command_list.append('cp '+which(pipeline_command)+' '+ backup_path)
-                command_list.append('cp '+os.path.join(os.path.dirname(__file__), 'make_copy.py')+' '+ which(pipeline_command))
+                command_list.append('cp ' + which(pipeline_command) + ' '
+                                    + backup_path)
+                command_list.append('cp ' + op.join(op.dirname(__file__),
+                                                    'make_copy.py') +
+                                    ' ' + which(pipeline_command))
 #                copyfile(which(pipeline_command), backup_path)
-#                copyfile(os.path.join(os.path.dirname(__file__), 'make_copy.py'), which(pipeline_command))
+#                copyfile(os.path.join(os.path.dirname(__file__),
+#                'make_copy.py'), which(pipeline_command))
     return command_list
 
 
 def modify_docker_image(descriptor, cmd_list):
-#image_name = "salari/peds:centos7-test2"
-    with open (descriptor, 'r') as jsonFile:
+    # image_name = "salari/peds:centos7-test2"
+    with open(descriptor, 'r') as jsonFile:
         data = json.load(jsonFile)
     image_name = data["container-image"]["image"]
 
     client = docker.from_env()
-    container = client.containers.run(image_name, 
-                                      command=cmd_list, 
-                                      volumes={os.getcwd(): {'bind': os.getcwd(), 'mode': 'rw'}}, 
+    print("Running command: {}".format(cmd_list))
+    container = client.containers.run(image_name,
+                                      command=cmd_list,
+                                      volumes={os.getcwd():
+                                               {'bind': os.getcwd(),
+                                                'mode': 'rw'}},
                                       detach=True)
-    #ctr = c.containers.run(image_name, command="bash -c ' for((i=1;i<=10;i+=2)); do echo Welcome $i times; sleep 10; done'", detach=True) 
+    # ctr = c.containers.run(image_name, command="bash -c ' for((i=1;i<=10;i+=2)); do echo Welcome $i times; sleep 10; done'", detach=True)
     container.wait()
-    new_img_name = image_name.split(':')[0]+"_"+"3" #"new_tag=12345"
+    new_img_name = image_name.split(':')[0] + "_" + "3"  # "new_tag=12345"
     image = container.commit(new_img_name)
     print image.id
 
-    data["container-image"]["image"] = new_img_name   
-    with open (descriptor, 'w+') as jsonFile:
+    data["container-image"]["image"] = new_img_name
+    with open(descriptor, 'w+') as jsonFile:
         json.dump(data, jsonFile)
 
 
 def main(args=None):
     # Use argparse
-    parser = argparse.ArgumentParser(description='Automation of pipeline error detection')
-    parser.add_argument("output_directory", help="directory where to store the output")
-    parser.add_argument("-p", "--pipe_exec",
-                        help="executions file of the pipeline")
-    parser.add_argument("-i", "--pipe_input",
-                        help="input data of pipeline running")
-    parser.add_argument("-o", "--pipe_output",
-                        help="path of pipeline output directory")
+    parser = argparse.ArgumentParser(description='Automation of pipeline '
+                                                 ' error detection')
+    parser.add_argument("output_directory", help='directory where to '
+                                                 'store the output')
     parser.add_argument("-c", "--verify_condition",
-                        help="input the text file containing the path to the verify_file condition folders")
+                        help="input the text file containing the path "
+                             "to the verify_file condition folders")
     parser.add_argument("-r", "--verify_output",
                         help="path of verify_file outputs")
     parser.add_argument("-s", "--sqlite_db",
                         help="sqlite file created by reprozip")
     parser.add_argument("-d", "--descriptor",
                         help="Boutiques descriptor")
-    parser.add_argument("-in", "--invocation",
+    parser.add_argument("-i", "--invocation",
                         help="Boutiques invocation")
     args = parser.parse_args()
     descriptor = args.descriptor
     invocation = args.invocation
     peds_data_path = os.path.abspath(args.output_directory)
-    pipe_exec = os.path.abspath(args.pipe_exec)
-    pipe_input = os.path.abspath(args.pipe_input)
-    pipe_output = os.path.abspath(args.pipe_output)
     verify_cond = args.verify_condition
     verify_output = args.verify_output
     sqlite_db = os.path.abspath(args.sqlite_db)
@@ -131,34 +134,34 @@ def main(args=None):
         # (1) Start the Pipeline execution
         # pipeline_command = pipe_exec+" "+pipe_input
         # bash_executor(pipe_output, pipeline_command)
-        # (A) get a Boutiques descriptor and invocation. Check that Boutiques descriptor has a Docker container (not Singularity, not no container)
-        with open (descriptor, 'r') as jsonFile:
+        # (A) get a Boutiques descriptor and invocation.
+        # Check that Boutiques descriptor has a Docker container (not
+        # Singularity, not no container)
+        with open(descriptor, 'r') as jsonFile:
             data = json.load(jsonFile)
         if data["container-image"]["type"] != 'docker':
-            sys.exit("Container should be a docker image!")
+            sys.exit("Container must be a docker image!")
+        print("Docker image: {}".format(data["container-image"]["image"]))
 
-# set invocation parameters entered by user
-        with open (invocation, 'r') as invocJson:
-            invoc_data = json.load(invocJson)
-        invoc_data["input_file"] = pipe_input
-        invoc_data["output_file"] = pipe_output
-        with open (invocation, 'w+') as invocJson:
-            json.dump(invoc_data, invocJson)
-        # (B) run the pipeline using bosh. 
+        # set invocation parameters entered by user
+        # (B) run the pipeline using bosh.
         #      from boutiques import bosh
         #      output_object = bosh.execute("launch", descriptor, invocation)
         #      check that execution succeeded in output_object
         try:
+            print("Launching Boutiques tool")
             output_object = boutiques.execute("launch", descriptor, invocation)
         except SystemExit as e:
             return(e.code)
+        print(output_object)
+        if(output_object.exit_code):
+            sys.exit("Pipeline execution failed.")
 
         #  (C) do your analysis, modify the Docker container in the Boutiques descriptor:
         #        1. run a container and modify it
         #        2. commit the container with a new image name, e.g., <init_name>_peds_1234. Use the Docker Python API for it: https://docker-py.readthedocs.io/en/stable/containers.html
         #        3. Modify the Boutiques descriptor to use the new image
         #  (D) GOTO (B)
-
 
         # (2) Start to create the error matrix file
         verify_command = 'verify_files ' + verify_cond + ' test ' + verify_output
@@ -168,8 +171,8 @@ def main(args=None):
             lines = mfile.readlines()
         sample = ""
         for line in lines[1:]:
-            splitedLine = line.split('\t')
-            sample += (splitedLine[0].replace(' ', '') + " " + str(int(splitedLine[1]))+"\n")
+            splited_line = line.split('\t')
+            sample += (splited_line[0].replace(' ', '') + " " + str(int(splited_line[1]))+os.linesep)
         write_matrix = open(os.path.join(peds_data_path, 'error_matrix.txt'), 'w')
         write_matrix.write(sample)
         write_matrix.close()
@@ -186,7 +189,8 @@ def main(args=None):
             cmd_list = replace_script(peds_data_path)
             modify_docker_image(descriptor, cmd_list)
 
-        else: break
+        else:
+            break
 
 
 if __name__ == '__main__':
