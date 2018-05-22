@@ -38,7 +38,8 @@ setup(name="reprotools",
         "console_scripts": [
             "verify_files=reprotools:verify_files",
             "peds=reprotools:peds",
-            "auto_peds=reprotools:auto_peds"
+            "auto_peds=reprotools:auto_peds",
+            "plot_matrix=reprotools:plot_matrix"
         ]
       },
       setup_requires=DEPS,
