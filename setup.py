@@ -6,7 +6,9 @@ VERSION = "0.0.1"
 DEPS = [
          "graphviz",
          "pandas",
-         "matplotlib"
+         "matplotlib",
+         "boutiques",
+         "docker"
        ]
 
 setup(name="reprotools",
