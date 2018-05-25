@@ -51,7 +51,7 @@ based on the reprozip trace file (trace.sqlite3) and matrix-file created by `ver
 
 ### Prerequisites:
 
-Python 2.7.5, graphviz module
+Python 2.7.5, graphviz , Boutiques, Docker modules
 
 ### Running the script:
 
