@@ -83,7 +83,7 @@ def modify_docker_image(descriptor, peds_data_path, tag_name):
         data = json.load(jsonFile)
     image_name = data["container-image"]["image"]
     client = docker.from_env()
-    #print("Running command: {}".format(cmd_list))
+    # print("Running command: {}".format(cmd_list))
 
     cmd_file_path = op.join(peds_data_path, 'cmd.sh')
     with open(cmd_file_path, 'r') as cmdFile:
@@ -98,7 +98,7 @@ def modify_docker_image(descriptor, peds_data_path, tag_name):
                                       detach=True)
     container.logs()
     container.wait()
-    new_img_name = image_name.split(':')[0] + "_" + str(tag_name)  # "new_tag=12345"
+    new_img_name = image_name.split(':')[0] + "_" + str(tag_name)  #tag=12345
     image = container.commit(new_img_name)
 
     data["container-image"]["image"] = new_img_name
@@ -133,8 +133,7 @@ def main(args=None):
     first_iter = True
     tag_name = 0
 # Start Modification Loop
-    while True:
-        
+    while True:       
         # (1) Start the Pipeline execution
         # pipeline_command = pipe_exec+" "+pipe_input
         # bash_executor(pipe_output, pipeline_command)

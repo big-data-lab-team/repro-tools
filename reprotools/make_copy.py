@@ -11,9 +11,9 @@ import os.path as op
 from reprotools import __file__ as path
 from shutil import copyfile
 
-#Modification Step: In order to make appropriate file copy to fix processes artificially, 
-#first, we replace the current script with the main pipeline process that create errors.
-#after that, script will make a copy of file if arguments are the same with backup command-lines.
+# Modification Step: In order to make appropriate file copy to fix processes artificially,
+# first, we replace the current script with the main pipeline process that create errors.
+# after that, script will make a copy of file if arguments are the same with backup command-lines.
 
 
 def is_intstring(s):
@@ -50,11 +50,12 @@ def csv_parser(cfile):
         for file in flist:
             count = 0
             for f in file.split('/'):
-            #  if f == "exec":
+            # if f == "exec":
                 if f == "centos7":
                     count += 1
                     break
-                else: count += 1
+                else:
+                    count += 1
             fname_list.append("/".join(file.split('/')[count:]))
         command_parsed[command] = fname_list
     return command_parsed
@@ -63,7 +64,7 @@ def csv_parser(cfile):
 def main(args=None):
 
     WD_test = op.join(op.dirname(op.abspath(path)), '../test/peds_test_data')
-    #WD_test = '/home/ali/Desktop/git_repo/repro-tools/test/peds_test_data'
+    # WD_test = '/home/ali/Desktop/git_repo/repro-tools/test/peds_test_data'
     # updated commands refer to the single processes that create errors
     # common_cmd refers to the multi-write processes that create errors
     with open(op.join(WD_test, 'total_commands.txt'), 'r') as cfile:
@@ -71,7 +72,8 @@ def main(args=None):
     try:
         with open(op.join(WD_test, 'common_cmd.txt'), 'r')as multi_write_file:
             multi_write_commands = csv_parser(multi_write_file)
-    except: multi_write_commands = []
+    except:
+        multi_write_commands = []
     proc_list = multi_write_commands.keys()
 
     input_arg_cmd = sys.argv[0]
@@ -79,7 +81,7 @@ def main(args=None):
     cmd_name = current_script_name.split('/')[-1:][0]
     command = op.join(WD_test, 'backup_scripts', str(cmd_name))
     i = 1
-    while i<len(sys.argv):
+    while i < len(sys.argv):
         command += " " + sys.argv[i]
         i += 1
     subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)
@@ -125,7 +127,8 @@ def main(args=None):
                 #    bash_command = "cp " + from_path + " " + To_temp_file
                 #    os.system(bash_command)
             break
-        else: continue
+        else:
+            continue
 
 
 if __name__ == '__main__':
