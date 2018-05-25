@@ -6,8 +6,10 @@ import os
 
 def test_peds():
     command_line = ("peds "
-                    "-d trace.sqlite3 "
-                    "-m error_matrix.txt")
+                    "trace.sqlite3 "
+                    "error_matrix.txt "
+                    "-i toremove.txt "
+                    "-g graph.dot")
     process = subprocess.Popen(command_line,
                                shell=True,
                                stdout=subprocess.PIPE,
