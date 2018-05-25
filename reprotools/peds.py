@@ -26,7 +26,7 @@ class linked_list:
         self.head = None
 
     def is_empty(self):
-        return self.head == None
+        return (self.head is None)
 
     # Returns the size of the list
     def size(self):
@@ -417,16 +417,35 @@ def print_writtn_files_by_several_process(pipeline_files, written_files_list, pi
     return origin_p
 
 
+def check_file(parser, x):
+    if os.path.exists(x):
+        return x
+    parser.error("File does not exist: {}".format(x))
+
 def main():
-    parser = argparse.ArgumentParser(description='Classification of the pipeline processes and making its graph')
-    parser.add_argument("-d", "--sqlite-db",
-                        help="sqlite file created by reprozip, includes all pipeline processes")
-    parser.add_argument("-m", "--matrix",
+    parser = argparse.ArgumentParser(description='Classification of the nodes'
+                                                 ' in the pipeline graph.')
+    parser.add_argument("sqlite_db",
+                        type=lambda x: check_file(parser, x),
+                        help='sqlite file created by reprozip, '
+                             'includes all pipeline processes')
+    parser.add_argument("matrix",
+                        type=lambda x: check_file(parser, x),
                         help="matrix file produced by verify_files")
+    parser.add_argument('-i', '--ignore',
+                        type=lambda x: check_file(parser, x),
+                        help='file containing process '
+                             'names to ignore (one process name per line).')
+    parser.add_argument('-g', '--graph',
+                        help='dot file where the graph will be written. A'
+                              'png rendering will also be done.')
     args = parser.parse_args()
 
-## INITIALIZE THE PROGRAM
-    graph = Di('Graph', filename='GraphModel', format='dot', strict=False)
+    # INITIALIZE THE PROGRAM
+    if args.graph:
+        graph = Di('Graph', filename=args.graph, format='png', strict=False)
+    else:
+        graph = Di('Graph', format='png', strict=False)
     # write_files = open("complete_file.txt", 'w')
     # write_proc = open("all_processes", 'w')
     write_total_tmp = ['000']
@@ -439,17 +458,16 @@ def main():
     red_nodes = []
     blue_nodes = []
     common_processes = []
+    ignore = []
     db_path = args.sqlite_db
     read_matrix_file = args.matrix
     # read the pipeline files
     with open(read_matrix_file, 'r') as pfiles:
         pipeline_files = pfiles.readlines()
-    try:
-        with open("toremove.txt", 'r') as ignorefiles:
+    if args.ignore:
+        with open(args.ignore, 'r') as ignorefiles:
             ignore = ignorefiles.readlines()  # read the whole files
-    except:
-        ignore = []
-## CREATE PROCESS TREE
+    # CREATE PROCESS TREE
     # Open the database file contains all the processes
     db = sqlite3.connect(db_path)
     writefile_cursor = db.cursor()
@@ -464,8 +482,10 @@ def main():
     pipeline_graph.reverse()
     total_pipe_proc = pipeline_graph.to_list()
 
-## FINDING ALL THE PROCESSES WITH MULTI-WRITE IN PIPELINE
-    origin = print_writtn_files_by_several_process(pipeline_files, written_files_list, pipeline_graph)
+    # FINDING ALL THE PROCESSES WITH MULTI-WRITE IN PIPELINE
+    origin = print_writtn_files_by_several_process(pipeline_files,
+                                                   written_files_list,
+                                                   pipeline_graph)
 #   '''
 #   # Add the common processes based on the common files with differences to prevent of propagating errors with various processes
 #    write_total_commons = open("total_common_cmd.txt", 'w')
@@ -480,7 +500,7 @@ def main():
 #    for key, val in command_lines.items():
 #        write_total_commons.write(str(key) + "##" + str(val) + "\n")
 #    '''
-## PROCESS CLASSIFICATION USING CREATED PROCESS TREE
+    # PROCESS CLASSIFICATION USING CREATED PROCESS TREE
     for proc in total_pipe_proc:
         count_diff_w = 0
         count_nodiff_w = 0
@@ -720,12 +740,14 @@ def main():
     #                                          'read_temp', 'write_diff', 'write_no_diff',
     #                                          'wite_temp', 'process_name'])
     # wproc.to_csv(write_proc, sep ='\t', index = False)
-    # graph.render()
-    # graph.view()
+    if args.graph:
+        graph.render()
 
 ###########
 ####### WRITE OUTPUT FILES
 #####
+    # change this so that the output file names are positional arguments
+    # on the command line.
     write_commands = open("command_lines.txt", 'w')
     write_total_commands = open("total_commands.txt", 'a+')
     write_commons = open("common_cmd.txt", 'a+')

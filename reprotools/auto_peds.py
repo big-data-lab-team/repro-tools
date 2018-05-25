@@ -176,6 +176,7 @@ def main(args=None):
         for line in lines[1:]:
             splited_line = line.split('\t')
             sample += (splited_line[0].replace(' ', '') + " " + str(int(splited_line[1]))+os.linesep)
+        # create a temporary file to store error_matrix.txt (use Python's tempfile library)
         write_matrix = open(op.join(peds_data_path, 'error_matrix.txt'), 'w')
         write_matrix.write(sample)
         write_matrix.close()
@@ -184,7 +185,7 @@ def main(args=None):
         #if first_iter is True:
         #    os.remove(os.path.join(peds_data_path, 'total_commands.txt'))
         #    first_iter = False
-        peds_command = "peds -d " + sqlite_db + " -m error_matrix.txt"
+        peds_command = "peds " + sqlite_db + " error_matrix.txt"
         bash_executor(peds_data_path, peds_command)
 
         # (4) Start the modification
