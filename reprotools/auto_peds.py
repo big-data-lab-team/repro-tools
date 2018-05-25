@@ -6,6 +6,7 @@ import sys
 import fileinput
 import csv
 import re
+import os
 import os.path as op
 from shutil import copyfile
 import json
@@ -29,11 +30,11 @@ def which(exe=None):
     Python clone of POSIX's /usr/bin/which
     '''
     if exe:
-        (path, name) = os.path.split(exe)
+        (path, name) = op.split(exe)
         if os.access(exe, os.X_OK):
             return exe
         for path in os.environ.get('PATH').split(os.pathsep):
-            full_path = os.path.join(path, exe)
+            full_path = op.join(path, exe)
             if os.access(full_path, os.X_OK):
                 return full_path
     return None
@@ -53,50 +54,52 @@ def bash_executor(execution_dir, command):
         raise Exception("Command execution failed")
 
 
-def replace_script(peds_data_path):
-    with open(os.path.join(peds_data_path, 'command_lines.txt'), 'r') as cfile:
+def make_modify_script(peds_data_path):
+    with open(op.join(peds_data_path, 'command_lines.txt'), 'r') as cfile:
         lines = cfile.readlines()
         for line in lines:
-            command_list = []
             commands = str(line).split('##')[:1]
             pipeline_command = commands[0].replace('\x00', ' ').split(' ')[0]
             # Make a copy of process to backup folder if doesn't exist
-            backup_path = os.path.join(peds_data_path,
+            backup_path = op.join(peds_data_path,
                                        'backup_scripts',
                                        pipeline_command)
-            if not os.path.exists(backup_path):
-                if not os.path.exists(os.path.dirname(backup_path)):
-                    os.makedirs(os.path.dirname(backup_path))
-                command_list.append('cp ' + which(pipeline_command) + ' '
-                                    + backup_path)
-                command_list.append('cp ' + op.join(op.dirname(__file__),
-                                                    'make_copy.py') +
-                                    ' ' + which(pipeline_command))
-#                copyfile(which(pipeline_command), backup_path)
-#                copyfile(os.path.join(os.path.dirname(__file__),
-#                'make_copy.py'), which(pipeline_command))
-    return command_list
+            cmd_file = open(op.join(peds_data_path, 'cmd.sh'), 'w+')
+            cmd_file.write('#!/usr/bin/env bash \n')
+
+            if not op.exists(backup_path):
+                if not op.exists(op.dirname(backup_path)):
+                    os.makedirs(op.dirname(backup_path))
+                cmd_file.write('cp ' + '`which '+pipeline_command + '` '
+                                + backup_path + '\n')
+                cmd_file.write('cp ' + op.join(op.dirname(__file__),
+                                                'make_copy.py') +
+                                ' `which '+pipeline_command + '`' + '\n')
 
 
-def modify_docker_image(descriptor, cmd_list):
+def modify_docker_image(descriptor, peds_data_path, tag_name):
     # image_name = "salari/peds:centos7-test2"
     with open(descriptor, 'r') as jsonFile:
         data = json.load(jsonFile)
     image_name = data["container-image"]["image"]
-
     client = docker.from_env()
-    print("Running command: {}".format(cmd_list))
+    #print("Running command: {}".format(cmd_list))
+
+    cmd_file_path = op.join(peds_data_path, 'cmd.sh')
+    with open(cmd_file_path, 'r') as cmdFile:
+        cmd = cmdFile.readlines()
     container = client.containers.run(image_name,
-                                      command=cmd_list,
+                                      command='sh ' + cmd_file_path,
                                       volumes={os.getcwd():
                                                {'bind': os.getcwd(),
                                                 'mode': 'rw'}},
+                                      environment=["PYTHONPATH=$PYTHONPATH:"+os.getcwd()],
+                                      working_dir=os.getcwd(),
                                       detach=True)
-    # ctr = c.containers.run(image_name, command="bash -c ' for((i=1;i<=10;i+=2)); do echo Welcome $i times; sleep 10; done'", detach=True)
+    container.logs()
     container.wait()
-    new_img_name = image_name.split(':')[0] + "_" + "3"  # "new_tag=12345"
+    new_img_name = image_name.split(':')[0] + "_" + str(tag_name)  # "new_tag=12345"
     image = container.commit(new_img_name)
-    print image.id
 
     data["container-image"]["image"] = new_img_name
     with open(descriptor, 'w+') as jsonFile:
@@ -123,14 +126,15 @@ def main(args=None):
     args = parser.parse_args()
     descriptor = args.descriptor
     invocation = args.invocation
-    peds_data_path = os.path.abspath(args.output_directory)
+    peds_data_path = op.abspath(args.output_directory)
     verify_cond = args.verify_condition
     verify_output = args.verify_output
-    sqlite_db = os.path.abspath(args.sqlite_db)
+    sqlite_db = op.abspath(args.sqlite_db)
     first_iter = True
+    tag_name = 0
 # Start Modification Loop
     while True:
-
+        
         # (1) Start the Pipeline execution
         # pipeline_command = pipe_exec+" "+pipe_input
         # bash_executor(pipe_output, pipeline_command)
@@ -163,32 +167,32 @@ def main(args=None):
         #        3. Modify the Boutiques descriptor to use the new image
         #  (D) GOTO (B)
 
-        # (2) Start to create the error matrix file
+        # (2) Create error matrix file
         verify_command = 'verify_files ' + verify_cond + ' test ' + verify_output
         bash_executor(os.getcwd(), verify_command)
 
-        with open(os.path.join(verify_output, 'test_differences_subject_total.txt'), 'r') as mfile:
+        with open(op.join(verify_output, 'test_differences_subject_total.txt'), 'r') as mfile:
             lines = mfile.readlines()
         sample = ""
         for line in lines[1:]:
             splited_line = line.split('\t')
             sample += (splited_line[0].replace(' ', '') + " " + str(int(splited_line[1]))+os.linesep)
-        write_matrix = open(os.path.join(peds_data_path, 'error_matrix.txt'), 'w')
+        write_matrix = open(op.join(peds_data_path, 'error_matrix.txt'), 'w')
         write_matrix.write(sample)
         write_matrix.close()
 
-        # (3) Start the classification
-#        if first_iter is True:
-#            os.remove(os.path.join(peds_data_path, 'total_commands.txt'))
-#            first_iter = False
+        # (3) Classification of processes
+        #if first_iter is True:
+        #    os.remove(os.path.join(peds_data_path, 'total_commands.txt'))
+        #    first_iter = False
         peds_command = "peds -d " + sqlite_db + " -m error_matrix.txt"
         bash_executor(peds_data_path, peds_command)
 
         # (4) Start the modification
-        if os.stat(os.path.join(peds_data_path, 'command_lines.txt')).st_size > 0:
-            cmd_list = replace_script(peds_data_path)
-            modify_docker_image(descriptor, cmd_list)
-
+        if os.stat(op.join(peds_data_path, 'command_lines.txt')).st_size > 0:
+            tag_name += 1
+            make_modify_script(peds_data_path)
+            modify_docker_image(descriptor, peds_data_path, tag_name)
         else:
             break
 
