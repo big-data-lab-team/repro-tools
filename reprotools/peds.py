@@ -4,6 +4,7 @@ import os
 import re
 import argparse
 import sqlite3
+import json
 import pandas as pd
 from sqlite3 import Error
 from graphviz import Digraph as Di
@@ -395,7 +396,7 @@ def path_parser(path):
     return str(os.path.abspath(splited_path))
 
 
-def print_writtn_files_by_several_process(pipeline_files, written_files_list, pipeline_graph):
+def flist_multi_write(pipeline_files, written_files_list, pipeline_graph):
     origin_p = {}
     for f in pipeline_files:
         n = f.split(" ")
@@ -417,10 +418,51 @@ def print_writtn_files_by_several_process(pipeline_files, written_files_list, pi
     return origin_p
 
 
+def total_common_processes(output_file, origin, pipeline_graph):
+   # Add the common processes based on the common files with differences
+   # to prevent of propagating errors with various processes
+    command_dic = {}
+    command_lines = {}
+    json_output = open(os.path.splitext(output_file)[0]+'_captured.json', 'w+')
+#	write_total_commons = open("total_common_cmd.txt", 'w')
+    for key, values in origin.items():
+        # if proc.id in values:
+        for v in values:
+            common_file = []
+            proc_name = pipeline_graph.get_name(v)
+            if proc_name[0][1] in command_lines.keys(): common_file = command_lines[proc_name[0][1]]
+            common_file.append(str(key))
+            command_lines[(proc_name[0][1])] = common_file
+    command_dic['total_multi_write_proc'] = command_lines
+    json.dump(command_dic, json_output)
+#    for key, val in command_lines.items():
+#        write_total_commons.write(str(key) + "##" + str(val) + "\n")
+    json_output.close()
+        
+
+def write_temp_files(output_file, temp_commands):
+    with open(os.path.splitext(output_file)[0]+'_captured.json', 'r') as rfile:
+        data = json.load(rfile)
+    data['total_temp_proc'] = temp_commands
+    with open(os.path.splitext(output_file)[0]+'_captured.json', 'w') as wfile:
+        json.dump(data, wfile)	
+	
+	        
+def error_matrix_format(read_matrix_file):
+    with open(read_matrix_file, 'r') as pfiles:
+        lines = pfiles.readlines()
+    pipeline_files = []
+    for line in lines[1:]:
+        splited_line = line.split('\t')
+        pipeline_files.append(splited_line[0].replace(' ', '') + " " + str(int(splited_line[1])) + os.linesep)
+    return pipeline_files
+    
+            
 def check_file(parser, x):
     if os.path.exists(x):
         return x
     parser.error("File does not exist: {}".format(x))
+
 
 def main():
     parser = argparse.ArgumentParser(description='Classification of the nodes'
@@ -439,6 +481,9 @@ def main():
     parser.add_argument('-g', '--graph',
                         help='dot file where the graph will be written. A'
                               'png rendering will also be done.')
+    parser.add_argument('-o', '--output_file',
+                        help='.Json output file include all commandlines of'
+                              'uncertain, unknown, and certain red processes')                              
     args = parser.parse_args()
 
     # INITIALIZE THE PROGRAM
@@ -446,24 +491,25 @@ def main():
         graph = Di('Graph', filename=args.graph, format='png', strict=False)
     else:
         graph = Di('Graph', format='png', strict=False)
+    
     # write_files = open("complete_file.txt", 'w')
     # write_proc = open("all_processes", 'w')
     write_total_tmp = ['000']
     write_total_tmp2 = ['000']
     node_label = 0
     proc_list = []
+    capture_mode = True
+    total_processes={}
     command_lines = {}
     multi_commands = {}
     temp_commands = {}
     red_nodes = []
     blue_nodes = []
-    common_processes = []
     ignore = []
     db_path = args.sqlite_db
     read_matrix_file = args.matrix
     # read the pipeline files
-    with open(read_matrix_file, 'r') as pfiles:
-        pipeline_files = pfiles.readlines()
+    pipeline_files = error_matrix_format(read_matrix_file)
     if args.ignore:
         with open(args.ignore, 'r') as ignorefiles:
             ignore = ignorefiles.readlines()  # read the whole files
@@ -483,23 +529,9 @@ def main():
     total_pipe_proc = pipeline_graph.to_list()
 
     # FINDING ALL THE PROCESSES WITH MULTI-WRITE IN PIPELINE
-    origin = print_writtn_files_by_several_process(pipeline_files,
-                                                   written_files_list,
+    origin = flist_multi_write(pipeline_files, written_files_list,
                                                    pipeline_graph)
-#   '''
-#   # Add the common processes based on the common files with differences to prevent of propagating errors with various processes
-#    write_total_commons = open("total_common_cmd.txt", 'w')
-#    for key, values in origin.items():
-#        # if proc.id in values:
-#        for v in values:
-#            common_file = []
-#            proc_name = pipeline_graph.get_name(v)
-#            if proc_name[0][1] in command_lines.keys(): common_file = command_lines[proc_name[0][1]]
-#            common_file.append(str(key))
-#            command_lines[(proc_name[0][1])] = common_file
-#    for key, val in command_lines.items():
-#        write_total_commons.write(str(key) + "##" + str(val) + "\n")
-#    '''
+
     # PROCESS CLASSIFICATION USING CREATED PROCESS TREE
     for proc in total_pipe_proc:
         count_diff_w = 0
@@ -614,25 +646,29 @@ def main():
             for key, values in origin.items():
                 if proc.id in values:
                     is_multi = True
+                    # key is file name and value is pid of process,
+                    # So value should be counted by the proc timestamp
                     for v in values:
                         common_file = []
                         proc_name = pipeline_graph.get_name(v)
                         common_file.append(str(key))
                         command_str = str((proc_name[0][1])) + "##" + str(common_file) + '\n'
                         try:
-                            with open("common_cmd.txt", 'r') as c_proc:
-                                common_proc = c_proc.readlines()
+                            with open(args.output_file, 'r') as rfile:
+                                data = json.load(rfile)
+                                multi_commands = data["multiWrite_cmd"]
                         except:
-                            common_proc = []
+                            multi_commands = {}
                         tmp = True
-                        for cmd in common_proc:
+                        for key, val in multi_commands.items():
+                            cmd = str(key) + "##" + str(val) + '\n'
                             if cmd == command_str:
                                 tmp = False
                         if tmp is True:
                             multi_commands[(proc_name[0][1])] = common_file
-                            command_lines[(proc_name[0][1])] = common_file
+                            #command_lines[(proc_name[0][1])] = common_file
                             break
-                        common_processes.append(str(v) + " = " + str(proc_name[0][0]))
+                        #common_processes.append(str(v) + " = " + str(proc_name[0][0]))
             # add red process include file with no multi-write
             if (not is_multi):
                 files = []
@@ -661,22 +697,23 @@ def main():
 ###########
 ####### FIND PROCESSES THAT W/R TEMPORARY FILES AND CREATE TEMP COMMAND-LINES LIST
 #####
-        if (count_diff_r > 0 or count_nodiff_r > 0 or count_diff_w > 0 or count_nodiff_w > 0) and count_tmp_w > 0:
-            temp_w = []
-            for tmp in write_tmp_list:
-                if tmp[1] != '/dev/null':
-                    temp_w.append(str(tmp[1]))
-            temp_commands[(proc.name[0][1])] = temp_w
+        if capture_mode:
+            if (count_diff_r > 0 or count_nodiff_r > 0 or count_diff_w > 0 or count_nodiff_w > 0) and count_tmp_w > 0:
+                temp_w = []
+                for tmp in write_tmp_list:
+                    if tmp[1] != '/dev/null':
+                        temp_w.append(str(tmp[1]))
+                temp_commands[(proc.name[0][1])] = temp_w
 
-        if (count_diff_r > 0 or count_nodiff_r > 0 or count_diff_w > 0 or count_nodiff_w > 0) and count_tmp_r > 0:
-            for tmp2 in read_tmp_list:
-                check = []
-                p_splited_name = str(tmp2[0]).split("/")[-1:]
-                if p_splited_name[0] not in ["cp", "recon-all"]:
-                    if tmp2[0] in temp_commands.keys():
-                        check = temp_commands[tmp2[0]]
-                    check.append(tmp2[1])
-                    temp_commands[tmp2[0]] = check
+            if (count_diff_r > 0 or count_nodiff_r > 0 or count_diff_w > 0 or count_nodiff_w > 0) and count_tmp_r > 0:
+                for tmp2 in read_tmp_list:
+                    check = []
+                    p_splited_name = str(tmp2[0]).split("/")[-1:]
+                    if p_splited_name[0] not in ["cp", "recon-all"]:
+                        if tmp2[0] in temp_commands.keys():
+                            check = temp_commands[tmp2[0]]
+                        check.append(tmp2[1])
+                        temp_commands[tmp2[0]] = check
 
 ###########
 ####### MAKE PROCESS GRAPH VISUALIZATION (DOT FILE)
@@ -733,45 +770,34 @@ def main():
                 [node_label, proc.id, len(proc.data), count_diff_r, count_nodiff_r, count_tmp_r, count_diff_w,
                  count_nodiff_w, count_tmp_w, proc.name])
             node_label += 1
-       # write_to_file(write_diff_list, read_diff_list, read_tmp_list, write_tmp_list, write_files, proc, count_diff_w,
-       #               count_diff_r, count_tmp_r, count_tmp_w)
-
-    # wproc = pd.DataFrame(proc_list, columns = ['node', 'process_ID', 'total_R/W', 'read_diff', 'read_no_diff',
-    #                                          'read_temp', 'write_diff', 'write_no_diff',
-    #                                          'wite_temp', 'process_name'])
-    # wproc.to_csv(write_proc, sep ='\t', index = False)
+ 
     if args.graph:
         graph.render()
 
 ###########
 ####### WRITE OUTPUT FILES
 #####
-    # change this so that the output file names are positional arguments
-    # on the command line.
-    write_commands = open("command_lines.txt", 'w')
-    write_total_commands = open("total_commands.txt", 'a+')
-    write_commons = open("common_cmd.txt", 'a+')
-    # write_temp_commands = open("total_tmp_files.txt", 'w')
-    # write_interesting_nodes = open("interesting_nodes.txt", 'a+')
-    #  write temporary file
-    # for key , val in temp_commands.items():
-    #     write_temp_commands.write(str(key) +"##"+ str(val)+"\n")
 
-    for key, val in command_lines.items():
-        key = key.replace('\x00' or ' ', ' ')
-        # print(str(key) +"##"+ str(val))
-        write_commands.write(str(key) + "##" + str(val) + "\n")
-        write_total_commands.write(str(key) + "##" + str(val) + "\n")
-    with open("common_cmd.txt", 'r') as c_proc:
-        write_commands.write(c_proc.read())
-        write_total_commands.write(c_proc.read())
+#    with open(args.output_file, 'r') as rfile:
+#        j_data = json.load(rfile)
+#    j_data['certain_cmd']=command_lines
+#    j_data['temp_cmd']=temp_commands
+#    j_data['multiWrite_cmd']=multi_commands
+#    rfile.close()
+#    with open(args.output_file, 'w') as wfile:
+#        json.dump(j_data, wfile)
+#    wfile.close()
 
-    for key, val in multi_commands.items():
-        write_commons.write(str(key) + "##" + str(val) + "\n")
-    # for key, val in interesting_nodes.items():
-    # write_interesting_nodes.write("red nodes: "+str(red_nodes) +"\n"+"blue nodes: "+ str(blue_nodes)+"\n"+"common processes: "+ str(common_processes)+ "\n")
-    # write_interesting_nodes.write("#### NEXT ITERATION ####\n\n")
+    if capture_mode:
+        # add total multi write processes for the first time
+        total_common_processes(args.output_file, origin, pipeline_graph)
+        write_temp_files(args.output_file, temp_commands)
+
+    total_processes['certain_cmd']=command_lines
+    total_processes['multiWrite_cmd']=multi_commands
+    with open(args.output_file, 'w+') as json_file:
+        json.dump(total_processes, json_file)
 
 
 if __name__ == '__main__':
-    main();
+    main()

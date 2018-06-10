@@ -7,6 +7,7 @@ import fileinput
 import csv
 import re
 import os
+import json
 import os.path as op
 from reprotools import __file__ as path
 from shutil import copyfile
@@ -39,15 +40,19 @@ def which(exe=None):
     return None
 
 
-def csv_parser(cfile):
+def csv_parser(command_dic):
     command_parsed = {}
-    for line in cfile:
+    for cmd, files in command_dic.items():
         fname_list = []
-        command = str(line).split('##')[:1]
-        command = str(command[0].replace('\x00', ' '))
-        file_name = str(line).split('##')[1:]
-        flist = file_name[0][2:-3].replace("'", '').split(',')
-        for file in flist:
+#        command = str(line).split('##')[:1]
+#        command = str(command[0].replace('\x00', ' '))
+        command = str(cmd.replace('\x00', ' '))
+
+#        file_name = str(line).split('##')[1:]
+#        flist = file_name[0][2:-3].replace("'", '').split(',')
+#        flist = files[0][2:-3].replace("'", '').split(',')
+
+        for file in files:
             count = 0
             for f in file.split('/'):
             # if f == "exec":
@@ -67,14 +72,17 @@ def main(args=None):
     # WD_test = '/home/ali/Desktop/git_repo/repro-tools/test/peds_test_data'
     # updated commands refer to the single processes that create errors
     # common_cmd refers to the multi-write processes that create errors
-    with open(op.join(WD_test, 'total_commands.txt'), 'r') as cfile:
-        commands = csv_parser(cfile)
-    try:
-        with open(op.join(WD_test, 'common_cmd.txt'), 'r')as multi_write_file:
-            multi_write_commands = csv_parser(multi_write_file)
-    except:
-        multi_write_commands = []
-    proc_list = multi_write_commands.keys()
+    with open(op.join(WD_test, 'commands.json'), 'r') as cfile:
+		data = json.load(cfile)
+		command_dic = data["total_commands"]
+		commands = csv_parser(command_dic)
+
+#    try:
+#        with open(op.join(WD_test, 'common_cmd.txt'), 'r')as multi_write_file:
+#            multi_write_commands = csv_parser(multi_write_file)
+#    except:
+#        multi_write_commands = []
+#    proc_list = multi_write_commands.keys()
 
     input_arg_cmd = sys.argv[0]
     current_script_name = __file__

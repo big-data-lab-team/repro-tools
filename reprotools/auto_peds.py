@@ -54,31 +54,27 @@ def bash_executor(execution_dir, command):
         raise Exception("Command execution failed")
 
 
-def make_modify_script(peds_data_path):
-    with open(op.join(peds_data_path, 'command_lines.txt'), 'r') as cfile:
-        lines = cfile.readlines()
-        for line in lines:
-            commands = str(line).split('##')[:1]
-            pipeline_command = commands[0].replace('\x00', ' ').split(' ')[0]
-            # Make a copy of process to backup folder if doesn't exist
-            backup_path = op.join(peds_data_path,
-                                       'backup_scripts',
-                                       pipeline_command)
-            cmd_file = open(op.join(peds_data_path, 'cmd.sh'), 'w+')
-            cmd_file.write('#!/usr/bin/env bash \n')
+def make_modify_script(peds_data_path, command_dic):
+    for command, files in command_dic.items():
+        pipeline_command = command.split('\x00')[0]
+        # Make a copy of process to backup folder if doesn't exist
+        backup_path = op.join(peds_data_path,
+                                   'backup_scripts',
+                                   pipeline_command)
+        cmd_file = open(op.join(peds_data_path, 'cmd.sh'), 'w+')
+        cmd_file.write('#!/usr/bin/env bash \n')
 
-            if not op.exists(backup_path):
-                if not op.exists(op.dirname(backup_path)):
-                    os.makedirs(op.dirname(backup_path))
-                cmd_file.write('cp ' + '`which '+pipeline_command + '` '
-                                + backup_path + '\n')
-                cmd_file.write('cp ' + op.join(op.dirname(__file__),
-                                                'make_copy.py') +
-                                ' `which '+pipeline_command + '`' + '\n')
+        if not op.exists(backup_path):
+            if not op.exists(op.dirname(backup_path)):
+                os.makedirs(op.dirname(backup_path))
+            cmd_file.write('cp ' + '`which '+pipeline_command + '` '
+                            + backup_path + '\n')
+            cmd_file.write('cp ' + op.join(op.dirname(__file__),
+                                            'make_copy.py') +
+                            ' `which '+pipeline_command + '`' + '\n')
 
 
 def modify_docker_image(descriptor, peds_data_path, tag_name):
-    # image_name = "salari/peds:centos7-test2"
     with open(descriptor, 'r') as jsonFile:
         data = json.load(jsonFile)
     image_name = data["container-image"]["image"]
@@ -106,8 +102,15 @@ def modify_docker_image(descriptor, peds_data_path, tag_name):
         json.dump(data, jsonFile)
 
 
+def update_peds_json(total_commands, output_peds_file):
+	with open(output_peds_file, 'r') as rfile:
+		data = json.load(rfile)
+	data["total_commands"] = total_commands
+	with open(output_peds_file, 'w') as ufile:
+		json.dump(data, ufile)
+
+
 def main(args=None):
-    # Use argparse
     parser = argparse.ArgumentParser(description='Automation of pipeline '
                                                  ' error detection')
     parser.add_argument("output_directory", help='directory where to '
@@ -119,6 +122,8 @@ def main(args=None):
                         help="path of verify_file outputs")
     parser.add_argument("-s", "--sqlite_db",
                         help="sqlite file created by reprozip")
+    parser.add_argument("-o", "--peds_output",
+                        help=".json output file of peds")
     parser.add_argument("-d", "--descriptor",
                         help="Boutiques descriptor")
     parser.add_argument("-i", "--invocation",
@@ -126,31 +131,25 @@ def main(args=None):
     args = parser.parse_args()
     descriptor = args.descriptor
     invocation = args.invocation
+    peds_result = args.peds_output
     peds_data_path = op.abspath(args.output_directory)
     verify_cond = args.verify_condition
     verify_output = args.verify_output
     sqlite_db = op.abspath(args.sqlite_db)
     first_iter = True
     tag_name = 0
+    total_commands={}
 # Start Modification Loop
     while True:       
-        # (1) Start the Pipeline execution
-        # pipeline_command = pipe_exec+" "+pipe_input
-        # bash_executor(pipe_output, pipeline_command)
-        # (A) get a Boutiques descriptor and invocation.
-        # Check that Boutiques descriptor has a Docker container (not
-        # Singularity, not no container)
+
+        # (1) Start the Pipeline execution using bosh
         with open(descriptor, 'r') as jsonFile:
             data = json.load(jsonFile)
+        # Check that Boutiques descriptor has a Docker container
         if data["container-image"]["type"] != 'docker':
             sys.exit("Container must be a docker image!")
         print("Docker image: {}".format(data["container-image"]["image"]))
 
-        # set invocation parameters entered by user
-        # (B) run the pipeline using bosh.
-        #      from boutiques import bosh
-        #      output_object = bosh.execute("launch", descriptor, invocation)
-        #      check that execution succeeded in output_object
         try:
             print("Launching Boutiques tool")
             output_object = boutiques.execute("launch", descriptor, invocation)
@@ -160,40 +159,32 @@ def main(args=None):
         if(output_object.exit_code):
             sys.exit("Pipeline execution failed.")
 
-        #  (C) do your analysis, modify the Docker container in the Boutiques descriptor:
-        #        1. run a container and modify it
-        #        2. commit the container with a new image name, e.g., <init_name>_peds_1234. Use the Docker Python API for it: https://docker-py.readthedocs.io/en/stable/containers.html
-        #        3. Modify the Boutiques descriptor to use the new image
-        #  (D) GOTO (B)
-
-        # (2) Create error matrix file
+        # (2) Running VerifyFiles script to make error matrix file
         verify_command = 'verify_files ' + verify_cond + ' test ' + verify_output
         bash_executor(os.getcwd(), verify_command)
 
-        with open(op.join(verify_output, 'test_differences_subject_total.txt'), 'r') as mfile:
-            lines = mfile.readlines()
-        sample = ""
-        for line in lines[1:]:
-            splited_line = line.split('\t')
-            sample += (splited_line[0].replace(' ', '') + " " + str(int(splited_line[1]))+os.linesep)
-        # create a temporary file to store error_matrix.txt (use Python's tempfile library)
-        write_matrix = open(op.join(peds_data_path, 'error_matrix.txt'), 'w')
-        write_matrix.write(sample)
-        write_matrix.close()
-
-        # (3) Classification of processes
-        #if first_iter is True:
-        #    os.remove(os.path.join(peds_data_path, 'total_commands.txt'))
-        #    first_iter = False
-        peds_command = "peds " + sqlite_db + " error_matrix.txt"
+        # (3) Classification of processes, running peds script
+        peds_command = "peds " + sqlite_db + " " + " test_differences_subject_total.txt" + " -o " + peds_result
         bash_executor(peds_data_path, peds_command)
-
-        # (4) Start the modification
-        if os.stat(op.join(peds_data_path, 'command_lines.txt')).st_size > 0:
+        
+        # Check if there exist processes that create error
+        output_peds_file = op.join(peds_data_path, peds_result)
+        with open(output_peds_file, 'r') as cmd_json:
+            data = json.load(cmd_json)
+        if data["certain_cmd"]:
+        # (4) Start the modification through docker image
+            total_commands.update(data["certain_cmd"])
+            update_peds_json(total_commands, output_peds_file)
             tag_name += 1
-            make_modify_script(peds_data_path)
+            # make a bash script include the commands of 
+            # modifications to run inside the docker image
+            make_modify_script(peds_data_path, data["certain_cmd"])
+            # commit the container with a new image name, e.g., peds_1234
+            # and modify the Boutiques descriptor to use the new image
             modify_docker_image(descriptor, peds_data_path, tag_name)
         else:
+			# print out the final recognized processes
+            update_peds_json(total_commands, output_peds_file)
             break
 
 
