@@ -9,7 +9,8 @@ def test_peds():
                     "trace.sqlite3 "
                     "error_matrix.txt "
                     "-i toremove.txt "
-                    "-g graph.dot")
+                    "-g graph.dot "
+                    "-o output_commands.json")
     process = subprocess.Popen(command_line,
                                shell=True,
                                stdout=subprocess.PIPE,
@@ -27,6 +28,7 @@ def test_auto_peds():
                "-r ./test/peds_test_data "
                "-s ./test/peds_test_data/trace.sqlite3 "
                "-d ./test/peds_test_data/descriptor.json "
+               "-o output_commands.json "
                "-i ./test/peds_test_data/invocation.json")
     process = subprocess.Popen(command,
                                shell=True,
