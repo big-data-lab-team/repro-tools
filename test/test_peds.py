@@ -1,5 +1,4 @@
 import pytest
-import commands
 import subprocess
 import os
 
