@@ -1,3 +1,0 @@
-grep line input_file.txt ##['/input_data/test/test/test_graph/centos7/f1.out']
-grep line input_file.txt ##['/input_data/test/test/test_graph/centos7/f1.out']
-grep centos7 f1.out ##['/input_data/test/test/test_graph/centos7/f3.out']

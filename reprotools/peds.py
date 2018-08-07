@@ -659,12 +659,12 @@ def main():
                                 multi_commands = data["multiWrite_cmd"]
                         except:
                             multi_commands = {}
-                        tmp = True
+                        var = True
                         for key, val in multi_commands.items():
                             cmd = str(key) + "##" + str(val) + '\n'
                             if cmd == command_str:
-                                tmp = False
-                        if tmp is True:
+                                var = False
+                        if var is True:
                             multi_commands[(proc_name[0][1])] = common_file
                             #command_lines[(proc_name[0][1])] = common_file
                             break

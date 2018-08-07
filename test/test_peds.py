@@ -7,9 +7,10 @@ import os
 def test_peds():
     command_line = ("peds "
                     "trace.sqlite3 "
-                    "error_matrix.txt "
+                    "test1_differences_subject_total.txt "
                     "-i toremove.txt "
-                    "-g graph.dot")
+                    "-g graph.dot "
+                    "-o commands.json")
     process = subprocess.Popen(command_line,
                                shell=True,
                                stdout=subprocess.PIPE,
@@ -19,6 +20,8 @@ def test_peds():
     print(process.stdout.read())
     print(process.stderr.read())
     assert(not code), "Command failed"
+    assert(open("./test/peds_test_data/graph.dot", "r").read()
+           == open("./test/peds_test_data/graph_test1.dot", "r").read())
 
 
 def test_auto_peds():
@@ -26,6 +29,7 @@ def test_auto_peds():
                "-c ./test/peds_test_data/conditions.txt "
                "-r ./test/peds_test_data "
                "-s ./test/peds_test_data/trace.sqlite3 "
+               "-o commands.json "
                "-d ./test/peds_test_data/descriptor.json "
                "-i ./test/peds_test_data/invocation.json")
     process = subprocess.Popen(command,
@@ -36,5 +40,5 @@ def test_auto_peds():
     print(output)
     print(error)
     assert(not process.returncode), "Command failed"
-    assert(open("./test/peds_test_data/total_commands.txt", "r").read()
-           == open("./test/peds_test_data/result_modif.txt", "r").read())
+    assert(open("./test/peds_test_data/commands.json", "r").read()
+           == open("./test/peds_test_data/result_test1.json", "r").read())
