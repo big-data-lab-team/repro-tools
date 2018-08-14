@@ -73,9 +73,9 @@ def main(args=None):
     # updated commands refer to the single processes that create errors
     # common_cmd refers to the multi-write processes that create errors
     with open(op.join(WD_test, 'commands.json'), 'r') as cfile:
-		data = json.load(cfile)
-		command_dic = data["total_commands"]
-		commands = csv_parser(command_dic)
+        data = json.load(cfile)
+        command_dic = data["total_commands"]
+        commands = csv_parser(command_dic)
 
 #    try:
 #        with open(op.join(WD_test, 'common_cmd.txt'), 'r')as multi_write_file:
