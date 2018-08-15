@@ -240,89 +240,88 @@ def n_differences_across_subjects(conditions_dict,
                             if key_name == selected_condition:
                                 mtime_files_list = modtime_dict[key_name][subject]
                                 bDiff[key][subject]['mtime_files_list'] = mtime_files_list
-                    if checksums_from_file_dict:
-                        if "subject_name" in file_name:
-                            if (checksums_from_file_dict[c][subject][file_name_new] != checksums_from_file_dict[d][subject][file_name_new]):
-                                files_are_different = True
-                        elif (checksums_from_file_dict[c][subject][file_name] != checksums_from_file_dict[d][subject][file_name]):
-                            files_are_different = True
-                    elif "subject_name" not in file_name and conditions_dict[c][subject][file_name].st_size != conditions_dict[d][subject][file_name].st_size:
-                        files_are_different = True
-                    elif "subject_name" in file_name and conditions_dict[c][subject][file_name_new].st_size != conditions_dict[d][subject][file_name_new].st_size:
-                        files_are_different = True
-                    else:
-                        # Computing the checksum if not present in the dictionary and adding it to the dictionary to avoid multiple checksum computation.
-                        for filename in {abs_path_d, abs_path_c}:
-                            if filename not in dictionary_checksum:
-                                dictionary_checksum[filename] = checksum(filename)
-                        if dictionary_checksum[abs_path_c] != dictionary_checksum[abs_path_d]:
-                            files_are_different = True
+                                if checksums_from_file_dict:
+                                    if "subject_name" in file_name:
+                                        if (checksums_from_file_dict[c][subject][file_name_new] != checksums_from_file_dict[d][subject][file_name_new]):
+                                            files_are_different = True
+                                    elif (checksums_from_file_dict[c][subject][file_name] != checksums_from_file_dict[d][subject][file_name]):
+                                        files_are_different = True
+                            elif "subject_name" not in file_name and conditions_dict[c][subject][file_name].st_size != conditions_dict[d][subject][file_name].st_size:
+                                    files_are_different = True
+                            elif "subject_name" in file_name and conditions_dict[c][subject][file_name_new].st_size != conditions_dict[d][subject][file_name_new].st_size:
+                                    files_are_different = True
+                            else:
+                                # Computing the checksum if not present in the dictionary and adding it to the dictionary to avoid multiple checksum computation.
+                                for filename in {abs_path_d, abs_path_c}:
+                                    if filename not in dictionary_checksum:
+                                        dictionary_checksum[filename] = checksum(filename)
+                                if dictionary_checksum[abs_path_c] != dictionary_checksum[abs_path_d]:
+                                    files_are_different = True
+                                # Track the processes which created the files using reprozip trace.
+                                if track_processes and sqlite_db_path and file_name not in dictionary_processes and file_name.endswith("nii.gz"):
+                                    dictionary_processes[file_name] = get_executable_details(conn, sqlite_db_path, file_name)
+                        
+                    if files_are_different:
+                        diff[key][file_name] += 1
+                        bDiff[key][subject][file_name] = 1
 
-            # Track the processes which created the files using reprozip trace.
-            if track_processes and sqlite_db_path and file_name not in dictionary_processes and file_name.endswith("nii.gz"):
-                dictionary_processes[file_name] = get_executable_details(conn, sqlite_db_path, file_name)
-
-            if files_are_different:
-                diff[key][file_name] += 1
-                bDiff[key][subject][file_name] = 1
-
-                # Below condition is making sure that the checksums are getting read from the file.Also that we are not computing the checksum of the checksums-after file.
-                if check_corruption and checksums_from_file_dict and checksum_after_file_path not in file_name:
-                    # If the checksum of the file computed locally is different from the one in the file, the file got corrupted and hence throw error.
-                    if (checksum(abs_path_c) != checksums_from_file_dict[c][subject][file_name]):
-                        log_error("Checksum of\"" + abs_path_c + "\"in checksum file is different from what is computed here.")
-                    # If the checksum of the file computed locally is different from the one in the file, the file got corrupted and hence throw error.
-                    if (checksum(abs_path_d) != checksums_from_file_dict[d][subject][file_name]):
-                        log_error("Checksum of\"" + abs_path_d + "\"in checksum file is different from what is computed here.")
-                metrics_to_evaluate = get_metrics(metrics, file_name)
-                if len(metrics_to_evaluate) != 0:
-                    for metric in metrics.values():
-                        if metric['name'] not in metric_values.keys() and metric['name'] not in metric_values_subject_wise.keys():
-                            metric_values[metric['name']] = {}
-                            metric_values_subject_wise[metric['name']] = {}
-                        if key not in metric_values[metric['name']].keys() and key not in metric_values_subject_wise[metric['name']].keys():
-                            metric_values[metric['name']][key] = {}
-                            metric_values_subject_wise[metric['name']][key] = {}
-                        # To add subject along with the file name to identify individual file differences
-                        if subject not in metric_values_subject_wise[metric['name']][key].keys():
-                            metric_values_subject_wise[metric['name']][key][subject] = {}
-                        if file_name not in metric_values[metric['name']][key].keys() and file_name.endswith(metric['extension']):
-                            metric_values[metric['name']][key][file_name] = 0
-                        if file_name not in metric_values_subject_wise[metric['name']][key][subject].keys() and file_name.endswith(metric['extension']):
-                            metric_values_subject_wise[metric['name']][key][subject][file_name] = 0
-                        if file_name.endswith(metric['extension']):
-                            try:
-                                log_info("Computing the metrics for the file:"+" "+file_name+" "+"in subject"+" "+subject)
-                                log_info(file_name + " " + c + " "+ d + " " + subject + " " + metric['command'])
-                                # Check the file_name and replace if it has subject_name
+                        # Below condition is making sure that the checksums are getting read from the file.Also that we are not computing the checksum of the checksums-after file.
+                        if check_corruption and checksums_from_file_dict and checksum_after_file_path not in file_name:
+                            # If the checksum of the file computed locally is different from the one in the file, the file got corrupted and hence throw error.
+                            if (checksum(abs_path_c) != checksums_from_file_dict[c][subject][file_name]):
+                                log_error("Checksum of\"" + abs_path_c + "\"in checksum file is different from what is computed here.")
+                            # If the checksum of the file computed locally is different from the one in the file, the file got corrupted and hence throw error.
+                            if (checksum(abs_path_d) != checksums_from_file_dict[d][subject][file_name]):
+                                log_error("Checksum of\"" + abs_path_d + "\"in checksum file is different from what is computed here.")
+                        metrics_to_evaluate = get_metrics(metrics, file_name)
+                        if len(metrics_to_evaluate) != 0:
+                            for metric in metrics.values():
+                                if metric['name'] not in metric_values.keys() and metric['name'] not in metric_values_subject_wise.keys():
+                                    metric_values[metric['name']] = {}
+                                    metric_values_subject_wise[metric['name']] = {}
+                                if key not in metric_values[metric['name']].keys() and key not in metric_values_subject_wise[metric['name']].keys():
+                                    metric_values[metric['name']][key] = {}
+                                    metric_values_subject_wise[metric['name']][key] = {}
+                                # To add subject along with the file name to identify individual file differences
+                                if subject not in metric_values_subject_wise[metric['name']][key].keys():
+                                    metric_values_subject_wise[metric['name']][key][subject] = {}
+                                if file_name not in metric_values[metric['name']][key].keys() and file_name.endswith(metric['extension']):
+                                    metric_values[metric['name']][key][file_name] = 0
+                                if file_name not in metric_values_subject_wise[metric['name']][key][subject].keys() and file_name.endswith(metric['extension']):
+                                    metric_values_subject_wise[metric['name']][key][subject][file_name] = 0
+                                if file_name.endswith(metric['extension']):
+                                    try:
+                                        log_info("Computing the metrics for the file:"+" "+file_name+" "+"in subject"+" "+subject)
+                                        log_info(file_name + " " + c + " "+ d + " " + subject + " " + metric['command'])
+                                        # Check the file_name and replace if it has subject_name
+                                        if "subject_name" in file_name:
+                                            diff_value = float(run_command(metric['command'], file_name_new, c, d, subject, root_dir))
+                                        else:
+                                            diff_value = float(run_command(metric['command'], file_name, c, d, subject, root_dir))
+                                        metric_values[metric['name']][key][file_name] += diff_value
+                                        metric_values_subject_wise[metric['name']][key][subject][file_name] = diff_value
+                                    except ValueError as e:
+                                        log_error("Result of metric execution could not be cast to float"+" "+metric['command']+" "+file_name+" "+c+" "+d+" "+subject+" "+root_dir)
+                        # if we are in different runs of the same
+                        # condition (see previous comment) then
+                        # inspect the reprozip trace here to get the
+                        # list of executables that created such
+                        # differences
+                        if sqlite_db_path and files_are_different and file_name not in dictionary_executables:
+                            # Monitor.txt seems not to have entry in sqlite table
+                            if is_intra_condition_run:
+                                # **indicates that the entries are the result of an intra-condition run
                                 if "subject_name" in file_name:
-                                    diff_value = float(run_command(metric['command'], file_name_new, c, d, subject, root_dir))
+                                    dictionary_executables["**"+file_name] = get_executable_details(conn, sqlite_db_path, file_name_new)
                                 else:
-                                    diff_value = float(run_command(metric['command'], file_name, c, d, subject, root_dir))
-                                metric_values[metric['name']][key][file_name] += diff_value
-                                metric_values_subject_wise[metric['name']][key][subject][file_name] = diff_value
-                            except ValueError as e:
-                                log_error("Result of metric execution could not be cast to float"+" "+metric['command']+" "+file_name+" "+c+" "+d+" "+subject+" "+root_dir)
-                # if we are in different runs of the same
-                # condition (see previous comment) then
-                # inspect the reprozip trace here to get the
-                # list of executables that created such
-                # differences
-                if sqlite_db_path and files_are_different and file_name not in dictionary_executables:
-                    # Monitor.txt seems not to have entry in sqlite table
-                    if is_intra_condition_run:
-                        # **indicates that the entries are the result of an intra-condition run
-                        if "subject_name" in file_name:
-                            dictionary_executables["**"+file_name] = get_executable_details(conn, sqlite_db_path, file_name_new)
-                        else:
-                            dictionary_executables["**"+file_name] = get_executable_details(conn, sqlite_db_path, file_name)
+                                    dictionary_executables["**"+file_name] = get_executable_details(conn, sqlite_db_path, file_name)
+                            else:
+                                if "subject_name" in file_name:
+                                    dictionary_executables[file_name] = get_executable_details(conn, sqlite_db_path, file_name_new)
+                                else:
+                                    dictionary_executables[file_name] = get_executable_details(conn, sqlite_db_path, file_name)
                     else:
-                        if "subject_name" in file_name:
-                            dictionary_executables[file_name] = get_executable_details(conn, sqlite_db_path, file_name_new)
-                        else:
-                            dictionary_executables[file_name] = get_executable_details(conn, sqlite_db_path, file_name)
-            else:
-                bDiff[key][subject][file_name] = 0
+                        bDiff[key][subject][file_name] = 0
 
     if sqlite_db_path:
         conn.close()

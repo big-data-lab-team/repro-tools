@@ -181,7 +181,8 @@ def create_graph(pid, process_node, db_path):
     # Calling the current function recursively for the children of the process
     for child in child_list:
         if child[0] is not None:
-            process_node.append(pid, create_graph(child[0], process_node, db_path))
+            process_node.append(pid, create_graph(child[0],
+                                process_node, db_path))
     data = process_node.get_data(pid)
     return data
 
@@ -242,15 +243,16 @@ def get_the_parent_id(parent_cursor, pid):
 
 
 # Node Creation functions
-def make_yellow_node(graph, id, pid, name, node_label, read_diff_list, read_tmp_list, read_nodiff_list):
+def make_yellow_node(graph, id, pid, name, node_label, read_diff_list,
+                     read_tmp_list, read_nodiff_list):
     graph.attr('node', style='filled', fillcolor='yellow')
     graph.node(str(id), ''.join(
         [str(node_label), '#', name]),
                shape='circle')
     graph.attr('edge', style='solid', color='black')
     graph.edge(str(pid[0][0]), str(id))
-    # showing the dependencies by dashed edges: diff read(red), tmp read(yellow)
-    # and read files without differences(green)
+    # showing the dependencies by dashed edges:
+    # diff read(red), tmp read(yellow) and read files without error (green)
     for e2 in read_diff_list:
         graph.attr('edge', style='dashed', color='red')
         for e in e2[2]:
@@ -277,7 +279,8 @@ def make_red_node(graph, id, pid, name, node_label, read_nodiff_list):
             graph.edge(str(e), str(id))
 
 
-def make_squared_red_node(graph, id, pid, name, node_label, read_tmp_list, read_nodiff_list):
+def make_squared_red_node(graph, id, pid, name, node_label,
+                          read_tmp_list, read_nodiff_list):
     graph.attr('node', style='filled', fillcolor='red')
     graph.node(str(id), ''.join(
         [str(node_label), '#', name]), shape='square')
@@ -293,7 +296,8 @@ def make_squared_red_node(graph, id, pid, name, node_label, read_tmp_list, read_
             graph.edge(str(e), str(id))
 
 
-def make_blue_node(graph, id, pid, name, node_label, read_diff_list, read_tmp_list, read_nodiff_list):
+def make_blue_node(graph, id, pid, name, node_label, read_diff_list,
+                   read_tmp_list, read_nodiff_list):
     graph.attr('node', style='filled', fillcolor='blue')
     graph.node(str(id), ''.join(
         [str(node_label), '#', name]), shape='circle')
@@ -313,7 +317,8 @@ def make_blue_node(graph, id, pid, name, node_label, read_diff_list, read_tmp_li
             graph.edge(str(e), str(id))
 
 
-def make_squared_blue_node(graph, id, pid, name, node_label, read_diff_list, read_tmp_list, read_nodiff_list):
+def make_squared_blue_node(graph, id, pid, name, node_label, read_diff_list,
+                           read_tmp_list, read_nodiff_list):
     graph.attr('node', style='filled', fillcolor='blue')
     graph.node(str(id), ''.join(
         [str(node_label), '#', name]), shape='square')
@@ -345,7 +350,8 @@ def make_green_node(graph, id, pid, name, node_label, read_nodiff_list):
             graph.edge(str(e), str(id))
 
 
-def make_squared_green_node(graph, id, pid, name, node_label, read_diff_list, read_tmp_list, read_nodiff_list):
+def make_squared_green_node(graph, id, pid, name, node_label,
+                            read_diff_list, read_tmp_list, read_nodiff_list):
     graph.attr('node', style='filled', fillcolor='yellowgreen')
     graph.node(str(id), ''.join(
         [str(node_label), '#', name]), shape='square')
@@ -366,12 +372,17 @@ def make_squared_green_node(graph, id, pid, name, node_label, read_diff_list, re
 
 
 # Create a file include all dependency files info
-def write_to_file(write_diff_list, read_diff_list, read_tmp_list, write_tmp_list, write_files, proc, count_diff_w, count_diff_r, count_tmp_r, count_tmp_w):
+def write_to_file(write_diff_list, read_diff_list, read_tmp_list,
+                  write_tmp_list, write_files, proc, count_diff_w,
+                  count_diff_r, count_tmp_r, count_tmp_w):
     wf = pd.DataFrame(write_diff_list, columns=['process_ID', 'name'])
-    rf = pd.DataFrame(read_diff_list, columns=['process_ID', 'name', 'created_process'])
-    tr = pd.DataFrame(read_tmp_list, columns=['process_ID', 'name', 'created_process'])
+    rf = pd.DataFrame(read_diff_list, columns=['process_ID', 'name',
+                                               'created_process'])
+    tr = pd.DataFrame(read_tmp_list, columns=['process_ID', 'name',
+                                              'created_process'])
     tw = pd.DataFrame(write_tmp_list, columns=['process_ID', 'name'])
-    write_files.write(str(proc.id) + "\t" + str(proc.name) + "\ntotal write/read files:\t" + str(len(proc.data)) +
+    write_files.write(str(proc.id) + "\t" + str(proc.name) +
+                      "\ntotal write/read files:\t" + str(len(proc.data)) +
                       "\ntotal write files with diff: " + str(count_diff_w) + "\n\n")
     wf.to_csv(write_files, sep='\t', index=False)
     write_files.write("\ntotal read files with diff: " + str(count_diff_r) + "\n\n")
@@ -407,7 +418,9 @@ def flist_multi_write(pipeline_files, written_files_list, pipeline_graph):
                 # if (int(n[1][:-1]) != 0 and str(n[0]) in data_parsed_name):
                 if str("/" + n[0]) == path_parser(str(os.path.abspath(str(o[1])))):
                     file_name = str(os.path.abspath(str(o[1])))
-                    if re.match("^.*.log$", file_name) is None and re.match("^.*.cmd$", file_name) is None and re.match("^.*.env$", file_name) is None:
+                    if re.match("^.*.log$", file_name) is None and \
+                       re.match("^.*.cmd$", file_name) is None and \
+                       re.match("^.*.env$", file_name) is None:
                         proc_name = pipeline_graph.get_name(o[0])
                         p_splited_name = str(proc_name[0][0]).split("/")[-1:]
                         if p_splited_name[0] not in ["cp", "recon-all"]:
@@ -419,45 +432,47 @@ def flist_multi_write(pipeline_files, written_files_list, pipeline_graph):
 
 
 def total_common_processes(output_file, origin, pipeline_graph):
-   # Add the common processes based on the common files with differences
-   # to prevent of propagating errors with various processes
+    # Add the common processes based on the common files with differences
+    # to prevent of propagating errors with various processes
     command_dic = {}
     command_lines = {}
     json_output = open(os.path.splitext(output_file)[0]+'_captured.json', 'w+')
-#	write_total_commons = open("total_common_cmd.txt", 'w')
+    # ~ write_total_commons = open("total_common_cmd.txt", 'w')
     for key, values in origin.items():
         # if proc.id in values:
         for v in values:
             common_file = []
             proc_name = pipeline_graph.get_name(v)
-            if proc_name[0][1] in command_lines.keys(): common_file = command_lines[proc_name[0][1]]
+            if proc_name[0][1] in command_lines.keys():
+                common_file = command_lines[proc_name[0][1]]
             common_file.append(str(key))
             command_lines[(proc_name[0][1])] = common_file
     command_dic['total_multi_write_proc'] = command_lines
     json.dump(command_dic, json_output)
-#    for key, val in command_lines.items():
-#        write_total_commons.write(str(key) + "##" + str(val) + "\n")
+    # ~ for key, val in command_lines.items():
+        # ~ write_total_commons.write(str(key) + "##" + str(val) + "\n")
     json_output.close()
-        
+
 
 def write_temp_files(output_file, temp_commands):
     with open(os.path.splitext(output_file)[0]+'_captured.json', 'r') as rfile:
         data = json.load(rfile)
     data['total_temp_proc'] = temp_commands
     with open(os.path.splitext(output_file)[0]+'_captured.json', 'w') as wfile:
-        json.dump(data, wfile)	
-	
-	        
+        json.dump(data, wfile)
+
+
 def error_matrix_format(read_matrix_file):
     with open(read_matrix_file, 'r') as pfiles:
         lines = pfiles.readlines()
     pipeline_files = []
     for line in lines[1:]:
         splited_line = line.split('\t')
-        pipeline_files.append(splited_line[0].replace(' ', '') + " " + str(int(splited_line[1])) + os.linesep)
+        pipeline_files.append(splited_line[0].replace(' ', '') + " " +
+                              str(int(splited_line[1])) + os.linesep)
     return pipeline_files
-    
-            
+
+
 def check_file(parser, x):
     if os.path.exists(x):
         return x
@@ -483,7 +498,7 @@ def main():
                               'png rendering will also be done.')
     parser.add_argument('-o', '--output_file',
                         help='.Json output file include all commandlines of'
-                              'uncertain, unknown, and certain red processes')                              
+                              'uncertain, unknown, and certain red processes')
     args = parser.parse_args()
 
     # INITIALIZE THE PROGRAM
@@ -491,7 +506,7 @@ def main():
         graph = Di('Graph', filename=args.graph, format='png', strict=False)
     else:
         graph = Di('Graph', format='png', strict=False)
-    
+
     # write_files = open("complete_file.txt", 'w')
     # write_proc = open("all_processes", 'w')
     write_total_tmp = ['000']
@@ -499,7 +514,7 @@ def main():
     node_label = 0
     proc_list = []
     capture_mode = True
-    total_processes={}
+    total_processes = {}
     command_lines = {}
     multi_commands = {}
     temp_commands = {}
@@ -530,7 +545,7 @@ def main():
 
     # FINDING ALL THE PROCESSES WITH MULTI-WRITE IN PIPELINE
     origin = flist_multi_write(pipeline_files, written_files_list,
-                                                   pipeline_graph)
+                               pipeline_graph)
 
     # PROCESS CLASSIFICATION USING CREATED PROCESS TREE
     for proc in total_pipe_proc:
@@ -570,12 +585,14 @@ def main():
                 tmp = False
                 for diff in pipeline_files:
                     n = diff.split(" ")
-                    if (int(n[1][:-1]) != 0 and str("/" + n[0]) == data_parsed_name):
+                    if int(n[1][:-1]) != 0 and \
+                       str("/" + n[0]) == data_parsed_name:
                         write_diff_list.append(data[0:2])
                         count_diff_w += 1
                         tmp = True
                         break
-                    elif (int(n[1][:-1]) == 0 and str("/" + n[0]) == data_parsed_name):
+                    elif int(n[1][:-1]) == 0 and \
+                         str("/" + n[0]) == data_parsed_name:
                         write_nodiff_list.append(data[0:2])
                         count_nodiff_w += 1
                         tmp = True
@@ -598,7 +615,8 @@ def main():
                 # finding the origin process of the read files to show dependencies
                 origin_p = []
                 for o in written_files_list:
-                    if str(os.path.abspath(data[1])) == str(os.path.abspath(str(o[1]))):
+                    if str(os.path.abspath(data[1])) == \
+                       str(os.path.abspath(str(o[1]))):
                         origin_p.append(o[0])
                 if proc.id in origin_p:
                     continue
@@ -606,13 +624,15 @@ def main():
                 tmp = False
                 for diff2 in pipeline_files:
                     n = diff2.split(" ")
-                    if (int(n[1][:-1]) != 0 and str("/"+n[0]) == data_parsed_name):
+                    if int(n[1][:-1]) != 0 and \
+                       str("/"+n[0]) == data_parsed_name:
                         data = data[:2] + (origin_p,)
                         read_diff_list.append(data)
                         count_diff_r += 1
                         tmp = True
                         break
-                    elif (int(n[1][:-1]) == 0 and str("/"+n[0]) == data_parsed_name):
+                    elif int(n[1][:-1]) == 0 and \
+                         str("/"+n[0]) == data_parsed_name:
                         data = data[:2] + (origin_p,)
                         read_nodiff_list.append(data)
                         count_nodiff_r += 1
@@ -652,7 +672,8 @@ def main():
                         common_file = []
                         proc_name = pipeline_graph.get_name(v)
                         common_file.append(str(key))
-                        command_str = str((proc_name[0][1])) + "##" + str(common_file) + '\n'
+                        command_str = str((proc_name[0][1])) + \
+                                      "##" + str(common_file) + '\n'
                         try:
                             with open(args.output_file, 'r') as rfile:
                                 data = json.load(rfile)
@@ -666,9 +687,9 @@ def main():
                                 var = False
                         if var is True:
                             multi_commands[(proc_name[0][1])] = common_file
-                            #command_lines[(proc_name[0][1])] = common_file
+                            # command_lines[(proc_name[0][1])] = common_file
                             break
-                        #common_processes.append(str(v) + " = " + str(proc_name[0][0]))
+                        # common_processes.append(str(v) + " = " + str(proc_name[0][0]))
             # add red process include file with no multi-write
             if (not is_multi):
                 files = []
@@ -686,26 +707,29 @@ def main():
                     command_lines[(proc.name[0][1])] = files
 
         # check if BLUE process
-        elif count_diff_r > 0 and (count_nodiff_w > 0 or count_tmp_w > 0) and count_diff_w == 0 and count_tmp_w == 0:
-          if name != "md5sum":
-            path = name
-            if proc.name != []:
-                path = str(proc.name[0][0])
-                pid = str(proc.id)
-                blue_nodes.append(pid + " = " + path)
+        elif count_diff_r > 0 and (count_nodiff_w > 0 or count_tmp_w > 0) and \
+             count_diff_w == 0 and count_tmp_w == 0:
+            if name != "md5sum":
+                path = name
+                if proc.name != []:
+                    path = str(proc.name[0][0])
+                    pid = str(proc.id)
+                    blue_nodes.append(pid + " = " + path)
 
 ###########
 ####### FIND PROCESSES THAT W/R TEMPORARY FILES AND CREATE TEMP COMMAND-LINES LIST
 #####
         if capture_mode:
-            if (count_diff_r > 0 or count_nodiff_r > 0 or count_diff_w > 0 or count_nodiff_w > 0) and count_tmp_w > 0:
+            if (count_diff_r > 0 or count_nodiff_r > 0 or count_diff_w > 0 or \
+               count_nodiff_w > 0) and count_tmp_w > 0:
                 temp_w = []
                 for tmp in write_tmp_list:
                     if tmp[1] != '/dev/null':
                         temp_w.append(str(tmp[1]))
                 temp_commands[(proc.name[0][1])] = temp_w
 
-            if (count_diff_r > 0 or count_nodiff_r > 0 or count_diff_w > 0 or count_nodiff_w > 0) and count_tmp_r > 0:
+            if (count_diff_r > 0 or count_nodiff_r > 0 or count_diff_w > 0 or \
+                count_nodiff_w > 0) and count_tmp_r > 0:
                 for tmp2 in read_tmp_list:
                     check = []
                     p_splited_name = str(tmp2[0]).split("/")[-1:]
@@ -721,54 +745,64 @@ def main():
         # According to the read/write files, classify the various process by colored node: create(red),
         # propagate(yellow), remove(blue) and green nodes are process with no differences
         if count_diff_r > 0 and count_diff_w > 0:
-            make_yellow_node(graph, proc.id, proc.pid, name, node_label, read_diff_list, read_tmp_list, read_nodiff_list)
-            proc_list.append(
-                [node_label, proc.id, len(proc.data), count_diff_r, count_nodiff_r, count_tmp_r, count_diff_w,
-                 count_nodiff_w, count_tmp_w, proc.name])
+            make_yellow_node(graph, proc.id, proc.pid, name, node_label,
+                             read_diff_list, read_tmp_list, read_nodiff_list)
+            proc_list.append([node_label, proc.id, len(proc.data),
+                              count_diff_r, count_nodiff_r, count_tmp_r,
+                              count_diff_w, count_nodiff_w, count_tmp_w, proc.name])
             node_label += 1
 
         elif count_diff_r == 0 and count_diff_w > 0 and count_tmp_r == 0:
             make_red_node(graph, proc.id, proc.pid, name, node_label, read_nodiff_list)
-            proc_list.append(
-                [node_label, proc.id, len(proc.data), count_diff_r, count_nodiff_r, count_tmp_r, count_diff_w,
-                 count_nodiff_w, count_tmp_w, proc.name])
+            proc_list.append([node_label, proc.id, len(proc.data),
+                             count_diff_r, count_nodiff_r, count_tmp_r,
+                             count_diff_w, count_nodiff_w, count_tmp_w, proc.name])
             node_label += 1
 
         elif count_diff_r == 0 and count_diff_w > 0 and count_tmp_r > 0:
-            make_squared_red_node(graph, proc.id, proc.pid, name, node_label, read_tmp_list, read_nodiff_list)
-            proc_list.append(
-                [node_label, proc.id, len(proc.data), count_diff_r, count_nodiff_r, count_tmp_r, count_diff_w,
-                 count_nodiff_w, count_tmp_w, proc.name])
+            make_squared_red_node(graph, proc.id, proc.pid, name,
+                                  node_label, read_tmp_list, read_nodiff_list)
+            proc_list.append([node_label, proc.id, len(proc.data),
+                             count_diff_r, count_nodiff_r, count_tmp_r,
+                             count_diff_w, count_nodiff_w, count_tmp_w, proc.name])
             node_label += 1
 
-        elif count_diff_r > 0 and (count_nodiff_w > 0 or count_tmp_w > 0) and count_diff_w == 0 and count_tmp_w == 0:
+        elif count_diff_r > 0 and (count_nodiff_w > 0 or count_tmp_w > 0) and \
+             count_diff_w == 0 and count_tmp_w == 0:
           if name != "md5sum":
-            make_blue_node(graph, proc.id, proc.pid, name, node_label, read_diff_list, read_tmp_list, read_nodiff_list)
-            proc_list.append(
-                [node_label, proc.id, len(proc.data), count_diff_r, count_nodiff_r, count_tmp_r, count_diff_w,
-                 count_nodiff_w, count_tmp_w, proc.name])
+            make_blue_node(graph, proc.id, proc.pid, name, node_label,
+                           read_diff_list, read_tmp_list, read_nodiff_list)
+            proc_list.append([node_label, proc.id, len(proc.data),
+                             count_diff_r, count_nodiff_r, count_tmp_r,
+                             count_diff_w, count_nodiff_w, count_tmp_w, proc.name])
             node_label += 1
 
         elif count_diff_r > 0 and count_diff_w == 0 and count_tmp_w > 0:
-            make_squared_blue_node(graph, proc.id, proc.pid, name, node_label, read_diff_list, read_tmp_list, read_nodiff_list)
-            proc_list.append(
-                [node_label, proc.id, len(proc.data), count_diff_r, count_nodiff_r, count_tmp_r, count_diff_w,
-                 count_nodiff_w, count_tmp_w, proc.name])
+            make_squared_blue_node(graph, proc.id, proc.pid, name,
+                                   node_label, read_diff_list,
+                                   read_tmp_list, read_nodiff_list)
+            proc_list.append([node_label, proc.id, len(proc.data),
+                              count_diff_r, count_nodiff_r, count_tmp_r,
+                              count_diff_w, count_nodiff_w, count_tmp_w, proc.name])
             node_label += 1
 
-        elif count_diff_r == 0 and count_tmp_r == 0 and count_diff_w == 0 and count_tmp_w == 0:
-            make_green_node(graph, proc.id, proc.pid, name, node_label, read_nodiff_list)
-            proc_list.append(
-                [node_label, proc.id, len(proc.data), count_diff_r, count_nodiff_r, count_tmp_r, count_diff_w,
-                 count_nodiff_w, count_tmp_w, proc.name])
+        elif count_diff_r == 0 and count_tmp_r == 0 and count_diff_w == 0 \
+             and count_tmp_w == 0:
+            make_green_node(graph, proc.id, proc.pid, name, node_label,
+                            read_nodiff_list)
+            proc_list.append([node_label, proc.id, len(proc.data),
+                              count_diff_r, count_nodiff_r, count_tmp_r,
+                              count_diff_w, count_nodiff_w, count_tmp_w, proc.name])
             node_label += 1
 
         # elif count_diff_r==0 and count_tmp_r>0 and count_diff_w==0 and count_tmp_w>0:
         else:
-            make_squared_green_node(graph, proc.id, proc.pid, name, node_label, read_diff_list, read_tmp_list, read_nodiff_list)
-            proc_list.append(
-                [node_label, proc.id, len(proc.data), count_diff_r, count_nodiff_r, count_tmp_r, count_diff_w,
-                 count_nodiff_w, count_tmp_w, proc.name])
+            make_squared_green_node(graph, proc.id, proc.pid, name,
+                                    node_label, read_diff_list,
+                                    read_tmp_list, read_nodiff_list)
+            proc_list.append([node_label, proc.id, len(proc.data),
+                              count_diff_r, count_nodiff_r, count_tmp_r,
+                              count_diff_w, count_nodiff_w, count_tmp_w, proc.name])
             node_label += 1
  
     if args.graph:
@@ -793,8 +827,8 @@ def main():
         total_common_processes(args.output_file, origin, pipeline_graph)
         write_temp_files(args.output_file, temp_commands)
 
-    total_processes['certain_cmd']=command_lines
-    total_processes['multiWrite_cmd']=multi_commands
+    total_processes['certain_cmd'] = command_lines
+    total_processes['multiWrite_cmd'] = multi_commands
     with open(args.output_file, 'w+') as json_file:
         json.dump(total_processes, json_file)
 

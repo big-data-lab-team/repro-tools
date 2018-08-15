@@ -48,9 +48,9 @@ def bash_executor(execution_dir, command):
     output, error = process.communicate()
     if(process.returncode):
         if output:
-            print(output)
+            print(output.decode("utf-8"))
         if error:
-            print(error)
+            print(error.decode("utf-8"))
         raise Exception("Command execution failed")
 
 
@@ -59,8 +59,7 @@ def make_modify_script(peds_data_path, command_dic):
         pipeline_command = command.split('\x00')[0]
         # Make a copy of process to backup folder if doesn't exist
         backup_path = op.join(peds_data_path,
-                                   'backup_scripts',
-                                   pipeline_command)
+                              'backup_scripts', pipeline_command)
         cmd_file = open(op.join(peds_data_path, 'cmd.sh'), 'w+')
         cmd_file.write('#!/usr/bin/env bash \n')
 
@@ -68,10 +67,10 @@ def make_modify_script(peds_data_path, command_dic):
             if not op.exists(op.dirname(backup_path)):
                 os.makedirs(op.dirname(backup_path))
             cmd_file.write('cp ' + '`which '+pipeline_command + '` '
-                            + backup_path + '\n')
+                           + backup_path + '\n')
             cmd_file.write('cp ' + op.join(op.dirname(__file__),
-                                            'make_copy.py') +
-                            ' `which '+pipeline_command + '`' + '\n')
+                           'make_copy.py') + ' `which ' + \
+                           pipeline_command + '`' + '\n')
 
 
 def modify_docker_image(descriptor, peds_data_path, tag_name):
@@ -103,11 +102,11 @@ def modify_docker_image(descriptor, peds_data_path, tag_name):
 
 
 def update_peds_json(total_commands, output_peds_file):
-	with open(output_peds_file, 'r') as rfile:
-		data = json.load(rfile)
-	data["total_commands"] = total_commands
-	with open(output_peds_file, 'w') as ufile:
-		json.dump(data, ufile)
+    with open(output_peds_file, 'r') as rfile:
+        data = json.load(rfile)
+    data["total_commands"] = total_commands
+    with open(output_peds_file, 'w') as ufile:
+        json.dump(data, ufile)
 
 
 def main(args=None):
@@ -138,9 +137,9 @@ def main(args=None):
     sqlite_db = op.abspath(args.sqlite_db)
     first_iter = True
     tag_name = 0
-    total_commands={}
+    total_commands = {}
 # Start Modification Loop
-    while True:       
+    while True:
 
         # (1) Start the Pipeline execution using bosh
         with open(descriptor, 'r') as jsonFile:
@@ -160,30 +159,34 @@ def main(args=None):
             sys.exit("Pipeline execution failed.")
 
         # (2) Running VerifyFiles script to make error matrix file
-        verify_command = 'verify_files ' + verify_cond + ' test ' + verify_output
+        verify_command = 'verify_files ' + verify_cond + ' test ' + \
+                         verify_output + \
+                         " -e ./test/peds_test_data/exclude_items.txt"
         bash_executor(os.getcwd(), verify_command)
 
         # (3) Classification of processes, running peds script
-        peds_command = "peds " + sqlite_db + " " + " test_differences_subject_total.txt" + " -o " + peds_result
+        peds_command = "peds " + sqlite_db + " " + \
+                       " test_differences_subject_total.txt" + \
+                       " -o " + peds_result
         bash_executor(peds_data_path, peds_command)
-        
+
         # Check if there exist processes that create error
         output_peds_file = op.join(peds_data_path, peds_result)
         with open(output_peds_file, 'r') as cmd_json:
             data = json.load(cmd_json)
         if data["certain_cmd"]:
-        # (4) Start the modification through docker image
+            # (4) Start the modification through docker image
             total_commands.update(data["certain_cmd"])
             update_peds_json(total_commands, output_peds_file)
             tag_name += 1
-            # make a bash script include the commands of 
+            # make a bash script include the commands of
             # modifications to run inside the docker image
             make_modify_script(peds_data_path, data["certain_cmd"])
             # commit the container with a new image name, e.g., peds_1234
             # and modify the Boutiques descriptor to use the new image
             modify_docker_image(descriptor, peds_data_path, tag_name)
         else:
-			# print out the final recognized processes
+            # print out the final recognized processes
             update_peds_json(total_commands, output_peds_file)
             break
 
