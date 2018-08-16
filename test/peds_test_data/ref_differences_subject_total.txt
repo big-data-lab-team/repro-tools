@@ -1,4 +1,5 @@
              	centos6 vs centos7	
+Dockerfile   	        0         	
 f1.out       	        1         	
 f2.out       	        0         	
 f3.out       	        1         	
