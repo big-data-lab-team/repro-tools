@@ -1,1 +1,1 @@
-{"certain_cmd": {}, "multiWrite_cmd": {}, "total_commands": {"grep\u0000line\u0000input_file.txt\u0000": ["/input_data/test/test/test_graph/centos7/f1.out"], "grep\u0000centos7\u0000f1.out\u0000": ["/input_data/test/test/test_graph/centos7/f3.out"]}}
+{"total_commands": {"grep\u0000centos7\u0000f1.out\u0000": ["/input_data/test/test/test_graph/centos7/f3.out"], "grep\u0000line\u0000input_file.txt\u0000": ["/input_data/test/test/test_graph/centos7/f1.out"]}, "multiWrite_cmd": {}, "certain_cmd": {}}
