@@ -1,0 +1,35 @@
+dist: trusty
+sudo: required
+language: python
+
+python:
+- 2.7
+- 3.4
+- 3.5
+- 3.5-dev
+- 3.6
+- 3.6-dev
+- 3.7-dev
+- nightly
+- pypy-5.3.1
+
+before_install:
+- sudo apt-get install graphviz
+- sudo apt-get update -qq
+- sudo apt-get install -y -qq python dh-autoreconf squashfs-tools build-essential
+- cd ${TRAVIS_BUILD_DIR}
+
+install:
+- pip install --upgrade setuptools
+- pip install coveralls pytest pytest-runner pycodestyle
+- pip install .
+- docker build -t peds test/peds_test_data/centos7/test
+
+script:
+- pycodestyle --max-line-length=80 *.py */*.py
+- coverage run --source repro-tools setup.py pytest
+
+after_success:
+- coveralls
+
+deploy:

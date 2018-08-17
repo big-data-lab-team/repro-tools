@@ -1,0 +1,8 @@
+             	centos6 vs centos7	
+Dockerfile   	        0         	
+f1.out       	        1         	
+f2.out       	        0         	
+f3.out       	        1         	
+f4.out       	        1         	
+input_file.txt	        0         	
+test_script.sh	        1         	

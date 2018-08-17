@@ -1,0 +1,8 @@
+*.txt
+*.nii.gz
+env
+*.out
+*~
+.*
+\#*
+*.pyc
