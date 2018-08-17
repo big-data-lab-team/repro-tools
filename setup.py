@@ -8,7 +8,8 @@ DEPS = [
          "pandas",
          "matplotlib",
          "boutiques",
-         "docker"
+         "docker",
+         "pyspark"
        ]
 
 setup(name="reprotools",
@@ -41,7 +42,8 @@ setup(name="reprotools",
             "verify_files=reprotools:verify_files",
             "peds=reprotools:peds",
             "auto_peds=reprotools:auto_peds",
-            "plot_matrix=reprotools:plot_matrix"
+            "plot_matrix=reprotools:plot_matrix",
+            "predict=reprotools:predict"
         ]
       },
       setup_requires=DEPS,
