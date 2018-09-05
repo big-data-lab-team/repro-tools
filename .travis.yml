@@ -23,7 +23,8 @@ install:
 - pip install --upgrade setuptools
 - pip install coveralls pytest pytest-runner pycodestyle
 - pip install .
-- docker build -t peds test/peds_test_data/centos7/test
+- docker build -t peds_centos7 test/peds_test_data/centos7/subject
+- docker build -t peds_centos6 test/peds_test_data/centos6/subject
 
 script:
 - pycodestyle --max-line-length=80 *.py */*.py
