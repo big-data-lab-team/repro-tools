@@ -254,7 +254,7 @@ def random_split_2D(lines, training_ratio, max_diff, sampling_method, dataset, a
                     last_sub_fileid, ran_subject = balance_training (training, applicable_subjects_in_training)
                 else:
                     target_sub = filter(lambda x: x[3]==last_sub_fileid,filter(lambda y: y[1] == ran_subject[0],training))
-                    test.append(target_sub[0])
+                    test.append(list(target_sub[0]))
                     training.remove(target_sub[0])
         elif effective_training_ratio < training_ratio:  #oversampling the training set
             oversampling_training(training,test,target_training_size,lines,n_subject)
