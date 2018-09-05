@@ -11,6 +11,8 @@ import json
 import os.path as op
 from reprotools import __file__ as path
 from shutil import copyfile
+import platform
+import hashlib
 
 # Modification Step: In order to make appropriate file copy to
 # fix processes artificially, first, we replace the current script with
@@ -48,16 +50,11 @@ def csv_parser(command_dic):
         # ~ command = str(line).split('##')[:1]
         # ~ command = str(command[0].replace('\x00', ' '))
         command = str(cmd.replace('\x00', ' '))
-
-        # ~ file_name = str(line).split('##')[1:]
-        # ~ flist = file_name[0][2:-3].replace("'", '').split(',')
-        # ~ flist = files[0][2:-3].replace("'", '').split(',')
-
         for file in files:
             count = 0
             for f in file.split('/'):
                 # if f == "exec":
-                if f == "centos7":
+                if f == "subject1":
                     count += 1
                     break
                 else:
@@ -67,24 +64,101 @@ def csv_parser(command_dic):
     return command_parsed
 
 
+def check_arguments(pipe_com, input_arg_cmd):
+    check = False
+    pipeline_commad = pipe_com.split(' ')
+    if which(pipeline_commad[0]) == which(input_arg_cmd):
+        if len(pipeline_commad)-1 == len(sys.argv):
+            check = True
+            i = 1
+            while i < len(sys.argv):
+                if op.basename(pipeline_commad[i]) != op.basename(sys.argv[i]) and is_intstring(sys.argv[i]):
+                    check = False
+                    break
+                i += 1
+    return check
+
+
+def make_copies(pipe_com, pipe_files, WD_ref, WD_dest, val):
+    proc_name = op.basename(pipe_com.split(' ')[0])
+    for file in pipe_files:
+        from_path = op.join(WD_ref, file)
+        #Fname = proc_name + "_" + file
+        hash_object = hashlib.sha1(pipe_com.encode('utf-8'))
+        hex_dig_file = hash_object.hexdigest()
+        Fname = hex_dig_file + "_" + file
+        if val == 'normal':
+            if 'peds_temp/' in file:
+                file2 = file.replace('peds_temp/', '')
+                Fname2 = hex_dig_file + "_" + file2
+                from_path = op.join(WD_ref, op.join('peds_temp', Fname2))
+                To_path = op.join(WD_dest, file2)
+                cp_command2 = "cp " + from_path + " " + To_path
+                subprocess.Popen(cp_command2, shell=True,
+                                 stderr=subprocess.PIPE)
+                To_path = op.join(WD_dest, op.join('peds_temp', Fname2))
+            else: To_path = op.join(WD_dest, file)
+            
+        elif val == 'multi-v':
+            from_path = op.join(WD_ref, op.join('multi_version', Fname))
+            To_path = op.join(WD_dest, file)
+        elif val == 'persist':
+            To_path = op.join(WD_dest, Fname)
+            # ~ while op.exists(To_path):
+                # ~ Fname = proc_name + "_" + Fname
+                # ~ To_path = op.join(WD_dest, Fname)
+        cp_command = "cp " + from_path + " " + To_path
+        subprocess.Popen(cp_command, shell=True,
+                         stderr=subprocess.PIPE)
+
+
+def read_files(WD_test):
+    try:
+        with open(op.join(WD_test, 'commands.json'), 'r') as cfile:
+            data = json.load(cfile)
+            try:
+                command_dic = data["total_commands"]
+                commands = csv_parser(command_dic)
+            except:
+                commands = {}
+            try:
+                # ~ if data["total_commands_multi"]:
+                multi_write = data["total_commands_multi"]
+                mw_cmd = csv_parser(multi_write)
+            except:
+                mw_cmd = {}
+    except:
+        mw_cmd = {}
+        commands = {}
+
+    try:
+        with open(op.join(WD_test, 'commands_captured.json'), 'r') as c_file:
+            data = json.load(c_file)
+            try:
+                command_dic_temp = data["total_temp_proc"]
+                total_temp_commands = csv_parser(command_dic_temp)
+            except:
+                total_temp_commands = {}
+            try:
+                command_dic_multi = data["total_multi_write_proc"]
+                total_multi_commands_commands = csv_parser(command_dic_multi)
+            except:
+                total_multi_commands_commands = {}
+    except:
+        total_temp_commands = {}
+        total_multi_commands_commands = {}
+        
+    return mw_cmd, commands, total_temp_commands, total_multi_commands_commands
+
+
 def main(args=None):
 
     WD_test = op.join(op.dirname(op.abspath(path)), '../test/peds_test_data')
-    # WD_test = '/home/ali/Desktop/git_repo/repro-tools/test/peds_test_data'
-    # updated commands refer to the single processes that create errors
-    # common_cmd refers to the multi-write processes that create errors
-    with open(op.join(WD_test, 'commands.json'), 'r') as cfile:
-        data = json.load(cfile)
-        command_dic = data["total_commands"]
-        commands = csv_parser(command_dic)
-
-    # ~ try:
-        # ~ with open(op.join(WD_test, 'common_cmd.txt'), 'r')as multi_write_file:
-            # ~ multi_write_commands = csv_parser(multi_write_file)
-    # ~ except:
-        # ~ multi_write_commands = []
-    # ~ proc_list = multi_write_commands.keys()
-
+    # single_cmd  refer to the single processes that create errors
+    # mw_cmd refers to the multi-write processes that create errors
+    mw_cmd, single_cmd, total_temp_commands, total_multi_commands = read_files(WD_test)
+    
+    OS_release = platform.linux_distribution()[1]
     input_arg_cmd = sys.argv[0]
     current_script_name = __file__
     cmd_name = current_script_name.split('/')[-1:][0]
@@ -95,51 +169,50 @@ def main(args=None):
         i += 1
     subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)
 
-    WD_ref = op.join(WD_test, "centos6/test")
-    WD_cur = op.join(WD_test, "centos7/test")
-    # WD_ref_saved = WD_test+"/centos6_common_files/"
-    # WD_cur_save = WD_test+"/centos7_common_files/"
-    for pipe_com, pipe_files in commands.items():
-        check = False
-        pipeline_commad = pipe_com.split(' ')
-        if which(pipeline_commad[0]) == which(input_arg_cmd):
-            if len(pipeline_commad)-1 == len(sys.argv):
-                check = True
-                i = 1
-                while i < len(sys.argv):
-                    if pipeline_commad[i] != op.basename(sys.argv[i]) and \
-                                             is_intstring(sys.argv[i]):
-                        check = False
-                        break
-                    i += 1
+######## ON FIRST CONDITION (CENTOS7  ######## iteratively
+    # Capture single write error files
+    WD_ref = op.join(WD_test, "centos6/subject1")
+    WD_cur = op.join(WD_test, "centos7/subject1")
+
+    for pipe_com, pipe_files in single_cmd.items():
+        check = check_arguments(pipe_com, input_arg_cmd)
         if check is True:
-            for file in pipe_files:
-                from_path = op.join(WD_ref, file)
-                To_path = op.join(WD_cur, file)
-                cp_command = "cp " + from_path + " " + To_path
-                subprocess.Popen(cp_command, shell=True,
-                                 stderr=subprocess.PIPE)
-                # copyfile(from_path, To_path)
-
-                # ~ f_ = file.split('/')[-1]
-                # ~ _f = file.split('/')[:-1]
-                # ~ if pipe_com in common_list:
-                    # ~ proc_fname = str(pipeline_commad[0].split('/')[-1])+"_" #for common file add proc name:  'procname_filename'
-                    # ~ #from_common_file = WD_ref + _f + proc_fname + f_
-                    # ~ To_common_file = WD_cur + _f + proc_fname + f_ ##
-                   # ~ # bash_command = "cp " + from_common_file + " " + To_common_file
-                    # ~ bash_command = "cp " + from_path + " " + To_common_file
-                    # ~ os.system(bash_command)
-
-                # ~ if pipe_com in temp_list:
-                  # ~ # from_temp_file = WD_ref + _f + "temp_" + f_ #for common file add temp:  'temp_filename'
-                   # ~ To_temp_file = WD_cur + _f + "temp_" + f_
-                  # ~ # bash_command = "cp " + from_temp_file + " " + To_temp_file
-                   # ~ bash_command = "cp " + from_path + " " + To_temp_file
-                   # ~ os.system(bash_command)
+            make_copies(pipe_com, pipe_files, WD_ref, WD_cur, 'normal')
             break
-        else:
-            continue
+
+    # Capture multi-write processes error
+    for pipe_com2, pipe_files2 in mw_cmd.items():
+        check2 = check_arguments(pipe_com2, input_arg_cmd)
+        if check2 is True:
+            make_copies(pipe_com2, pipe_files2, WD_ref, WD_cur, 'multi-v')
+            break
+
+######## ON FIRST (CENTOS7) AND REF(CENTOS6) CONDITIONS  ######## one time
+    if OS_release == "7.5.1804":
+        WD_temp = op.join(WD_test, "centos7/subject1")
+        WD_temp_persist = op.join(WD_test, "centos7/subject1/peds_temp")
+        WD_multi = op.join(WD_test, "centos7/subject1")
+        WD_multi_persist = op.join(WD_test, "centos7/subject1/multi_version")        
+
+    elif OS_release == "6.10":
+        WD_temp = op.join(WD_test, "centos6/subject1")
+        WD_temp_persist = op.join(WD_test, "centos6/subject1/peds_temp")
+        WD_multi = op.join(WD_test, "centos6/subject1")
+        WD_multi_persist = op.join(WD_test, "centos6/subject1/multi_version")
+
+    # Capture the temporary files
+    for pipe_com3, pipe_files3 in total_temp_commands.items():
+        check3 = check_arguments(pipe_com3, input_arg_cmd)
+        if check3 is True:
+            make_copies(pipe_com3, pipe_files3, WD_temp, WD_temp_persist, 'persist')
+            break
+
+    # Capture multi-write processes error
+    for pipe_com2, pipe_files2 in total_multi_commands.items():
+        check2 = check_arguments(pipe_com2, input_arg_cmd)
+        if check2 is True:
+            make_copies(pipe_com2, pipe_files2, WD_multi, WD_multi_persist, 'persist')
+            break
 
 
 if __name__ == '__main__':

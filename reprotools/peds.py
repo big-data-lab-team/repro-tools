@@ -187,6 +187,19 @@ def create_graph(pid, process_node, db_path):
     return data
 
 
+# ~ # Update temp and multi write path name in sqlite db
+# ~ def update_db_path():
+    # ~ db = sqlite3.connect(db_path)
+    # ~ process_cursor = db.cursor()
+    # ~ path_update_query = '''
+                        # ~ UPDATE opened_files SET name = %s 
+                        # ~ WHERE name = $s  
+                        # ~ and process = $s
+                        # ~ '''
+    # ~ process_cursor.execute(path_update_query %new_name % old_name %pid)
+    # ~ return process_cursor.fetchall()
+
+
 # Returns the children of the process
 def get_the_child_processes(process_cursor, pid):
     process_id_query = '''
@@ -372,33 +385,33 @@ def make_squared_green_node(graph, id, pid, name, node_label,
 
 
 # Create a file include all dependency files info
-def write_to_file(write_diff_list, read_diff_list, read_tmp_list,
-                  write_tmp_list, write_files, proc, count_diff_w,
-                  count_diff_r, count_tmp_r, count_tmp_w):
-    wf = pd.DataFrame(write_diff_list, columns=['process_ID', 'name'])
-    rf = pd.DataFrame(read_diff_list, columns=['process_ID', 'name',
-                                               'created_process'])
-    tr = pd.DataFrame(read_tmp_list, columns=['process_ID', 'name',
-                                              'created_process'])
-    tw = pd.DataFrame(write_tmp_list, columns=['process_ID', 'name'])
-    write_files.write(str(proc.id) + "\t" + str(proc.name) +
-                      "\ntotal write/read files:\t" + str(len(proc.data)) +
-                      "\ntotal write files with diff: " + str(count_diff_w) + "\n\n")
-    wf.to_csv(write_files, sep='\t', index=False)
-    write_files.write("\ntotal read files with diff: " + str(count_diff_r) + "\n\n")
-    rf.to_csv(write_files, sep='\t', index=False)
-    write_files.write("\ntotal read temp files: " + str(count_tmp_r) + "\n\n")
-    tr.to_csv(write_files, sep='\t', index=False)
-    write_files.write("\ntotal write temp files: " + str(count_tmp_w) + "\n\n")
-    tw.to_csv(write_files, sep='\t', index=False)
-    write_files.write("\n************************************\n\n")
+# ~ def write_to_file(write_diff_list, read_diff_list, read_tmp_list,
+                  # ~ write_tmp_list, write_files, proc, count_diff_w,
+                  # ~ count_diff_r, count_tmp_r, count_tmp_w):
+    # ~ wf = pd.DataFrame(write_diff_list, columns=['process_ID', 'name'])
+    # ~ rf = pd.DataFrame(read_diff_list, columns=['process_ID', 'name',
+                                               # ~ 'created_process'])
+    # ~ tr = pd.DataFrame(read_tmp_list, columns=['process_ID', 'name',
+                                              # ~ 'created_process'])
+    # ~ tw = pd.DataFrame(write_tmp_list, columns=['process_ID', 'name'])
+    # ~ write_files.write(str(proc.id) + "\t" + str(proc.name) +
+                      # ~ "\ntotal write/read files:\t" + str(len(proc.data)) +
+                      # ~ "\ntotal write files with diff: " + str(count_diff_w) + "\n\n")
+    # ~ wf.to_csv(write_files, sep='\t', index=False)
+    # ~ write_files.write("\ntotal read files with diff: " + str(count_diff_r) + "\n\n")
+    # ~ rf.to_csv(write_files, sep='\t', index=False)
+    # ~ write_files.write("\ntotal read temp files: " + str(count_tmp_r) + "\n\n")
+    # ~ tr.to_csv(write_files, sep='\t', index=False)
+    # ~ write_files.write("\ntotal write temp files: " + str(count_tmp_w) + "\n\n")
+    # ~ tw.to_csv(write_files, sep='\t', index=False)
+    # ~ write_files.write("\n************************************\n\n")
 
 
 def path_parser(path):
     count = 0
     for f in path.split('/'):
         # if f == "exec":
-        if f == "centos7":
+        if f == "subject1":
             count += 1
             break
         else:
@@ -448,7 +461,7 @@ def total_common_processes(output_file, origin, pipeline_graph):
             common_file.append(str(key))
             command_lines[(proc_name[0][1])] = common_file
     command_dic['total_multi_write_proc'] = command_lines
-    json.dump(command_dic, json_output)
+    json.dump(command_dic, json_output, indent=4, sort_keys=True)
     # ~ for key, val in command_lines.items():
         # ~ write_total_commons.write(str(key) + "##" + str(val) + "\n")
     json_output.close()
@@ -459,7 +472,7 @@ def write_temp_files(output_file, temp_commands):
         data = json.load(rfile)
     data['total_temp_proc'] = temp_commands
     with open(os.path.splitext(output_file)[0]+'_captured.json', 'w') as wfile:
-        json.dump(data, wfile)
+        json.dump(data, wfile, indent=4, sort_keys=True)
 
 
 def error_matrix_format(read_matrix_file):
@@ -499,6 +512,11 @@ def main():
     parser.add_argument('-o', '--output_file',
                         help='.Json output file include all commandlines of'
                               'uncertain, unknown, and certain red processes')
+    parser.add_argument('-c', '--capture_mode',
+                        help='include two values (true and false) to indicate'
+                              'capture mode of the script'
+                              'modification steps (false)'
+                              'capturing temp and multi-write files and making graph (true)')
     args = parser.parse_args()
 
     # INITIALIZE THE PROGRAM
@@ -513,7 +531,6 @@ def main():
     write_total_tmp2 = ['000']
     node_label = 0
     proc_list = []
-    capture_mode = True
     total_processes = {}
     command_lines = {}
     multi_commands = {}
@@ -521,6 +538,10 @@ def main():
     red_nodes = []
     blue_nodes = []
     ignore = []
+    capture_mode = args.capture_mode
+    if capture_mode == 'true':
+        capture_mode = True
+    else: capture_mode = False
     db_path = args.sqlite_db
     read_matrix_file = args.matrix
     # read the pipeline files
@@ -585,14 +606,35 @@ def main():
                 tmp = False
                 for diff in pipeline_files:
                     n = diff.split(" ")
+                    check_temp_file = False
+                    file_name = str("/" + n[0])
+                    if 'peds_temp/' in n[0] and not capture_mode: 
+                        check_temp_file = True
+                        temp_folder = '/peds_temp/'
+                        temp_file_name = n[0].replace('peds_temp/', '').split('_')
+                        file_name = "/" + '_'.join(temp_file_name[1:])
                     if int(n[1][:-1]) != 0 and \
-                       str("/" + n[0]) == data_parsed_name:
+                       file_name == data_parsed_name:
+                        if check_temp_file:
+                            data = list(data)
+                            nn = data[1].split('/')
+                            new_n = temp_folder + nn[-1]
+                            data[1] = '/'.join(nn[:-1]) + new_n
+                            data = tuple(data)
+                            
                         write_diff_list.append(data[0:2])
                         count_diff_w += 1
                         tmp = True
                         break
                     elif int(n[1][:-1]) == 0 and \
-                         str("/" + n[0]) == data_parsed_name:
+                         file_name == data_parsed_name:
+                        if check_temp_file:
+                            data = list(data)
+                            nn = data[1].split('/')
+                            new_n = temp_folder + nn[-1]
+                            data[1] = '/'.join(nn[:-1]) + new_n
+                            data = tuple(data)
+                            
                         write_nodiff_list.append(data[0:2])
                         count_nodiff_w += 1
                         tmp = True
@@ -624,15 +666,36 @@ def main():
                 tmp = False
                 for diff2 in pipeline_files:
                     n = diff2.split(" ")
+                    check_temp_file = False
+                    file_name = str("/" + n[0])
+                    if 'peds_temp/' in n[0] and not capture_mode: 
+                        check_temp_file = True
+                        temp_folder = '/peds_temp/'
+                        temp_file_name = n[0].replace('peds_temp/', '').split('_')
+                        file_name = "/" + '_'.join(temp_file_name[1:])
                     if int(n[1][:-1]) != 0 and \
-                       str("/"+n[0]) == data_parsed_name:
+                       file_name == data_parsed_name:
+                        if check_temp_file:
+                            data = list(data)
+                            nn = data[1].split('/')
+                            new_n = temp_folder + nn[-1]
+                            data[1] = '/'.join(nn[:-1]) + new_n
+                            data = tuple(data)
+
                         data = data[:2] + (origin_p,)
                         read_diff_list.append(data)
                         count_diff_r += 1
                         tmp = True
                         break
                     elif int(n[1][:-1]) == 0 and \
-                         str("/"+n[0]) == data_parsed_name:
+                         file_name == data_parsed_name:
+                        if check_temp_file:
+                            data = list(data)
+                            nn = data[1].split('/')
+                            new_n = temp_folder + nn[-1]
+                            data[1] = '/'.join(nn[:-1]) + new_n
+                            data = tuple(data)
+                            
                         data = data[:2] + (origin_p,)
                         read_nodiff_list.append(data)
                         count_nodiff_r += 1
@@ -681,13 +744,13 @@ def main():
                         except:
                             multi_commands = {}
                         var = True
-                        for key, val in multi_commands.items():
-                            cmd = str(key) + "##" + str(val) + '\n'
+                        for key2, val in multi_commands.items():
+                            cmd = str(key2) + "##" + str(val) + '\n'
                             if cmd == command_str:
                                 var = False
                         if var is True:
                             multi_commands[(proc_name[0][1])] = common_file
-                            # command_lines[(proc_name[0][1])] = common_file
+                            # ~ command_lines[(proc_name[0][1])] = common_file
                             break
                         # common_processes.append(str(v) + " = " + str(proc_name[0][0]))
             # add red process include file with no multi-write
@@ -728,16 +791,16 @@ def main():
                         temp_w.append(str(tmp[1]))
                 temp_commands[(proc.name[0][1])] = temp_w
 
-            if (count_diff_r > 0 or count_nodiff_r > 0 or count_diff_w > 0 or \
-                count_nodiff_w > 0) and count_tmp_r > 0:
-                for tmp2 in read_tmp_list:
-                    check = []
-                    p_splited_name = str(tmp2[0]).split("/")[-1:]
-                    if p_splited_name[0] not in ["cp", "recon-all"]:
-                        if tmp2[0] in temp_commands.keys():
-                            check = temp_commands[tmp2[0]]
-                        check.append(tmp2[1])
-                        temp_commands[tmp2[0]] = check
+            # ~ if (count_diff_r > 0 or count_nodiff_r > 0 or count_diff_w > 0 or \
+                # ~ count_nodiff_w > 0) and count_tmp_r > 0:
+                # ~ for tmp2 in read_tmp_list:
+                    # ~ check = []
+                    # ~ p_splited_name = str(tmp2[0]).split("/")[-1:]
+                    # ~ if p_splited_name[0] not in ["cp", "recon-all"]:
+                        # ~ if tmp2[0] in temp_commands.keys():
+                            # ~ check = temp_commands[tmp2[0]]
+                        # ~ check.append(tmp2[1])
+                        # ~ temp_commands[tmp2[0]] = check
 
 ###########
 ####### MAKE PROCESS GRAPH VISUALIZATION (DOT FILE)
@@ -812,25 +875,24 @@ def main():
 ####### WRITE OUTPUT FILES
 #####
 
-#    with open(args.output_file, 'r') as rfile:
-#        j_data = json.load(rfile)
-#    j_data['certain_cmd']=command_lines
-#    j_data['temp_cmd']=temp_commands
-#    j_data['multiWrite_cmd']=multi_commands
-#    rfile.close()
-#    with open(args.output_file, 'w') as wfile:
-#        json.dump(j_data, wfile)
-#    wfile.close()
-
     if capture_mode:
         # add total multi write processes for the first time
         total_common_processes(args.output_file, origin, pipeline_graph)
         write_temp_files(args.output_file, temp_commands)
+    else:
+        data = {}
+        with open(os.path.splitext(args.output_file)[0]+'_captured.json', 'w+') as wfile:
+            json.dump(data, wfile, indent=4, sort_keys=True)
 
-    total_processes['certain_cmd'] = command_lines
-    total_processes['multiWrite_cmd'] = multi_commands
+    try:
+        with open(args.output_file, 'r') as rfile:
+            data = json.load(rfile)
+    except:
+        data = {}
+    data['certain_cmd'] = command_lines
+    data['multiWrite_cmd'] = multi_commands
     with open(args.output_file, 'w+') as json_file:
-        json.dump(total_processes, json_file)
+        json.dump(data, json_file, indent=4, sort_keys=True)
 
 
 if __name__ == '__main__':
