@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/big-data-lab-team/repro-tools.svg?branch=master)](https://travis-ci.org/big-data-lab-team/repro-tools)
+[![Build Status](https://travis-ci.org/ali4006/repro-tools.svg?branch=auto-peds)](https://travis-ci.org/ali4006/repro-tools)
+
 [![codecov](https://codecov.io/gh/ali4006/repro-tools/branch/auto-peds/graph/badge.svg)](https://codecov.io/gh/ali4006/repro-tools)
 
 # repro-tools
