@@ -241,7 +241,7 @@ def random_split_2D(lines, training_ratio, max_diff, sampling_method, dataset, a
                     if last_sub_fileid == a: #to respect the largest-a it is not allowed to remove those files which file-id is less than the minimum required for each subject
                         last_sub_fileid, ran_subject = balance_training (training, applicable_subjects_in_training)
                     else:
-                        target_sub = filter(lambda x: x[3]==last_sub_fileid,filter(lambda y: y[1] == ran_subject[0],training))
+                        target_sub = list(filter(lambda x: x[3]==last_sub_fileid,list(filter(lambda y: y[1] == ran_subject[0],training))))
                         test.append(target_sub[0])
                         training.remove(target_sub[0])
             else: #oversampling the training set
@@ -250,10 +250,10 @@ def random_split_2D(lines, training_ratio, max_diff, sampling_method, dataset, a
         elif effective_training_ratio > training_ratio: # downsizing the training set 
             while len(training) > target_training_size:
                 last_sub_fileid, ran_subject = balance_training (training, applicable_subjects_in_training)
-                if last_sub_fileid == min(map(lambda x: x[3], filter(lambda y: y[1] == ran_subject[0], lines))):# To respect the fact of having at least one file for each subject
+                if last_sub_fileid == min(map(lambda x: x[3], list(filter(lambda y: y[1] == ran_subject[0], lines)))):# To respect the fact of having at least one file for each subject
                     last_sub_fileid, ran_subject = balance_training (training, applicable_subjects_in_training)
                 else:
-                    target_sub = filter(lambda x: x[3]==last_sub_fileid,filter(lambda y: y[1] == ran_subject[0],training))
+                    target_sub = list(filter(lambda x: x[3]==last_sub_fileid,list(filter(lambda y: y[1] == ran_subject[0],training))))
                     test.append(target_sub[0])
                     training.remove(target_sub[0])
         elif effective_training_ratio < training_ratio:  #oversampling the training set
@@ -265,16 +265,16 @@ def random_split_2D(lines, training_ratio, max_diff, sampling_method, dataset, a
 
 def balance_training (training, applicable_subjects_in_training ): #Get the maximum file-id for the random selected subject in the current training set
     random_subject = rn.sample(applicable_subjects_in_training,1)
-    last_sub_fileid = max(map(lambda x: x[3], filter(lambda y: y[1] == random_subject[0], training)))
+    last_sub_fileid = max(map(lambda x: x[3], list(filter(lambda y: y[1] == random_subject[0], training))))
     return(last_sub_fileid, random_subject)
 
 def oversampling_training (training,test,target_training_size,lines,n_subject):
     while len (training) < target_training_size:
         ran_subject_id = randrange(1, n_subject)
-        last_sub_fileid = max(map(lambda x: x[3], filter(lambda y: y[1] == ran_subject_id, training)))
+        last_sub_fileid = max(map(lambda x: x[3], list(filter(lambda y: y[1] == ran_subject_id, training))))
         next_sub_fileid = last_sub_fileid + 1
-        if next_sub_fileid < max(map(lambda x: x[3], filter(lambda y: y[1] == ran_subject_id, lines))):
-            target_sub = filter(lambda x: x[3]==next_sub_fileid,filter(lambda y: y[1] == ran_subject_id,lines))
+        if next_sub_fileid < max(map(lambda x: x[3], list(filter(lambda y: y[1] == ran_subject_id, lines)))):
+            target_sub = list(filter(lambda x: x[3]==next_sub_fileid,list(filter(lambda y: y[1] == ran_subject_id,lines))))
             training.append(target_sub[0])
             test.remove(target_sub[0])
     return test,training
