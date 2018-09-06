@@ -29,10 +29,9 @@ script:
 - export PYTHONPATH=$SPARK_HOME/python:$PYTHONPATH
 - export PYTHONPATH=$SPARK_HOME/python/lib/py4j-0.10.7-src.zip:$PYTHONPATH
 - coverage run --source repro-tools setup.py pytest
-
-codecov:
-  token: e5816ff7-b948-453b-8833-340dc1eaebb1
   
+after_success:
+- bash <(curl -s https://codecov.io/bash)
 after_success:
 - coveralls
 
