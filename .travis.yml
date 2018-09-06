@@ -38,6 +38,9 @@ script:
 - pycodestyle --max-line-length=80 *.py */*.py
 - coverage run --source repro-tools setup.py pytest
 
+codecov:
+  token: e5816ff7-b948-453b-8833-340dc1eaebb1
+  
 after_success:
 - coveralls
 
