@@ -71,9 +71,9 @@ def round_values(line_list):
 
 def create_dataframe_from_line_list(sc, ss, line_list, mode):
     if mode == True: #training dataframe
-        rdd=sc.parallelize(line_list).map(lambda line:Row(ordered_file_id=long(line[3]),subject=long(line[1]), val=long(line[2]), row_file_index=long(line[0])))
+        rdd=sc.parallelize(line_list).map(lambda line:Row(ordered_file_id=int(line[3]),subject=int(line[1]), val=int(line[2]), row_file_index=int(line[0])))
     else: #test dataframe # there is a prediction on the 3rd column
-        rdd=sc.parallelize(line_list).map(lambda line:Row(ordered_file_id=long(line[0]), subject=long(line[1]), val=long(line[2]), prediction=float(line[3])))
+        rdd=sc.parallelize(line_list).map(lambda line:Row(ordered_file_id=int(line[0]), subject=int(line[1]), val=int(line[2]), prediction=float(line[3])))
     return ss.createDataFrame(rdd)
 
 def write_matrix(line,matrix_name):
