@@ -13,6 +13,9 @@ python:
 - nightly
 - pypy-5.3.1
 
+jdk:
+  - openjdk7
+      
 before_install:
 - sudo apt-get install graphviz
 - sudo apt-get update -qq
@@ -20,13 +23,18 @@ before_install:
 - cd ${TRAVIS_BUILD_DIR}
 
 install:
+- wget http://apache.mirror.gtcomm.net/spark/spark-2.3.1/spark-2.3.1-bin-hadoop2.7.tgz
+- tar -xzf spark-2.3.1-bin-hadoop2.7.tgz
 - pip install --upgrade setuptools
 - pip install coveralls pytest pytest-runner pycodestyle
 - pip install .
-- docker build -t peds_centos7 test/peds_test_data/centos7/subject
-- docker build -t peds_centos6 test/peds_test_data/centos6/subject
+- docker build -t peds_centos7 test/peds_test_data/centos7/subject1
+- docker build -t peds_centos6 test/peds_test_data/centos6/subject1
 
 script:
+- export SPARK_HOME=`pwd`/spark-2.3.1-bin-hadoop2.7
+- export PYTHONPATH=$SPARK_HOME/python:$PYTHONPATH
+- export PYTHONPATH=$SPARK_HOME/python/lib/py4j-0.10.7-src.zip:$PYTHONPATH
 - pycodestyle --max-line-length=80 *.py */*.py
 - coverage run --source repro-tools setup.py pytest
 
