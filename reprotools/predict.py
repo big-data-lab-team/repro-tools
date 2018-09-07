@@ -71,9 +71,9 @@ def round_values(line_list):
 
 def create_dataframe_from_line_list(sc, ss, line_list, mode):
     if mode == True: #training dataframe
-        rdd=sc.parallelize(line_list).map(lambda line:Row(ordered_file_id=long(line[3]),subject=long(line[1]), val=long(line[2]), row_file_index=long(line[0])))
+        rdd=sc.parallelize(line_list).map(lambda line:Row(ordered_file_id=int(line[3]),subject=int(line[1]), val=int(line[2]), row_file_index=int(line[0])))
     else: #test dataframe # there is a prediction on the 3rd column
-        rdd=sc.parallelize(line_list).map(lambda line:Row(ordered_file_id=long(line[0]), subject=long(line[1]), val=long(line[2]), prediction=float(line[3])))
+        rdd=sc.parallelize(line_list).map(lambda line:Row(ordered_file_id=int(line[0]), subject=int(line[1]), val=int(line[2]), prediction=float(line[3])))
     return ss.createDataFrame(rdd)
 
 def write_matrix(line,matrix_name):
@@ -253,7 +253,7 @@ def random_split_2D(lines, training_ratio, max_diff, sampling_method, dataset, a
                 if last_sub_fileid == min(map(lambda x: x[3], list(filter(lambda y: y[1] == ran_subject[0], lines)))):# To respect the fact of having at least one file for each subject
                     last_sub_fileid, ran_subject = balance_training (training, applicable_subjects_in_training)
                 else:
-                    target_sub = list(filter(lambda x: x[3]==last_sub_fileid,list(filter(lambda y: y[1] == ran_subject[0],training))))
+                    target_sub = list(filter(lambda x: x[3]==last_sub_fileid,filter(lambda y: y[1] == ran_subject[0],training)))
                     test.append(target_sub[0])
                     training.remove(target_sub[0])
         elif effective_training_ratio < training_ratio:  #oversampling the training set

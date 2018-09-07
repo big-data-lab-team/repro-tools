@@ -1,5 +1,6 @@
-[![Build Status](https://travis-ci.org/big-data-lab-team/repro-tools.svg?branch=master)](https://travis-ci.org/big-data-lab-team/repro-tools)
-[![Coverage Status](https://coveralls.io/repos/github/big-data-lab-team/repro-tools/badge.svg?branch=master)](https://coveralls.io/github/big-data-lab-team/repro-tools?branch=master)
+[![Build Status](https://travis-ci.org/ali4006/repro-tools.svg?branch=auto-peds)](https://travis-ci.org/ali4006/repro-tools)
+[![codecov](https://codecov.io/gh/ali4006/repro-tools/branch/auto-peds/graph/badge.svg)](https://codecov.io/gh/ali4006/repro-tools)
+[![Coverage Status](https://coveralls.io/repos/github/ali4006/repro-tools/badge.svg?branch=auto-peds)](https://coveralls.io/github/ali4006/repro-tools?branch=auto-peds)
 
 # repro-tools
 A set of tools to evaluate the reproducibility of computations.
