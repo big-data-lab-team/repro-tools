@@ -68,8 +68,8 @@ def test_capture_second_cond():
 
 def test_verify_files_running():
     command_line = ("verify_files ./test/peds_test_data/conditions.txt "
-                           "test ./test/peds_test_data "
-                           "-e ./test/peds_test_data/exclude_items.txt")
+                    "test ./test/peds_test_data "
+                    "-e ./test/peds_test_data/exclude_items.txt")
     process = subprocess.Popen(command_line,
                                shell=True,
                                stdout=subprocess.PIPE,
@@ -104,4 +104,3 @@ def test_auto_peds():
     assert(not process.returncode), "Command failed"
     assert(open("./test/peds_test_data/commands.json", "r").read()
            == open("./test/peds_test_data/result_test.json", "r").read())
-
