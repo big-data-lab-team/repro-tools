@@ -87,7 +87,7 @@ def make_modify_script(peds_data_path, command_dic):
             cmd_file.write('cp ' + '`which '+pipeline_command + '` '
                            + backup_path + '\n')
             cmd_file.write('cp ' + op.join(op.dirname(__file__),
-                           'make_copy.py') + ' `which ' + \
+                           'make_copy.py') + ' `which ' +
                            pipeline_command + '`' + '\n')
 
 
@@ -106,18 +106,18 @@ def modify_docker_image(descriptor, peds_data_path, tag_name):
                                       volumes={os.getcwd():
                                                {'bind': os.getcwd(),
                                                 'mode': 'rw'}},
-                                      environment=["PYTHONPATH=$PYTHONPATH:"+os.getcwd()],
+                                      environment=(["PYTHONPATH=$PYTHONPATH:"
+                                                   + os.getcwd()]),
                                       working_dir=os.getcwd(),
                                       detach=True)
     container.logs()
     container.wait()
-    new_img_name = image_name.split(':')[0] + "_" + str(tag_name)  #tag=12345
+    new_img_name = image_name.split(':')[0] + "_" + str(tag_name)
     image = container.commit(new_img_name)
-    
     json_file_editor(descriptor, new_img_name, 'image')
     # ~ data["container-image"]["image"] = new_img_name
     # ~ with open(descriptor, 'w+') as jsonFile:
-        # ~ json.dump(data, jsonFile)
+    # ~ json.dump(data, jsonFile)
 
 
 def json_file_editor(descriptor, new_param, act):
@@ -188,22 +188,23 @@ def main(args=None):
     tag_name_cond2 = 0
     total_commands = {}
     total_mutli_write = {}
-    peds_capture_output = os.path.splitext(output_peds_file)[0]+'_captured.json'
+    peds_capture_output = (os.path.splitext(output_peds_file)[0] +
+                           '_captured.json')
     capture_files = args.capture_mode
     condition = args.cap_condition
-    
+
 # Start to persist temporary and multi version files in both conditions
     if capture_files == 'true':
         # (1) Start the Pipeline execution using bosh
-        pipeline_executor(descriptor, invocation) #CENTOS7
-        pipeline_executor(descriptor_cond2, invocation_cond2) #CENTOS6
+        pipeline_executor(descriptor, invocation)  # CENTOS7
+        pipeline_executor(descriptor_cond2, invocation_cond2)  # CENTOS6
 
         # (2) Get the error matrix file
         verify_command = 'verify_files ' + verify_cond + ' test ' + \
                          verify_output + \
                          " -e ./test/peds_test_data/exclude_items.txt"
         bash_executor(os.getcwd(), verify_command)
-        
+
         # (3) Get total multi_write and temp commands
         peds_command = "peds " + sqlite_db + " " + \
                        " test_differences_subject_total.txt" + \
@@ -216,30 +217,32 @@ def main(args=None):
             data = json.load(tmp_cmd)
         if data["total_temp_proc"]:
             tag_name += 1
-            tag_name_cond2 +=1
+            tag_name_cond2 += 1
             make_modify_script(peds_data_path, data["total_temp_proc"])
-            
+
             if condition == 'first':
                 modify_docker_image(descriptor, peds_data_path, tag_name)
             else:
-                modify_docker_image(descriptor_cond2, peds_data_path, tag_name_cond2)
-            
+                modify_docker_image(descriptor_cond2, peds_data_path,
+                                    tag_name_cond2)
+
         if data["total_multi_write_proc"]:
             tag_name += 1
-            tag_name_cond2 +=1
+            tag_name_cond2 += 1
             make_modify_script(peds_data_path, data["total_multi_write_proc"])
             if condition == 'first':
                 modify_docker_image(descriptor, peds_data_path, tag_name)
             else:
-                modify_docker_image(descriptor_cond2, peds_data_path, tag_name_cond2)
+                modify_docker_image(descriptor_cond2, peds_data_path,
+                                    tag_name_cond2)
 
-        # (4-1) Execute ref condition pipeline to persist the temporary 
+        # (4-1) Execute ref condition pipeline to persist the temporary
         # and mnulti-write process in the second condition
         json_file_editor(output_peds_file, '', 'None')
         if condition == 'first':
-            pipeline_executor(descriptor, invocation) #CENTOS7
+            pipeline_executor(descriptor, invocation)  # CENTOS7
         else:
-            pipeline_executor(descriptor_cond2, invocation_cond2) #CENTOS6
+            pipeline_executor(descriptor_cond2, invocation_cond2)  # CENTOS6
 
         backup_path = op.join(peds_data_path, 'backup_scripts')
         for f in os.listdir(backup_path):
@@ -252,20 +255,19 @@ def main(args=None):
     while True:
         # (1) Start the Pipeline execution using bosh
         pipeline_executor(descriptor, invocation)
-        
+
         # (2) Running VerifyFiles script to make error matrix file
         verify_command = 'verify_files ' + verify_cond + ' test ' + \
                          verify_output + \
                          " -e ./test/peds_test_data/exclude_items.txt"
         bash_executor(os.getcwd(), verify_command)
-        
+
         # (3) Classification of processes, running peds script
         peds_command = "peds " + sqlite_db + " " + \
                        " test_differences_subject_total.txt" + \
                        " -o " + peds_result + " -c " + capture_files
         bash_executor(peds_data_path, peds_command)
         json_file_editor(peds_capture_output, '', 'None')
-              
 
         # Check if there exist processes that create error
         with open(output_peds_file, 'r') as cmd_json:
@@ -276,7 +278,7 @@ def main(args=None):
             tag_name += 1
             make_modify_script(peds_data_path, data["multiWrite_cmd"])
             modify_docker_image(descriptor, peds_data_path, tag_name)
-            
+
         if data["certain_cmd"]:
             # (4) Start the modification through docker image
             total_commands.update(data["certain_cmd"])
@@ -292,13 +294,13 @@ def main(args=None):
             # print out the final recognized processes
             update_peds_json(total_mutli_write, output_peds_file, "multi")
             update_peds_json(total_commands, output_peds_file, "single")
-            
+
             backup_path = op.join(peds_data_path, 'backup_scripts')
             for f in os.listdir(backup_path):
                 os.remove(os.path.join(backup_path, f))
             json_file_editor(descriptor, 'peds_centos7', 'image')
             json_file_editor(descriptor_cond2, 'peds_centos6', 'image')
-            
+
             break
 
 

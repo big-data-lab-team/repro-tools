@@ -5,6 +5,7 @@ import re
 import argparse
 import sqlite3
 import json
+import logging
 import pandas as pd
 from sqlite3 import Error
 from graphviz import Digraph as Di
@@ -171,7 +172,8 @@ def create_graph(pid, process_node, db_path):
     total_files = get_the_written_file_list(writefile_cursor)
     # select the parent id of pid from process list
     parent_id = get_the_parent_id(parent_cursor, pid)
-    topenedf = []  # Getting the total opened files from the repro-tools matrix file
+    # Getting the total opened files from the repro-tools matrix file
+    topenedf = []
     for file in opened_file_list:
         for line in total_files:
             if line[1] in file[1]:
@@ -187,17 +189,17 @@ def create_graph(pid, process_node, db_path):
     return data
 
 
-# ~ # Update temp and multi write path name in sqlite db
-# ~ def update_db_path():
-    # ~ db = sqlite3.connect(db_path)
-    # ~ process_cursor = db.cursor()
-    # ~ path_update_query = '''
-                        # ~ UPDATE opened_files SET name = %s 
-                        # ~ WHERE name = $s  
-                        # ~ and process = $s
-                        # ~ '''
-    # ~ process_cursor.execute(path_update_query %new_name % old_name %pid)
-    # ~ return process_cursor.fetchall()
+# Update temp and multi write path name in sqlite db
+def update_db_path():
+    db = sqlite3.connect(db_path)
+    process_cursor = db.cursor()
+    path_update_query = '''
+                        UPDATE opened_files SET name = %s
+                        WHERE name = $s
+                        and process = $s
+                        '''
+    process_cursor.execute(path_update_query % new_name % old_name % pid)
+    return process_cursor.fetchall()
 
 
 # Returns the children of the process
@@ -384,27 +386,29 @@ def make_squared_green_node(graph, id, pid, name, node_label,
             graph.edge(str(e), str(id))
 
 
-# Create a file include all dependency files info
-# ~ def write_to_file(write_diff_list, read_diff_list, read_tmp_list,
-                  # ~ write_tmp_list, write_files, proc, count_diff_w,
-                  # ~ count_diff_r, count_tmp_r, count_tmp_w):
-    # ~ wf = pd.DataFrame(write_diff_list, columns=['process_ID', 'name'])
-    # ~ rf = pd.DataFrame(read_diff_list, columns=['process_ID', 'name',
-                                               # ~ 'created_process'])
-    # ~ tr = pd.DataFrame(read_tmp_list, columns=['process_ID', 'name',
-                                              # ~ 'created_process'])
-    # ~ tw = pd.DataFrame(write_tmp_list, columns=['process_ID', 'name'])
-    # ~ write_files.write(str(proc.id) + "\t" + str(proc.name) +
-                      # ~ "\ntotal write/read files:\t" + str(len(proc.data)) +
-                      # ~ "\ntotal write files with diff: " + str(count_diff_w) + "\n\n")
-    # ~ wf.to_csv(write_files, sep='\t', index=False)
-    # ~ write_files.write("\ntotal read files with diff: " + str(count_diff_r) + "\n\n")
-    # ~ rf.to_csv(write_files, sep='\t', index=False)
-    # ~ write_files.write("\ntotal read temp files: " + str(count_tmp_r) + "\n\n")
-    # ~ tr.to_csv(write_files, sep='\t', index=False)
-    # ~ write_files.write("\ntotal write temp files: " + str(count_tmp_w) + "\n\n")
-    # ~ tw.to_csv(write_files, sep='\t', index=False)
-    # ~ write_files.write("\n************************************\n\n")
+# ~ # Create a file include all dependency files info
+def write_to_file(write_diff_list, read_diff_list, read_tmp_list,
+                  write_tmp_list, write_files, proc, count_diff_w,
+                  count_diff_r, count_tmp_r, count_tmp_w):
+    wf = pd.DataFrame(write_diff_list, columns=['process_ID', 'name'])
+    rf = pd.DataFrame(read_diff_list, columns=['process_ID', 'name',
+                                               'created_process'])
+    tr = pd.DataFrame(read_tmp_list, columns=['process_ID', 'name',
+                                              'created_process'])
+    tw = pd.DataFrame(write_tmp_list, columns=['process_ID', 'name'])
+    write_files.write(str(proc.id) + "\t" + str(proc.name) +
+                      "\ntotal write/read files:\t" + str(len(proc.data)) +
+                      "\ntotal write files with diff: " +
+                      str(count_diff_w) + "\n\n")
+    wf.to_csv(write_files, sep='\t', index=False)
+    write_files.write("\ntotal read files with diff: " +
+                      str(count_diff_r) + "\n\n")
+    rf.to_csv(write_files, sep='\t', index=False)
+    write_files.write("\ntotal read temp files: " + str(count_tmp_r) + "\n\n")
+    tr.to_csv(write_files, sep='\t', index=False)
+    write_files.write("\ntotal write temp files: " + str(count_tmp_w) + "\n\n")
+    tw.to_csv(write_files, sep='\t', index=False)
+    write_files.write("\n************************************\n\n")
 
 
 def path_parser(path):
@@ -429,7 +433,8 @@ def flist_multi_write(pipeline_files, written_files_list, pipeline_graph):
             num_proc = []
             for o in written_files_list:
                 # if (int(n[1][:-1]) != 0 and str(n[0]) in data_parsed_name):
-                if str("/" + n[0]) == path_parser(str(os.path.abspath(str(o[1])))):
+                if str("/" + n[0]) == path_parser(str(
+                                      os.path.abspath(str(o[1])))):
                     file_name = str(os.path.abspath(str(o[1])))
                     if re.match("^.*.log$", file_name) is None and \
                        re.match("^.*.cmd$", file_name) is None and \
@@ -441,6 +446,7 @@ def flist_multi_write(pipeline_files, written_files_list, pipeline_graph):
                 num_proc = list(set(num_proc))
             if len(num_proc) > 1:
                 origin_p[file_name] = num_proc
+    log_info("Multi-write files are detected")
     return origin_p
 
 
@@ -463,7 +469,7 @@ def total_common_processes(output_file, origin, pipeline_graph):
     command_dic['total_multi_write_proc'] = command_lines
     json.dump(command_dic, json_output, indent=4, sort_keys=True)
     # ~ for key, val in command_lines.items():
-        # ~ write_total_commons.write(str(key) + "##" + str(val) + "\n")
+    # ~ write_total_commons.write(str(key) + "##" + str(val) + "\n")
     json_output.close()
 
 
@@ -476,6 +482,7 @@ def write_temp_files(output_file, temp_commands):
 
 
 def error_matrix_format(read_matrix_file):
+    log_info("read error matrix file between two conditions..")
     with open(read_matrix_file, 'r') as pfiles:
         lines = pfiles.readlines()
     pipeline_files = []
@@ -491,6 +498,14 @@ def check_file(parser, x):
         return x
     parser.error("File does not exist: {}".format(x))
 
+
+def log_info(message):
+    logging.info("INFO: " + message)
+
+
+def log_error(message):
+    logging.error("ERROR: " + message)
+    sys.exit(1)
 
 def main():
     parser = argparse.ArgumentParser(description='Classification of the nodes'
@@ -516,9 +531,10 @@ def main():
                         help='include two values (true and false) to indicate'
                               'capture mode of the script'
                               'modification steps (false)'
-                              'capturing temp and multi-write files and making graph (true)')
+                              'capturing temp and multi-write files'
+                              'or making graph file (true)')
     args = parser.parse_args()
-
+    logging.basicConfig(format='%(asctime)s:%(message)s', level=logging.INFO)
     # INITIALIZE THE PROGRAM
     if args.graph:
         graph = Di('Graph', filename=args.graph, format='png', strict=False)
@@ -541,7 +557,10 @@ def main():
     capture_mode = args.capture_mode
     if capture_mode == 'true':
         capture_mode = True
-    else: capture_mode = False
+        log_info("Prepare to capturing files")
+    else:
+        capture_mode = False
+        log_info("Prepare to classifying process")
     db_path = args.sqlite_db
     read_matrix_file = args.matrix
     # read the pipeline files
@@ -551,6 +570,7 @@ def main():
             ignore = ignorefiles.readlines()  # read the whole files
     # CREATE PROCESS TREE
     # Open the database file contains all the processes
+    log_info("Connecting to database..")
     db = sqlite3.connect(db_path)
     writefile_cursor = db.cursor()
     # Select the list of opened files (just written file)
@@ -563,11 +583,13 @@ def main():
     pipeline_graph.filter()
     pipeline_graph.reverse()
     total_pipe_proc = pipeline_graph.to_list()
+    log_info("Process tree created")
 
     # FINDING ALL THE PROCESSES WITH MULTI-WRITE IN PIPELINE
     origin = flist_multi_write(pipeline_files, written_files_list,
                                pipeline_graph)
-
+    log_info("Start to finding file dependencies in Read and Write mode\
+             and then classifying process..")
     # PROCESS CLASSIFICATION USING CREATED PROCESS TREE
     for proc in total_pipe_proc:
         count_diff_w = 0
@@ -583,9 +605,10 @@ def main():
         read_nodiff_list = []
         read_tmp_list = []
 
-###########
-####### FIND FILE DEPENDENCIES INCLUDE W/R PIPELINE AND TEMPORARY FILES WITH/WITHOUT ERRORS
-#####
+# ##########
+# ###### FIND FILE DEPENDENCIES INCLUDE W/R PIPELINE AND
+# ###### TEMPORARY FILES WITH/WITHOUT ERRORS
+# ####
         for data in proc.data:
             tn = True
             for nn in ignore:
@@ -608,10 +631,11 @@ def main():
                     n = diff.split(" ")
                     check_temp_file = False
                     file_name = str("/" + n[0])
-                    if 'peds_temp/' in n[0] and not capture_mode: 
+                    if 'peds_temp/' in n[0] and not capture_mode:
                         check_temp_file = True
                         temp_folder = '/peds_temp/'
-                        temp_file_name = n[0].replace('peds_temp/', '').split('_')
+                        temp_file_name = n[0].replace(
+                                         'peds_temp/', '').split('_')
                         file_name = "/" + '_'.join(temp_file_name[1:])
                     if int(n[1][:-1]) != 0 and \
                        file_name == data_parsed_name:
@@ -621,20 +645,20 @@ def main():
                             new_n = temp_folder + nn[-1]
                             data[1] = '/'.join(nn[:-1]) + new_n
                             data = tuple(data)
-                            
+
                         write_diff_list.append(data[0:2])
                         count_diff_w += 1
                         tmp = True
                         break
-                    elif int(n[1][:-1]) == 0 and \
-                         file_name == data_parsed_name:
+                    elif (int(n[1][:-1]) == 0 and
+                          file_name == data_parsed_name):
                         if check_temp_file:
                             data = list(data)
                             nn = data[1].split('/')
                             new_n = temp_folder + nn[-1]
                             data[1] = '/'.join(nn[:-1]) + new_n
                             data = tuple(data)
-                            
+
                         write_nodiff_list.append(data[0:2])
                         count_nodiff_w += 1
                         tmp = True
@@ -654,7 +678,8 @@ def main():
 
             # check if file with READ mode
             elif data[2] == 1:
-                # finding the origin process of the read files to show dependencies
+                # finding the origin process of the files in R mode
+                # to show dependencies
                 origin_p = []
                 for o in written_files_list:
                     if str(os.path.abspath(data[1])) == \
@@ -668,13 +693,14 @@ def main():
                     n = diff2.split(" ")
                     check_temp_file = False
                     file_name = str("/" + n[0])
-                    if 'peds_temp/' in n[0] and not capture_mode: 
+                    if 'peds_temp/' in n[0] and not capture_mode:
                         check_temp_file = True
                         temp_folder = '/peds_temp/'
-                        temp_file_name = n[0].replace('peds_temp/', '').split('_')
+                        temp_file_name = n[0].replace(
+                                         'peds_temp/', '').split('_')
                         file_name = "/" + '_'.join(temp_file_name[1:])
-                    if int(n[1][:-1]) != 0 and \
-                       file_name == data_parsed_name:
+                    if (int(n[1][:-1]) != 0 and
+                            file_name == data_parsed_name):
                         if check_temp_file:
                             data = list(data)
                             nn = data[1].split('/')
@@ -687,15 +713,15 @@ def main():
                         count_diff_r += 1
                         tmp = True
                         break
-                    elif int(n[1][:-1]) == 0 and \
-                         file_name == data_parsed_name:
+                    elif (int(n[1][:-1]) == 0 and
+                          file_name == data_parsed_name):
                         if check_temp_file:
                             data = list(data)
                             nn = data[1].split('/')
                             new_n = temp_folder + nn[-1]
                             data[1] = '/'.join(nn[:-1]) + new_n
                             data = tuple(data)
-                            
+
                         data = data[:2] + (origin_p,)
                         read_nodiff_list.append(data)
                         count_nodiff_r += 1
@@ -710,18 +736,18 @@ def main():
                                 read_tmp_list.append(tmp_r)
                     count_tmp_r += 1
 
-###########
-####### IGNORE PROCESSES BY NAME
-#####
+# ##########
+# ###### IGNORE PROCESSES BY NAME
+# ####
         name = "Null"
         if proc.name != []:
             name = str(proc.name[0][0].split('/')[-1])
         if name == "tee" or name == "date" or name == "Null":
             continue
 
-###########
-####### FIND RED PROCESSES (CREATE ERROR) AND CREATE COMMAND-LINES LIST
-#####
+# ##########
+# ###### FIND RED PROCESSES (CREATE ERROR) AND CREATE COMMAND-LINES LIST
+# ####
         # check if RED process
         elif count_diff_r == 0 and count_diff_w > 0 and count_tmp_r >= 0:
             # add red process include file with multi-write
@@ -735,8 +761,8 @@ def main():
                         common_file = []
                         proc_name = pipeline_graph.get_name(v)
                         common_file.append(str(key))
-                        command_str = str((proc_name[0][1])) + \
-                                      "##" + str(common_file) + '\n'
+                        command_str = (str((proc_name[0][1])) +
+                                       "##" + str(common_file) + '\n')
                         try:
                             with open(args.output_file, 'r') as rfile:
                                 data = json.load(rfile)
@@ -752,7 +778,8 @@ def main():
                             multi_commands[(proc_name[0][1])] = common_file
                             # ~ command_lines[(proc_name[0][1])] = common_file
                             break
-                        # common_processes.append(str(v) + " = " + str(proc_name[0][0]))
+                        # # ~ common_processes.append(str(v) + " = "
+                        #                          # ~ + str(proc_name[0][0]))
             # add red process include file with no multi-write
             if (not is_multi):
                 files = []
@@ -770,8 +797,8 @@ def main():
                     command_lines[(proc.name[0][1])] = files
 
         # check if BLUE process
-        elif count_diff_r > 0 and (count_nodiff_w > 0 or count_tmp_w > 0) and \
-             count_diff_w == 0 and count_tmp_w == 0:
+        elif (count_diff_r > 0 and (count_nodiff_w > 0 or count_tmp_w > 0)
+              and count_diff_w == 0 and count_tmp_w == 0):
             if name != "md5sum":
                 path = name
                 if proc.name != []:
@@ -779,11 +806,11 @@ def main():
                     pid = str(proc.id)
                     blue_nodes.append(pid + " = " + path)
 
-###########
-####### FIND PROCESSES THAT W/R TEMPORARY FILES AND CREATE TEMP COMMAND-LINES LIST
-#####
+# ##########
+# ###### FIND TEMP PROCESSES THAT CREATE ERROR IN MODE W/R
+# ####
         if capture_mode:
-            if (count_diff_r > 0 or count_nodiff_r > 0 or count_diff_w > 0 or \
+            if (count_diff_r > 0 or count_nodiff_r > 0 or count_diff_w > 0 or
                count_nodiff_w > 0) and count_tmp_w > 0:
                 temp_w = []
                 for tmp in write_tmp_list:
@@ -791,35 +818,40 @@ def main():
                         temp_w.append(str(tmp[1]))
                 temp_commands[(proc.name[0][1])] = temp_w
 
-            # ~ if (count_diff_r > 0 or count_nodiff_r > 0 or count_diff_w > 0 or \
-                # ~ count_nodiff_w > 0) and count_tmp_r > 0:
-                # ~ for tmp2 in read_tmp_list:
-                    # ~ check = []
-                    # ~ p_splited_name = str(tmp2[0]).split("/")[-1:]
-                    # ~ if p_splited_name[0] not in ["cp", "recon-all"]:
-                        # ~ if tmp2[0] in temp_commands.keys():
-                            # ~ check = temp_commands[tmp2[0]]
-                        # ~ check.append(tmp2[1])
-                        # ~ temp_commands[tmp2[0]] = check
+            # # ~ if ((count_diff_r > 0 or count_nodiff_r > 0 or
+            #     # ~ count_diff_w > 0 or count_nodiff_w > 0) and
+            #    # ~ count_tmp_r > 0):
+            #     # ~ for tmp2 in read_tmp_list:
+            #         # ~ check = []
+            #         # ~ p_splited_name = str(tmp2[0]).split("/")[-1:]
+            #         # ~ if p_splited_name[0] not in ["cp", "recon-all"]:
+            #             # ~ if tmp2[0] in temp_commands.keys():
+            #                 # ~ check = temp_commands[tmp2[0]]
+            #             # ~ check.append(tmp2[1])
+            #             # ~ temp_commands[tmp2[0]] = check
 
-###########
-####### MAKE PROCESS GRAPH VISUALIZATION (DOT FILE)
-#####
-        # According to the read/write files, classify the various process by colored node: create(red),
-        # propagate(yellow), remove(blue) and green nodes are process with no differences
+# ##########
+# ###### MAKE PROCESS GRAPH VISUALIZATION (DOT FILE)
+# ####
+        # According to the read/write files, classify process by colored node:
+        # create(red), propagate(yellow), remove(blue) and
+        # green nodes are process with no differences
         if count_diff_r > 0 and count_diff_w > 0:
             make_yellow_node(graph, proc.id, proc.pid, name, node_label,
                              read_diff_list, read_tmp_list, read_nodiff_list)
             proc_list.append([node_label, proc.id, len(proc.data),
                               count_diff_r, count_nodiff_r, count_tmp_r,
-                              count_diff_w, count_nodiff_w, count_tmp_w, proc.name])
+                              count_diff_w, count_nodiff_w, count_tmp_w,
+                              proc.name])
             node_label += 1
 
         elif count_diff_r == 0 and count_diff_w > 0 and count_tmp_r == 0:
-            make_red_node(graph, proc.id, proc.pid, name, node_label, read_nodiff_list)
+            make_red_node(graph, proc.id, proc.pid, name, node_label,
+                          read_nodiff_list)
             proc_list.append([node_label, proc.id, len(proc.data),
                              count_diff_r, count_nodiff_r, count_tmp_r,
-                             count_diff_w, count_nodiff_w, count_tmp_w, proc.name])
+                             count_diff_w, count_nodiff_w, count_tmp_w,
+                             proc.name])
             node_label += 1
 
         elif count_diff_r == 0 and count_diff_w > 0 and count_tmp_r > 0:
@@ -827,18 +859,20 @@ def main():
                                   node_label, read_tmp_list, read_nodiff_list)
             proc_list.append([node_label, proc.id, len(proc.data),
                              count_diff_r, count_nodiff_r, count_tmp_r,
-                             count_diff_w, count_nodiff_w, count_tmp_w, proc.name])
+                             count_diff_w, count_nodiff_w, count_tmp_w,
+                             proc.name])
             node_label += 1
 
-        elif count_diff_r > 0 and (count_nodiff_w > 0 or count_tmp_w > 0) and \
-             count_diff_w == 0 and count_tmp_w == 0:
-          if name != "md5sum":
-            make_blue_node(graph, proc.id, proc.pid, name, node_label,
-                           read_diff_list, read_tmp_list, read_nodiff_list)
-            proc_list.append([node_label, proc.id, len(proc.data),
-                             count_diff_r, count_nodiff_r, count_tmp_r,
-                             count_diff_w, count_nodiff_w, count_tmp_w, proc.name])
-            node_label += 1
+        elif (count_diff_r > 0 and (count_nodiff_w > 0 or count_tmp_w > 0) and
+              count_diff_w == 0 and count_tmp_w == 0):
+            if name != "md5sum":
+                make_blue_node(graph, proc.id, proc.pid, name, node_label,
+                               read_diff_list, read_tmp_list, read_nodiff_list)
+                proc_list.append([node_label, proc.id, len(proc.data),
+                                 count_diff_r, count_nodiff_r, count_tmp_r,
+                                 count_diff_w, count_nodiff_w, count_tmp_w,
+                                 proc.name])
+                node_label += 1
 
         elif count_diff_r > 0 and count_diff_w == 0 and count_tmp_w > 0:
             make_squared_blue_node(graph, proc.id, proc.pid, name,
@@ -846,34 +880,39 @@ def main():
                                    read_tmp_list, read_nodiff_list)
             proc_list.append([node_label, proc.id, len(proc.data),
                               count_diff_r, count_nodiff_r, count_tmp_r,
-                              count_diff_w, count_nodiff_w, count_tmp_w, proc.name])
+                              count_diff_w, count_nodiff_w, count_tmp_w,
+                              proc.name])
             node_label += 1
 
-        elif count_diff_r == 0 and count_tmp_r == 0 and count_diff_w == 0 \
-             and count_tmp_w == 0:
+        elif (count_diff_r == 0 and count_tmp_r == 0 and count_diff_w == 0
+              and count_tmp_w == 0):
             make_green_node(graph, proc.id, proc.pid, name, node_label,
                             read_nodiff_list)
             proc_list.append([node_label, proc.id, len(proc.data),
                               count_diff_r, count_nodiff_r, count_tmp_r,
-                              count_diff_w, count_nodiff_w, count_tmp_w, proc.name])
+                              count_diff_w, count_nodiff_w, count_tmp_w,
+                              proc.name])
             node_label += 1
 
-        # elif count_diff_r==0 and count_tmp_r>0 and count_diff_w==0 and count_tmp_w>0:
+        # # ~ elif (count_diff_r==0 and count_tmp_r>0 and
+        #       # ~ count_diff_w==0 and count_tmp_w>0):
         else:
             make_squared_green_node(graph, proc.id, proc.pid, name,
                                     node_label, read_diff_list,
                                     read_tmp_list, read_nodiff_list)
             proc_list.append([node_label, proc.id, len(proc.data),
                               count_diff_r, count_nodiff_r, count_tmp_r,
-                              count_diff_w, count_nodiff_w, count_tmp_w, proc.name])
+                              count_diff_w, count_nodiff_w, count_tmp_w,
+                              proc.name])
             node_label += 1
- 
+
     if args.graph:
         graph.render()
+        log_info(".png graph file created")
 
-###########
-####### WRITE OUTPUT FILES
-#####
+# ##########
+# ###### WRITE OUTPUT FILES
+# ####
 
     if capture_mode:
         # add total multi write processes for the first time
@@ -881,7 +920,8 @@ def main():
         write_temp_files(args.output_file, temp_commands)
     else:
         data = {}
-        with open(os.path.splitext(args.output_file)[0]+'_captured.json', 'w+') as wfile:
+        with open(os.path.splitext(args.output_file)[0] +
+                  '_captured.json', 'w+') as wfile:
             json.dump(data, wfile, indent=4, sort_keys=True)
 
     try:
@@ -893,6 +933,7 @@ def main():
     data['multiWrite_cmd'] = multi_commands
     with open(args.output_file, 'w+') as json_file:
         json.dump(data, json_file, indent=4, sort_keys=True)
+    log_info("files captured and classified")
 
 
 if __name__ == '__main__':

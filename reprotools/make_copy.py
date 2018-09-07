@@ -72,7 +72,9 @@ def check_arguments(pipe_com, input_arg_cmd):
             check = True
             i = 1
             while i < len(sys.argv):
-                if op.basename(pipeline_commad[i]) != op.basename(sys.argv[i]) and is_intstring(sys.argv[i]):
+                if (op.basename(pipeline_commad[i]) !=
+                        op.basename(sys.argv[i]) and
+                        is_intstring(sys.argv[i])):
                     check = False
                     break
                 i += 1
@@ -83,7 +85,7 @@ def make_copies(pipe_com, pipe_files, WD_ref, WD_dest, val):
     proc_name = op.basename(pipe_com.split(' ')[0])
     for file in pipe_files:
         from_path = op.join(WD_ref, file)
-        #Fname = proc_name + "_" + file
+        # ~ Fname = proc_name + "_" + file
         hash_object = hashlib.sha1(pipe_com.encode('utf-8'))
         hex_dig_file = hash_object.hexdigest()
         Fname = hex_dig_file + "_" + file
@@ -97,16 +99,17 @@ def make_copies(pipe_com, pipe_files, WD_ref, WD_dest, val):
                 subprocess.Popen(cp_command2, shell=True,
                                  stderr=subprocess.PIPE)
                 To_path = op.join(WD_dest, op.join('peds_temp', Fname2))
-            else: To_path = op.join(WD_dest, file)
-            
+            else:
+                To_path = op.join(WD_dest, file)
+
         elif val == 'multi-v':
             from_path = op.join(WD_ref, op.join('multi_version', Fname))
             To_path = op.join(WD_dest, file)
         elif val == 'persist':
             To_path = op.join(WD_dest, Fname)
             # ~ while op.exists(To_path):
-                # ~ Fname = proc_name + "_" + Fname
-                # ~ To_path = op.join(WD_dest, Fname)
+            # ~ Fname = proc_name + "_" + Fname
+            # ~ To_path = op.join(WD_dest, Fname)
         cp_command = "cp " + from_path + " " + To_path
         subprocess.Popen(cp_command, shell=True,
                          stderr=subprocess.PIPE)
@@ -147,7 +150,7 @@ def read_files(WD_test):
     except:
         total_temp_commands = {}
         total_multi_commands_commands = {}
-        
+
     return mw_cmd, commands, total_temp_commands, total_multi_commands_commands
 
 
@@ -157,7 +160,7 @@ def main(args=None):
     # single_cmd  refer to the single processes that create errors
     # mw_cmd refers to the multi-write processes that create errors
     mw_cmd, single_cmd, total_temp_commands, total_multi_commands = read_files(WD_test)
-    
+
     OS_release = platform.linux_distribution()[1]
     input_arg_cmd = sys.argv[0]
     current_script_name = __file__
@@ -169,7 +172,7 @@ def main(args=None):
         i += 1
     subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)
 
-######## ON FIRST CONDITION (CENTOS7  ######## iteratively
+# ####### ON FIRST CONDITION (CENTOS7  ######## iteratively
     # Capture single write error files
     WD_ref = op.join(WD_test, "centos6/subject1")
     WD_cur = op.join(WD_test, "centos7/subject1")
@@ -187,12 +190,12 @@ def main(args=None):
             make_copies(pipe_com2, pipe_files2, WD_ref, WD_cur, 'multi-v')
             break
 
-######## ON FIRST (CENTOS7) AND REF(CENTOS6) CONDITIONS  ######## one time
+# ####### ON FIRST (CENTOS7) AND REF(CENTOS6) CONDITIONS  ######## one time
     if OS_release == "7.5.1804":
         WD_temp = op.join(WD_test, "centos7/subject1")
         WD_temp_persist = op.join(WD_test, "centos7/subject1/peds_temp")
         WD_multi = op.join(WD_test, "centos7/subject1")
-        WD_multi_persist = op.join(WD_test, "centos7/subject1/multi_version")        
+        WD_multi_persist = op.join(WD_test, "centos7/subject1/multi_version")
 
     elif OS_release == "6.10":
         WD_temp = op.join(WD_test, "centos6/subject1")
@@ -204,14 +207,16 @@ def main(args=None):
     for pipe_com3, pipe_files3 in total_temp_commands.items():
         check3 = check_arguments(pipe_com3, input_arg_cmd)
         if check3 is True:
-            make_copies(pipe_com3, pipe_files3, WD_temp, WD_temp_persist, 'persist')
+            make_copies(pipe_com3, pipe_files3, WD_temp,
+                        WD_temp_persist, 'persist')
             break
 
     # Capture multi-write processes error
     for pipe_com2, pipe_files2 in total_multi_commands.items():
         check2 = check_arguments(pipe_com2, input_arg_cmd)
         if check2 is True:
-            make_copies(pipe_com2, pipe_files2, WD_multi, WD_multi_persist, 'persist')
+            make_copies(pipe_com2, pipe_files2, WD_multi,
+                        WD_multi_persist, 'persist')
             break
 
 
