@@ -36,10 +36,8 @@ def test_conditions_checksum_dict():
     assert(get_conditions_checksum_dict(conditions_dict,
                                         "test",
                                         "checksums-after.txt"))
-<<<<<<< HEAD
 
-=======
->>>>>>> 373ae2d4283c39628713b9961a81edd11b4e3d08
+
 @pytest.mark.skip(reason="Files produced currently do not match")
 def test_run_verify_files():
     command_line_string = ("verify_files test/conditions.txt "
