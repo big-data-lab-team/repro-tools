@@ -52,7 +52,7 @@ def test_run_verify_files():
     print(process.stderr.read().decode("utf-8"))
     assert(code == 0), "Command failed"
     assert filecmp.cmp("results.json",
-                       "test/differences-ref.json") 
+                       "test/differences-ref.json")
 
 
 def test_read_metrics():
