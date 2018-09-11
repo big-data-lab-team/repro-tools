@@ -240,8 +240,7 @@ def random_split_2D(lines, training_ratio, max_diff, sampling_method,
                       looking for another one".format(subject_id))
 
         if (file_index < n_files and subject_id < n_subject):
-            assert(file_index < n_files and subject_id < n_subject),
-                   "File index or subject index is out of bound!"  # This should never happen
+            assert(file_index < n_files and subject_id < n_subject), "File index or subject index is out of bound!"  # This should never happen
         for line in lines:
             if line[3] == file_index and line[1] == shuffled_subject[subject_id]:
                 # assert(line not in training), "File {0} of subject {1} is already in the training set".format(line[1], line[4]) # something wrong happened with the determination of subject_id and file_index
