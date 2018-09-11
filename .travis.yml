@@ -4,7 +4,12 @@ language: python
 
 python:
 - 3.5
-
+- 3.5-dev
+- 3.6
+- 3.6-dev
+- 3.7-dev
+- nightly
+- pypy-5.3.1
 
 jdk:
   - openjdk7
@@ -28,10 +33,9 @@ script:
 - export SPARK_HOME=`pwd`/spark-2.3.1-bin-hadoop2.7
 - export PYTHONPATH=$SPARK_HOME/python:$PYTHONPATH
 - export PYTHONPATH=$SPARK_HOME/python/lib/py4j-0.10.7-src.zip:$PYTHONPATH
+- pycodestyle --max-line-length=80 *.py */*.py
 - coverage run --source repro-tools setup.py pytest
-  
-after_success:
-- bash <(curl -s https://codecov.io/bash)
+
 after_success:
 - coveralls
 
