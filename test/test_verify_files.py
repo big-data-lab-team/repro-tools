@@ -9,7 +9,7 @@ from reprotools.verify_files import read_file_contents
 from reprotools.verify_files import get_conditions_dict
 from reprotools.verify_files import get_conditions_checksum_dict
 
-@pytest.mark.skip(reason="Files produced currently do not match")
+#@pytest.mark.skip(reason="Files produced currently do not match")
 def test_checksum():
     assert checksum("test/condition4") == "45a021d9910102aac726dd222a898334"
 
@@ -38,10 +38,10 @@ def test_conditions_checksum_dict():
                                         "checksums-after.txt"))
 
 
-@pytest.mark.skip(reason="Files produced currently do not match")
+#@pytest.mark.skip(reason="Files produced currently do not match")
 def test_run_verify_files():
     command_line_string = ("verify_files test/conditions.txt "
-                           "fileDiff  results -c checksums-after.txt -e"
+                           "results.json -e"
                            " test/exclude_items.txt")
     process = subprocess.Popen(command_line_string,
                                shell=True,
@@ -51,8 +51,8 @@ def test_run_verify_files():
     print(process.stdout.read().decode("utf-8"))
     print(process.stderr.read().decode("utf-8"))
     assert(code == 0), "Command failed"
-    assert filecmp.cmp("results/fileDiff_differences_subject_total.txt",
-                       "test/differences-ref.txt") 
+    assert filecmp.cmp("results.json",
+                       "test/differences-ref.json") 
 
 
 def test_read_metrics():
