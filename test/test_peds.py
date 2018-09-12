@@ -6,7 +6,7 @@ import os
 def test_peds():
     command_line = ("peds "
                     "trace_test.sqlite3 "
-                    "ref_differences_subject_total.txt "
+                    "ref_diff_file.json "
                     "-i toremove.txt "
                     "-g graph.dot "
                     "-o commands.json "
@@ -68,7 +68,7 @@ def test_capture_second_cond():
 
 def test_verify_files_running():
     command_line = ("verify_files ./test/peds_test_data/conditions.txt "
-                    "test ./test/peds_test_data "
+                    "./test/peds_test_data/test_diff_file.json "
                     "-e ./test/peds_test_data/exclude_items.txt")
     process = subprocess.Popen(command_line,
                                shell=True,
@@ -78,8 +78,8 @@ def test_verify_files_running():
     print(process.stdout.read().decode("utf-8"))
     print(process.stderr.read().decode("utf-8"))
     assert(not code), "Command failed"
-    assert(open("./test/peds_test_data/ref_differences_subject_total.txt", "r").read()
-           == open("./test/peds_test_data/test_differences_subject_total.txt", "r").read())
+    assert(open("./test/peds_test_data/ref_diff_file.json", "r").read()
+           == open("./test/peds_test_data/test_diff_file.json", "r").read())
 
 def test_auto_peds():
     command = ("auto_peds ./test/peds_test_data "

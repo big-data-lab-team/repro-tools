@@ -200,14 +200,14 @@ def main(args=None):
         pipeline_executor(descriptor_cond2, invocation_cond2)  # CENTOS6
 
         # (2) Get the error matrix file
-        verify_command = 'verify_files ' + verify_cond + ' test ' + \
-                         verify_output + \
+        verify_command = 'verify_files ' + verify_cond + ' ' + \
+                         op.join(verify_output, 'test_diff_file.json') + \
                          " -e ./test/peds_test_data/exclude_items.txt"
         bash_executor(os.getcwd(), verify_command)
 
         # (3) Get total multi_write and temp commands
         peds_command = "peds " + sqlite_db + " " + \
-                       " test_differences_subject_total.txt" + \
+                       " test_diff_file.json" + \
                        " -o " + peds_result + " -c " + capture_files
         bash_executor(peds_data_path, peds_command)
 
@@ -257,14 +257,14 @@ def main(args=None):
         pipeline_executor(descriptor, invocation)
 
         # (2) Running VerifyFiles script to make error matrix file
-        verify_command = 'verify_files ' + verify_cond + ' test ' + \
-                         verify_output + \
+        verify_command = 'verify_files ' + verify_cond + ' ' + \
+                         op.join(verify_output, 'test_diff_file.json') + \
                          " -e ./test/peds_test_data/exclude_items.txt"
         bash_executor(os.getcwd(), verify_command)
 
         # (3) Classification of processes, running peds script
         peds_command = "peds " + sqlite_db + " " + \
-                       " test_differences_subject_total.txt" + \
+                       " test_diff_file.json" + \
                        " -o " + peds_result + " -c " + capture_files
         bash_executor(peds_data_path, peds_command)
         json_file_editor(peds_capture_output, '', 'None')

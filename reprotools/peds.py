@@ -6,6 +6,7 @@ import argparse
 import sqlite3
 import json
 import logging
+import sys
 import pandas as pd
 from sqlite3 import Error
 from graphviz import Digraph as Di
@@ -484,12 +485,18 @@ def write_temp_files(output_file, temp_commands):
 def error_matrix_format(read_matrix_file):
     log_info("read error matrix file between two conditions..")
     with open(read_matrix_file, 'r') as pfiles:
-        lines = pfiles.readlines()
+        data = json.load(pfiles)
+    dat = data["centos6 vs centos7"]["files"]
     pipeline_files = []
-    for line in lines[1:]:
-        splited_line = line.split('\t')
-        pipeline_files.append(splited_line[0].replace(' ', '') + " " +
-                              str(int(splited_line[1])) + os.linesep)
+    for file_name, file_dic in dat.items():
+        # ~ print(file_dic["subjects"]["subject1"]["checksum"])
+        pipeline_files.append(file_name + " " + str(file_dic["subjects"]["subject1"]["checksum"]) + os.linesep)
+    #print(pipeline_files)
+    #sys.exit("EXIT NOW !")
+    # ~ for line in lines[1:]:
+        # ~ splited_line = line.split('\t')
+        # ~ pipeline_files.append(splited_line[0].replace(' ', '') + " " +
+                              # ~ str(int(splited_line[1])) + os.linesep)
     return pipeline_files
 
 
