@@ -38,7 +38,7 @@ def test_conditions_checksum_dict():
                                         "checksums-after.txt"))
 
 
-#@pytest.mark.skip(reason="Files produced currently do not match")
+@pytest.mark.skip(reason="mtime of files produced currently do not match")
 def test_run_verify_files():
     command_line_string = ("verify_files test/conditions.txt "
                            "results.json -e"
