@@ -119,43 +119,38 @@ def read_files(WD_test):
     try:
         with open(op.join(WD_test, 'commands.json'), 'r') as cfile:
             data = json.load(cfile)
-            try:
+            if data["total_commands"]:
                 command_dic = data["total_commands"]
                 commands = csv_parser(command_dic)
-            except ValueError:
-                print("total_commands property does not exist in the file")
+            else:
                 commands = {}
-            try:
-                # ~ if data["total_commands_multi"]:
+            if data["total_commands_multi"]:
                 multi_write = data["total_commands_multi"]
                 mw_cmd = csv_parser(multi_write)
-            except ValueError:
-                print("total_commands_multi property does not exist"
-                      "in the file")
+            else:
                 mw_cmd = {}
     except IOError:
-        print("Commands.json file does not exist")
+        pass
+    else:
         mw_cmd = {}
         commands = {}
 
     try:
         with open(op.join(WD_test, 'commands_captured.json'), 'r') as c_file:
             data = json.load(c_file)
-            try:
+            if data["total_temp_proc"]:
                 command_dic_temp = data["total_temp_proc"]
                 total_temp_commands = csv_parser(command_dic_temp)
-            except ValueError:
-                print("total_temp_proc property does not exist in the file")
+            else:
                 total_temp_commands = {}
-            try:
+            if data["total_multi_write_proc"]:
                 command_dic_multi = data["total_multi_write_proc"]
                 total_multi_commands_commands = csv_parser(command_dic_multi)
-            except ValueError:
-                print("total_multi_write_proc property does not exist "
-                      "in the file")
+            else:
                 total_multi_commands_commands = {}
     except IOError:
-        print("commands_captured.json file does not exist")
+        pass
+    else:
         total_temp_commands = {}
         total_multi_commands_commands = {}
 
