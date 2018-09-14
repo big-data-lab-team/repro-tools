@@ -495,13 +495,15 @@ def error_matrix_format(read_matrix_file):
     pipeline_files = []
     for file_name, file_dic in dat.items():
         # ~ print(file_dic["subjects"]["subject1"]["checksum"])
-        pipeline_files.append(file_name + " " + str(file_dic["subjects"]["subject1"]["checksum"]) + os.linesep)
-    #print(pipeline_files)
-    #sys.exit("EXIT NOW !")
+        pipeline_files.append(file_name + " " +
+                              str(file_dic["subjects"]["subject1"]["checksum"])
+                              + os.linesep)
+    # print(pipeline_files)
+    # sys.exit("EXIT NOW !")
     # ~ for line in lines[1:]:
         # ~ splited_line = line.split('\t')
         # ~ pipeline_files.append(splited_line[0].replace(' ', '') + " " +
-                              # ~ str(int(splited_line[1])) + os.linesep)
+        #                      # ~ str(int(splited_line[1])) + os.linesep)
     return pipeline_files
 
 
@@ -518,6 +520,7 @@ def log_info(message):
 def log_error(message):
     logging.error("ERROR: " + message)
     sys.exit(1)
+
 
 def main():
     parser = argparse.ArgumentParser(description='Classification of the nodes'
@@ -781,7 +784,8 @@ def main():
                             with open(args.output_file, 'r') as rfile:
                                 data = json.load(rfile)
                                 multi_commands = data["multiWrite_cmd"]
-                        except:
+                        except IOError:
+                            print("commands_captured.json file does not exist")
                             multi_commands = {}
                         var = True
                         for key2, val in multi_commands.items():
@@ -941,7 +945,8 @@ def main():
     try:
         with open(args.output_file, 'r') as rfile:
             data = json.load(rfile)
-    except:
+    except IOError:
+        print("commands.json file does not exist")
         data = {}
     data['certain_cmd'] = command_lines
     data['multiWrite_cmd'] = multi_commands

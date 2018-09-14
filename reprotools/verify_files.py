@@ -325,7 +325,8 @@ def n_differences_across_subjects(conditions_dict,
                             diff_value = float(run_command(metric['command'],
                                                file_name, c, d, subject,
                                                root_dir))
-                            diff_files[file_name]['subjects'][subject][metric['name']] = diff_value
+                            (diff_files[file_name]['subjects'][subject]
+                             [metric['name']]) = diff_value
                             diff_files[file_name]['sum'][metric['name']] += (
                                                                   diff_value)
                         except ValueError as e:
@@ -429,7 +430,8 @@ def get_conditions_checksum_dict(conditions_dict, root_dir,
     conditions = conditions_dict.keys()
     subjects = list(conditions_dict.values())[0].keys()
     for condition in conditions:
-        conditions_checksum_dict[condition] = get_condition_checksum_dict(condition, root_dir, subjects, checksum_after_file_path)
+        conditions_checksum_dict[condition] = get_condition_checksum_dict(
+            condition, root_dir, subjects, checksum_after_file_path)
     return conditions_checksum_dict
 
 
@@ -439,7 +441,9 @@ def get_condition_checksum_dict(condition, root_dir, subjects,
                                 checksum_after_file_path):
     condition_checksum_dict = {}
     for subject in subjects:
-        condition_checksum_dict[subject] = read_checksum_from_file(os.path.join(root_dir, condition, subject, checksum_after_file_path))
+        condition_checksum_dict[subject] = read_checksum_from_file(
+            os.path.join(root_dir, condition, subject,
+                         checksum_after_file_path))
     return condition_checksum_dict
 
 

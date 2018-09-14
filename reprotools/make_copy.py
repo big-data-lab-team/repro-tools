@@ -122,15 +122,19 @@ def read_files(WD_test):
             try:
                 command_dic = data["total_commands"]
                 commands = csv_parser(command_dic)
-            except:
+            except ValueError:
+                print("total_commands property does not exist in the file")
                 commands = {}
             try:
                 # ~ if data["total_commands_multi"]:
                 multi_write = data["total_commands_multi"]
                 mw_cmd = csv_parser(multi_write)
-            except:
+            except ValueError:
+                print("total_commands_multi property does not exist"
+                      "in the file")
                 mw_cmd = {}
-    except:
+    except IOError:
+        print("Commands.json file does not exist")
         mw_cmd = {}
         commands = {}
 
@@ -140,14 +144,18 @@ def read_files(WD_test):
             try:
                 command_dic_temp = data["total_temp_proc"]
                 total_temp_commands = csv_parser(command_dic_temp)
-            except:
+            except ValueError:
+                print("total_temp_proc property does not exist in the file")
                 total_temp_commands = {}
             try:
                 command_dic_multi = data["total_multi_write_proc"]
                 total_multi_commands_commands = csv_parser(command_dic_multi)
-            except:
+            except ValueError:
+                print("total_multi_write_proc property does not exist "
+                      "in the file")
                 total_multi_commands_commands = {}
-    except:
+    except IOError:
+        print("commands_captured.json file does not exist")
         total_temp_commands = {}
         total_multi_commands_commands = {}
 
@@ -159,7 +167,8 @@ def main(args=None):
     WD_test = op.join(op.dirname(op.abspath(path)), '../test/peds_test_data')
     # single_cmd  refer to the single processes that create errors
     # mw_cmd refers to the multi-write processes that create errors
-    mw_cmd, single_cmd, total_temp_commands, total_multi_commands = read_files(WD_test)
+    mw_cmd, single_cmd, total_temp_commands, total_multi_commands = (
+                                                    read_files(WD_test))
 
     OS_release = platform.linux_distribution()[1]
     input_arg_cmd = sys.argv[0]

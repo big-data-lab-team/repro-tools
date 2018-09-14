@@ -123,7 +123,9 @@ def get_number_of_files_to_training(n_files, n_subject, training_ratio,
                 else:
                     n_last_file[i] = 0
             else:
-                n_last_file[i] = rn.randrange(int(round(2 * training_ratio * n_files)) - n_files, n_files, 1)
+                n_last_file[i] = rn.randrange(
+                    int(round(2 * training_ratio * n_files))
+                    - n_files, n_files, 1)
 
         elif sampling_method == "RFNT-S":
             if training_ratio >= 1/3.0:
@@ -290,12 +292,14 @@ def random_split_2D(lines, training_ratio, max_diff, sampling_method,
             # downsizing the training set
             if effective_training_ratio > training_ratio:
                 while len(training) > target_training_size:
-                    last_sub_fileid, ran_subject = balance_training(training, applicable_subjects_in_training)
+                    last_sub_fileid, ran_subject = balance_training(
+                        training, applicable_subjects_in_training)
                     # to respect the largest-a it is not allowed to remove
                     # those files which file-id is less than the minimum
                     # required for each subject
                     if last_sub_fileid == a:
-                        last_sub_fileid, ran_subject = balance_training(training, applicable_subjects_in_training)
+                        last_sub_fileid, ran_subject = balance_training(
+                            training, applicable_subjects_in_training)
                     else:
                         target_sub = list(filter(lambda x: x[3] ==
                                                  last_sub_fileid,
@@ -310,14 +314,16 @@ def random_split_2D(lines, training_ratio, max_diff, sampling_method,
         # downsizing the training set
         elif effective_training_ratio > training_ratio:
             while len(training) > target_training_size:
-                last_sub_fileid, ran_subject = balance_training(training, applicable_subjects_in_training)
+                last_sub_fileid, ran_subject = balance_training(
+                    training, applicable_subjects_in_training)
                 # To respect the fact of having at least one file
                 # for each subject
                 if last_sub_fileid == min(map(lambda x: x[3],
                                           list(filter(lambda y: y[1] ==
                                                       ran_subject[0],
                                                       lines)))):
-                    last_sub_fileid, ran_subject = balance_training(training, applicable_subjects_in_training)
+                    last_sub_fileid, ran_subject = balance_training(
+                        training, applicable_subjects_in_training)
                 else:
                     target_sub = list(filter(lambda x: x[3] ==
                                              last_sub_fileid,
@@ -444,7 +450,7 @@ def main(args=None):
         seed = int(results.seed_number)
         rn.seed(seed)
         np.random.seed(seed)
-    except:
+    except ValueError:
         print("No seed")
 
     conf = SparkConf().setAppName("predict").setMaster("local")
@@ -469,7 +475,7 @@ def main(args=None):
         try:
             als.setSeed(seed)
             model = als.fit(training_df)
-        except:
+        except ValueError:
             model = als.fit(training_df)
         latentFactors(model, results.sampling_method, results.dataset,
                       results.approach, results.training_ratio)
@@ -496,7 +502,7 @@ def main(args=None):
         try:
             als.setSeed(seed)
             model = als.fit(training_fin)
-        except:
+        except ValueError:
             model = als.fit(training_fin)
         latentFactors(model, results.sampling_method, results.dataset,
                       results.approach, results.training_ratio)

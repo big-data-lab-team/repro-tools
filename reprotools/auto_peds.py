@@ -25,6 +25,7 @@ import docker
 # (4) Modification step to fix the detected processes with error artificially
 # (5) if command_line list is empty: break; else go step (1)"
 
+
 def log_info(message):
     logging.info("INFO: " + message)
 
