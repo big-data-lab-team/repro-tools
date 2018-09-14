@@ -9,6 +9,7 @@ import re
 import os
 import os.path as op
 from shutil import copyfile
+import logging
 import json
 import boutiques
 import docker
@@ -23,6 +24,9 @@ import docker
 #    to get a command_line list include all the classified process
 # (4) Modification step to fix the detected processes with error artificially
 # (5) if command_line list is empty: break; else go step (1)"
+
+def log_info(message):
+    logging.info("INFO: " + message)
 
 
 def which(exe=None):
@@ -76,8 +80,13 @@ def make_modify_script(peds_data_path, command_dic):
     for command, files in command_dic.items():
         pipeline_command = command.split('\x00')[0]
         # Make a copy of process to backup folder if doesn't exist
-        backup_path = op.join(peds_data_path,
-                              'backup_scripts', pipeline_command)
+        if pipeline_command.split('/')[0] == '':
+            pipeline_command_new = pipeline_command[1:]
+            backup_path = op.join(peds_data_path,
+                                  'backup_scripts', pipeline_command_new)
+        else:
+            backup_path = op.join(peds_data_path,
+                                  'backup_scripts', pipeline_command)
         cmd_file = open(op.join(peds_data_path, 'cmd.sh'), 'w+')
         cmd_file.write('#!/usr/bin/env bash \n')
 
@@ -173,6 +182,7 @@ def main(args=None):
     parser.add_argument("-i2", "--invocation_cond2",
                         help="Boutiques invocation for the second condition")
 
+    logging.basicConfig(format='%(asctime)s:%(message)s', level=logging.INFO)
     args = parser.parse_args()
     descriptor = args.descriptor
     invocation = args.invocation
@@ -204,13 +214,14 @@ def main(args=None):
                          op.join(verify_output, 'test_diff_file.json') + \
                          " -e ./test/peds_test_data/exclude_items.txt"
         bash_executor(os.getcwd(), verify_command)
+        log_info("Verify_files has done!")
 
         # (3) Get total multi_write and temp commands
         peds_command = "peds " + sqlite_db + " " + \
                        " test_diff_file.json" + \
                        " -o " + peds_result + " -c " + capture_files
         bash_executor(peds_data_path, peds_command)
-
+        log_info("peds has done!")
         # (4) Capturing multi-write process in the ref condition (centos6)
         # and all Temporary files in both conditions (Just One time)
         with open(peds_capture_output, 'r') as tmp_cmd:
@@ -222,9 +233,13 @@ def main(args=None):
 
             if condition == 'first':
                 modify_docker_image(descriptor, peds_data_path, tag_name)
+                log_info("Docker is modified on the First condition "
+                         "to capture all the temporaty files")
             else:
                 modify_docker_image(descriptor_cond2, peds_data_path,
                                     tag_name_cond2)
+                log_info("Docker is modified on the Second condition "
+                         "to capture all the temporaty files")
 
         if data["total_multi_write_proc"]:
             tag_name += 1
@@ -232,17 +247,23 @@ def main(args=None):
             make_modify_script(peds_data_path, data["total_multi_write_proc"])
             if condition == 'first':
                 modify_docker_image(descriptor, peds_data_path, tag_name)
+                log_info("Docker is modified on the First condition "
+                         "to capture all the files with multi-writes")
             else:
                 modify_docker_image(descriptor_cond2, peds_data_path,
                                     tag_name_cond2)
+                log_info("Docker is modified on the Second condition "
+                         "to capture all the files with multi-writes")
 
         # (4-1) Execute ref condition pipeline to persist the temporary
         # and mnulti-write process in the second condition
         json_file_editor(output_peds_file, '', 'None')
         if condition == 'first':
             pipeline_executor(descriptor, invocation)  # CENTOS7
+            log_info("all the files are captured on the First condition")
         else:
             pipeline_executor(descriptor_cond2, invocation_cond2)  # CENTOS6
+            log_info("all the files are captured on the Second condition")
 
         backup_path = op.join(peds_data_path, 'backup_scripts')
         for f in os.listdir(backup_path):
@@ -255,20 +276,22 @@ def main(args=None):
     while True:
         # (1) Start the Pipeline execution using bosh
         pipeline_executor(descriptor, invocation)
+        log_info("Pipeline executed, "
+                 "going to find new process that create error!")
 
         # (2) Running VerifyFiles script to make error matrix file
         verify_command = 'verify_files ' + verify_cond + ' ' + \
                          op.join(verify_output, 'test_diff_file.json') + \
                          " -e ./test/peds_test_data/exclude_items.txt"
         bash_executor(os.getcwd(), verify_command)
-
+        log_info("Verify_files has done!")
         # (3) Classification of processes, running peds script
         peds_command = "peds " + sqlite_db + " " + \
                        " test_diff_file.json" + \
                        " -o " + peds_result + " -c " + capture_files
         bash_executor(peds_data_path, peds_command)
         json_file_editor(peds_capture_output, '', 'None')
-
+        log_info("peds has done!")
         # Check if there exist processes that create error
         with open(output_peds_file, 'r') as cmd_json:
             data = json.load(cmd_json)
@@ -278,6 +301,9 @@ def main(args=None):
             tag_name += 1
             make_modify_script(peds_data_path, data["multiWrite_cmd"])
             modify_docker_image(descriptor, peds_data_path, tag_name)
+            log_info("Docker is modified on the Reference condition"
+                     "to fix process with multiple-writes, "
+                     "going to the next iteration")
 
         if data["certain_cmd"]:
             # (4) Start the modification through docker image
@@ -290,7 +316,12 @@ def main(args=None):
             # commit the container with a new image name, e.g., peds_1234
             # and modify the Boutiques descriptor to use the new image
             modify_docker_image(descriptor, peds_data_path, tag_name)
+            log_info("Docker is modified on the Reference condition"
+                     "to fix process that create errors with certain cmd, "
+                     "goint to the next iteration")
+
         if not (data["certain_cmd"] or data["multiWrite_cmd"]):
+            log_info("there are no error in the pipeline!")
             # print out the final recognized processes
             update_peds_json(total_mutli_write, output_peds_file, "multi")
             update_peds_json(total_commands, output_peds_file, "single")

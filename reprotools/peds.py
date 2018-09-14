@@ -414,14 +414,19 @@ def write_to_file(write_diff_list, read_diff_list, read_tmp_list,
 
 def path_parser(path):
     count = 0
+    check = False
     for f in path.split('/'):
         # if f == "exec":
         if f == "subject1":
+            check = True
             count += 1
             break
         else:
             count += 1
-    splited_path = "/"+"/".join(path.split('/')[count:])
+    if check is True:
+        splited_path = "/" + "/".join(path.split('/')[count:])
+    else:
+        splited_path = "/" + path
     return str(os.path.abspath(splited_path))
 
 
@@ -624,6 +629,8 @@ def main():
                     break
             if tn is False:
                 continue
+            # data 'path' is from sqlite db
+            # n 'path' is from verify_files
             data_parsed_name = path_parser(str(data[1]))
             # check if file with WRITE mode
             if data[2] == 2:
@@ -637,13 +644,13 @@ def main():
                 for diff in pipeline_files:
                     n = diff.split(" ")
                     check_temp_file = False
-                    file_name = str("/" + n[0])
+                    file_name = path_parser(str(n[0]))
                     if 'peds_temp/' in n[0] and not capture_mode:
                         check_temp_file = True
                         temp_folder = '/peds_temp/'
                         temp_file_name = n[0].replace(
                                          'peds_temp/', '').split('_')
-                        file_name = "/" + '_'.join(temp_file_name[1:])
+                        file_name = path_parser('_'.join(temp_file_name[1:]))
                     if int(n[1][:-1]) != 0 and \
                        file_name == data_parsed_name:
                         if check_temp_file:
@@ -699,13 +706,13 @@ def main():
                 for diff2 in pipeline_files:
                     n = diff2.split(" ")
                     check_temp_file = False
-                    file_name = str("/" + n[0])
+                    file_name = path_parser(str(n[0]))
                     if 'peds_temp/' in n[0] and not capture_mode:
                         check_temp_file = True
                         temp_folder = '/peds_temp/'
                         temp_file_name = n[0].replace(
                                          'peds_temp/', '').split('_')
-                        file_name = "/" + '_'.join(temp_file_name[1:])
+                        file_name = path_parser('_'.join(temp_file_name[1:]))
                     if (int(n[1][:-1]) != 0 and
                             file_name == data_parsed_name):
                         if check_temp_file:

@@ -123,14 +123,15 @@ def get_number_of_files_to_training(n_files, n_subject, training_ratio,
                 else:
                     n_last_file[i] = 0
             else:
-                n_last_file[i] = rn.randrange(int(round(2*training_ratio*n_files))-n_files, n_files, 1)
+                n_last_file[i] = rn.randrange(int(round(2 * training_ratio * n_files)) - n_files, n_files, 1)
 
         elif sampling_method == "RFNT-S":
             if training_ratio >= 1/3.0:
                 if training_ratio >= 2/3.0:
                     b = n_files
                     a = 0
-                    if rn.uniform(0, 1) <= 3 * (1-training_ratio):  # with probability 3(1-alpha)
+                    # with probability 3(1-alpha)
+                    if rn.uniform(0, 1) <= 3 * (1-training_ratio):
                         n_last_file[i] = np.random.triangular(a, b, n_files)
                     else:
                         n_last_file[i] = n_files
@@ -141,7 +142,8 @@ def get_number_of_files_to_training(n_files, n_subject, training_ratio,
             else:
                 a = 0
                 b = 0
-                if rn.uniform(0, 1) <= 3 * training_ratio:  # with probability 3(alpha)
+                # with probability 3(alpha)
+                if rn.uniform(0, 1) <= 3 * training_ratio:
                     n_last_file[i] = np.random.triangular(a, b, n_files)
                 else:
                     n_last_file[i] = 0
@@ -154,7 +156,8 @@ def get_number_of_files_to_training(n_files, n_subject, training_ratio,
             else:
                 a = 0
                 b = 0
-                if rn.uniform(0, 1) <= 3 * training_ratio:  # with probability 3(alpha)
+                # with probability 3(alpha)
+                if rn.uniform(0, 1) <= 3 * training_ratio:
                     n_last_file[i] = np.random.triangular(a, b, n_files)
                 else:
                     n_last_file[i] = 0
@@ -189,16 +192,21 @@ def random_split_2D(lines, training_ratio, max_diff, sampling_method,
 
     print(" shuffled list of subjects:", shuffled_subject)
     target_training_size = training_ratio * len(lines)
-    for line in lines:  # add the lines corresponding to the first file or the first subject
+    # add the lines correspondingto the first file or the first subject
+    for line in lines:
         if line[3] == 0 or line[1] == first_ran_subject:
-            assert(line not in training)  # something wrong happened with the determination of subject_id and file_index
+            # something wrong happened with the determination of
+            # subject_id and file_index
+            assert(line not in training)
             training.append(line)
             write_matrix(line, training_matrix)
     subject_id = 1
     file_index = 0
     # used in RS sampling method in the while loop below
     next_file = []
-    n_last_file = []  # in RFNU mode records the number of selected files for the subject according to the formula (to be used for semetrycal purpose
+    # in RFNU mode records the number of selected files for the subject
+    # according to the formula (to be used for semetrycal purpose
+    n_last_file = []
     p = 0
     for c in range(0, n_subject):
         n_last_file.append(0)
@@ -207,7 +215,9 @@ def random_split_2D(lines, training_ratio, max_diff, sampling_method,
         next_file.append(1)
     while(len(training) < target_training_size):
         n_line_add = 0
-        assert(sampling_method in ["random-unreal", "columns", "rows", "RS", "RFNU", "RFNT-L", "RFNT-S"]), "Unknown sampling method: {0}".format(sampling_method)
+        assert(sampling_method in ["random-unreal", "columns", "rows", "RS",
+                                   "RFNU", "RFNT-L", "RFNT-S"]), (
+               "Unknown sampling method: {0}".format(sampling_method))
 
         if sampling_method in {"RFNU", "RFNT-L", "RFNT-S"}:
             n_last_file, a = get_number_of_files_to_training(
@@ -240,10 +250,16 @@ def random_split_2D(lines, training_ratio, max_diff, sampling_method,
                       looking for another one".format(subject_id))
 
         if (file_index < n_files and subject_id < n_subject):
-            assert(file_index < n_files and subject_id < n_subject), "File index or subject index is out of bound!"  # This should never happen
+            # This should never happen
+            assert(file_index < n_files and subject_id < n_subject), (
+                   "File index or subject index is out of bound!")
         for line in lines:
-            if line[3] == file_index and line[1] == shuffled_subject[subject_id]:
-                # assert(line not in training), "File {0} of subject {1} is already in the training set".format(line[1], line[4]) # something wrong happened with the determination of subject_id and file_index
+            if (line[3] == file_index and
+               line[1] == shuffled_subject[subject_id]):
+                # assert(line not in training), "File {0} of subject {1}
+                # is already in the training set".format(line[1], line[4])
+                # something wrong happened with the determination
+                # of subject_id and file_index
                 if line not in training:
                     training.append(line)
                     write_matrix(line, training_matrix)
@@ -255,58 +271,95 @@ def random_split_2D(lines, training_ratio, max_diff, sampling_method,
         if line not in training:
             test.append(line)
     effective_training_ratio = len(training)/(float(len(lines)))
-    print("Training ratio:\n  * Target: {0}\n  * Effective: {1}".format(training_ratio, effective_training_ratio))
+    print("Training ratio:\n  * Target: {0}\n  * Effective: {1}"
+          .format(training_ratio, effective_training_ratio))
     if (sampling_method not in ("RFNU", "RFNT-L", "RFNT-S")):
-        assert(abs(effective_training_ratio-training_ratio) < max_diff), "Effective and target training ratios differed by more than {0}".format(max_diff)  # TODO: think about this threshold
-    else:  # To keep the max difference of effective and target training ratios to 0.01
+        assert(abs(effective_training_ratio-training_ratio) < max_diff), (
+               "Effective and target training ratios differed by more than {0}"
+               .format(max_diff))  # TODO: think about this threshold
+    # To keep the max difference of effective
+    # and target training ratios to 0.01
+    else:
         subjects_in_training = []
         subjects_in_training = list(set(map(lambda s: s[1], training)))
         applicable_subjects_in_training = []
         applicable_subjects_in_training = subjects_in_training
         applicable_subjects_in_training.remove(first_ran_subject)
-        if abs(effective_training_ratio-training_ratio) > max_diff and sampling_method == "RFNT-L":
-            if effective_training_ratio > training_ratio:  # downsizing the training set
+        if (abs(effective_training_ratio-training_ratio) >
+                max_diff and sampling_method == "RFNT-L"):
+            # downsizing the training set
+            if effective_training_ratio > training_ratio:
                 while len(training) > target_training_size:
                     last_sub_fileid, ran_subject = balance_training(training, applicable_subjects_in_training)
-                    if last_sub_fileid == a:  # to respect the largest-a it is not allowed to remove those files which file-id is less than the minimum required for each subject
+                    # to respect the largest-a it is not allowed to remove
+                    # those files which file-id is less than the minimum
+                    # required for each subject
+                    if last_sub_fileid == a:
                         last_sub_fileid, ran_subject = balance_training(training, applicable_subjects_in_training)
                     else:
-                        target_sub = list(filter(lambda x: x[3] == last_sub_fileid, list(filter(lambda y: y[1] == ran_subject[0], training))))
+                        target_sub = list(filter(lambda x: x[3] ==
+                                                 last_sub_fileid,
+                                                 list(filter(lambda y: y[1] ==
+                                                             ran_subject[0],
+                                                             training))))
                         test.append(target_sub[0])
                         training.remove(target_sub[0])
             else:  # oversampling the training set
-                oversampling_training(training, test, target_training_size, lines, n_subject)
-
-        elif effective_training_ratio > training_ratio:  # downsizing the training set
+                oversampling_training(training, test, target_training_size,
+                                      lines, n_subject)
+        # downsizing the training set
+        elif effective_training_ratio > training_ratio:
             while len(training) > target_training_size:
                 last_sub_fileid, ran_subject = balance_training(training, applicable_subjects_in_training)
-                if last_sub_fileid == min(map(lambda x: x[3], list(filter(lambda y: y[1] == ran_subject[0], lines)))):  # To respect the fact of having at least one file for each subject
+                # To respect the fact of having at least one file
+                # for each subject
+                if last_sub_fileid == min(map(lambda x: x[3],
+                                          list(filter(lambda y: y[1] ==
+                                                      ran_subject[0],
+                                                      lines)))):
                     last_sub_fileid, ran_subject = balance_training(training, applicable_subjects_in_training)
                 else:
-                    target_sub = list(filter(lambda x: x[3] == last_sub_fileid, filter(lambda y: y[1] == ran_subject[0], training)))
+                    target_sub = list(filter(lambda x: x[3] ==
+                                             last_sub_fileid,
+                                             filter(lambda y: y[1] ==
+                                             ran_subject[0], training)))
                     test.append(target_sub[0])
                     training.remove(target_sub[0])
-        elif effective_training_ratio < training_ratio:  # oversampling the training set
-            oversampling_training(training, test, target_training_size, lines, n_subject)
+        # oversampling the training set
+        elif effective_training_ratio < training_ratio:
+            oversampling_training(training, test, target_training_size,
+                                  lines, n_subject)
         final_effective_training_ratio = len(training)/(float(len(lines)))
-        print ("Modified_effective_training_ratio: ", final_effective_training_ratio)
+        print ("Modified_effective_training_ratio: ",
+               final_effective_training_ratio)
         print("Updated training size is {0}".format(len(training)))
     return training, test
 
 
-def balance_training(training, applicable_subjects_in_training):  # Get the maximum file-id for the random selected subject in the current training set
+# Get the maximum file-id for the random selected subject
+# in the current training set
+def balance_training(training, applicable_subjects_in_training):
     random_subject = rn.sample(applicable_subjects_in_training, 1)
-    last_sub_fileid = max(map(lambda x: x[3], list(filter(lambda y: y[1] == random_subject[0], training))))
+    last_sub_fileid = max(map(lambda x: x[3],
+                          list(filter(lambda y: y[1] ==
+                                      random_subject[0], training))))
     return(last_sub_fileid, random_subject)
 
 
-def oversampling_training(training, test, target_training_size, lines, n_subject):
+def oversampling_training(training, test, target_training_size, lines,
+                          n_subject):
     while len(training) < target_training_size:
         ran_subject_id = randrange(1, n_subject)
-        last_sub_fileid = max(map(lambda x: x[3], list(filter(lambda y: y[1] == ran_subject_id, training))))
+        last_sub_fileid = max(map(lambda x: x[3],
+                              list(filter(lambda y: y[1] ==
+                                          ran_subject_id, training))))
         next_sub_fileid = last_sub_fileid + 1
-        if next_sub_fileid < max(map(lambda x: x[3], list(filter(lambda y: y[1] == ran_subject_id, lines)))):
-            target_sub = list(filter(lambda x: x[3] == next_sub_fileid, list(filter(lambda y: y[1] == ran_subject_id, lines))))
+        if next_sub_fileid < max(map(lambda x: x[3],
+                                 list(filter(lambda y: y[1] ==
+                                             ran_subject_id, lines)))):
+            target_sub = list(filter(lambda x: x[3] == next_sub_fileid,
+                              list(filter(lambda y: y[1] == ran_subject_id,
+                                          lines))))
             training.append(target_sub[0])
             test.remove(target_sub[0])
     return test, training
@@ -315,7 +368,8 @@ def oversampling_training(training, test, target_training_size, lines, n_subject
 def write_line_list_to_text_file(line_list, file_name):
     with open(file_name, 'w') as f:
         for line in line_list:
-            f.write("{0};{1};{2};{3}\n".format(line[0], line[1], line[2], line[3]))
+            f.write("{0};{1};{2};{3}\n".format(line[0], line[1], line[2],
+                                               line[3]))
 
 
 def write_dataframe_to_text_file(df, file_path, overwrite=True):
@@ -324,7 +378,8 @@ def write_dataframe_to_text_file(df, file_path, overwrite=True):
             shutil.rmtree(file_path)
         else:
             os.remove(file_path)
-    df.write.format("com.databricks.spark.csv").option("header", "true").save("file://"+os.path.abspath(file_path))
+    (df.write.format("com.databricks.spark.csv").option("header", "true")
+     .save("file://"+os.path.abspath(file_path)))
 
 
 def parse_file(file_path):
@@ -332,39 +387,58 @@ def parse_file(file_path):
     with open(file_path, 'r') as f:
         for line in f:
             elements = line.split(";")
-            lines.append([int(elements[0]), int(elements[1]), int(elements[2]), int(elements[3])])
+            lines.append([int(elements[0]), int(elements[1]),
+                         int(elements[2]), int(elements[3])])
     return lines
 
 
 def latentFactors(model, sampling_method, dataset, approach, training_ratio):
     labels = ['id', 'feature']
-    df_userFactors = pd.DataFrame.from_records(model.userFactors.orderBy("id").collect(), columns=labels)
-    df_itemFactors = pd.DataFrame.from_records(model.itemFactors.orderBy("id").collect(), columns=labels)
-    df_userFactors.to_csv(sampling_method+"_"+dataset+"_"+approach+"_"+str(training_ratio)+'userFactors.csv', sep='\t')
-    df_itemFactors.to_csv(sampling_method+"_"+dataset+"_"+approach+"_"+str(training_ratio)+'itemFactors.csv', sep='\t')
+    df_userFactors = (pd.DataFrame.from_records(model.userFactors.orderBy("id")
+                      .collect(), columns=labels))
+    df_itemFactors = (pd.DataFrame.from_records(model.itemFactors.orderBy("id")
+                      .collect(), columns=labels))
+    df_userFactors.to_csv(sampling_method + "_" + dataset + "_" + approach +
+                          "_" + str(training_ratio) +
+                          'userFactors.csv', sep='\t')
+    df_itemFactors.to_csv(sampling_method+"_" + dataset + "_" + approach +
+                          "_" + str(training_ratio) +
+                          'itemFactors.csv', sep='\t')
 
 
 def main(args=None):
     # Use argparse to get arguments of your script:
     parser = ArgumentParser("predict")
     parser.add_argument("matrix_file", action="store",
-                        help="The matrix file produced by verifyFiles. Each line must be formated as '<file_id>;<condition_id>;<value>'.")
+                        help="The matrix file produced by verifyFiles. "
+                             "Each line must be formated as "
+                             "'<file_id>;<condition_id>;<value>'.")
     parser.add_argument("training_ratio", action="store", type=float,
-                        help="The ratio of matrix elements that will be added to the training set. Has to be in [0,1].")
-    parser.add_argument("approach", action="store", help="Prediction strategy: ALS, ALS-Bias or Bias.")
-    parser.add_argument("dataset", action="store", help="Name of the dataset. Just to be used in the name of the output files")
+                        help="The ratio of matrix elements that will be "
+                             "added to the training set. Has to be in [0,1].")
+    parser.add_argument("approach", action="store",
+                        help="Prediction strategy: ALS, ALS-Bias or Bias.")
+    parser.add_argument("dataset", action="store",
+                        help="Name of the dataset. Just to be used "
+                             "in the name of the output files")
     parser.add_argument("--predictions", "-p", action="store",
                         help="Text file where the predictions will be stored.")
-    parser.add_argument("--random-ratio-error", "-r", action="store", type=float, default=0.01,
-                        help="Maximum acceptable difference between target and effective training ratios. Defaults to 0.01.")
+    parser.add_argument("--random-ratio-error", "-r", action="store",
+                        type=float, default=0.01,
+                        help="Maximum acceptable difference between target "
+                             "and effective training ratios.Defaults to 0.01.")
     parser.add_argument("sampling_method", action="store",
-                        help="Sampling method to use to build the training set.")
+                        help="Sampling method to use to build "
+                             "the training set.")
     parser.add_argument("--seed_number", "-s",
                         help="set seed number")
     results = parser.parse_args() if args is None else parser.parse_args(args)
-    assert(results.training_ratio <= 1 and results.training_ratio >= 0), "Training ratio has to be in [0,1]."
-    assert(results.approach in ["ALS", "ALS-Bias", "Bias"]), "Unknown approach: {0}".format(results.approach)
-    # matrix file path, split fraction, all the ALS parameters (with default values)
+    assert(results.training_ratio <= 1 and results.training_ratio >= 0), (
+           "Training ratio has to be in [0,1].")
+    assert(results.approach in ["ALS", "ALS-Bias", "Bias"]), (
+           "Unknown approach: {0}".format(results.approach))
+    # matrix file path, split fraction,
+    # all the ALS parameters (with default values)
     # see sim package on github
     try:
         seed = int(results.seed_number)
@@ -374,72 +448,116 @@ def main(args=None):
         print("No seed")
 
     conf = SparkConf().setAppName("predict").setMaster("local")
-    sc = SparkContext(conf = conf)
+    sc = SparkContext(conf=conf)
     spark = SparkSession.builder.appName("ALS_session").getOrCreate()
     lines = parse_file(results.matrix_file)
     assert(len(lines) > 0), "Matrix file is empty"
-    training, test = random_split_2D(lines, results.training_ratio, results.random_ratio_error, results.sampling_method, results.dataset, results.approach)
+    training, test = random_split_2D(lines, results.training_ratio,
+                                     results.random_ratio_error,
+                                     results.sampling_method, results.dataset,
+                                     results.approach)
     training_df = create_dataframe_from_line_list(sc, spark, training, True)
-    file_mean_training = training_df.groupBy('ordered_file_id').agg(F.avg(training_df.val).alias("file_mean"))  # If it's 1 or 0 means that it's constant 1 or zero
+    # If it's 1 or 0 means that it's constant 1 or zero
+    file_mean_training = (training_df.groupBy('ordered_file_id')
+                          .agg(F.avg(training_df.val).alias("file_mean")))
     test_df = create_dataframe_from_line_list(sc, spark, test, True)
 
     if results.approach == 'ALS':
-        als = ALS(maxIter=5, regParam=0.01, userCol="ordered_file_id", itemCol="subject", ratingCol="val", rank=50, nonnegative=True)
+        als = ALS(maxIter=5, regParam=0.01, userCol="ordered_file_id",
+                  itemCol="subject", ratingCol="val", rank=50,
+                  nonnegative=True)
         try:
             als.setSeed(seed)
             model = als.fit(training_df)
         except:
             model = als.fit(training_df)
-        latentFactors(model, results.sampling_method, results.dataset, results.approach, results.training_ratio)
+        latentFactors(model, results.sampling_method, results.dataset,
+                      results.approach, results.training_ratio)
         predictions = model.transform(test_df)
 
     else:
-        subject_mean_training = training_df.groupBy('subject').agg(F.avg(training_df.val).alias("subject_mean"))
-        training_fin = training_df.join(subject_mean_training, ['subject']).join(file_mean_training, ['ordered_file_id'])
-        global_mean_training = training_df.groupBy().agg(F.avg(training_df.val).alias("global_mean"))
+        subject_mean_training = (training_df.groupBy('subject')
+                                 .agg(F.avg(training_df.val)
+                                 .alias("subject_mean")))
+        training_fin = (training_df.join(subject_mean_training,
+                        ['subject']).join(file_mean_training,
+                        ['ordered_file_id']))
+        global_mean_training = (training_df.groupBy()
+                                .agg(F.avg(training_df.val)
+                                .alias("global_mean")))
         global_mean = global_mean_training.collect()[0][0]
         print ("global_mean", global_mean)
-        training_fin = training_fin.withColumn('interaction', (training_fin['val'] - (training_fin['subject_mean'] + training_fin['file_mean'] - global_mean)))
-        als = ALS(maxIter=5, regParam=0.01, userCol="ordered_file_id", itemCol="subject", ratingCol="interaction", rank=50, nonnegative=True)
+        training_fin = (training_fin.withColumn('interaction',
+                        (training_fin['val'] - (training_fin['subject_mean'] +
+                         training_fin['file_mean'] - global_mean))))
+        als = ALS(maxIter=5, regParam=0.01, userCol="ordered_file_id",
+                  itemCol="subject", ratingCol="interaction", rank=50,
+                  nonnegative=True)
         try:
             als.setSeed(seed)
             model = als.fit(training_fin)
         except:
             model = als.fit(training_fin)
-        latentFactors(model, results.sampling_method, results.dataset, results.approach, results.training_ratio)
+        latentFactors(model, results.sampling_method, results.dataset,
+                      results.approach, results.training_ratio)
         predictions = model.transform(test_df)
-        predictions_fin = predictions.join(subject_mean_training, ['subject']).join(file_mean_training, ['ordered_file_id'])
+        predictions_fin = (predictions.join(subject_mean_training,
+                           ['subject']).join(file_mean_training,
+                           ['ordered_file_id']))
         if results.approach == 'ALS-Bias':
-            predictions_fin = predictions_fin.withColumn('fin_val', predictions_fin['prediction'] + training_fin['subject_mean'] + training_fin['file_mean'] - global_mean)
+            predictions_fin = (predictions_fin.withColumn('fin_val',
+                               predictions_fin['prediction'] +
+                               training_fin['subject_mean'] +
+                               training_fin['file_mean'] - global_mean))
         else:  # Bias
-            predictions_fin = predictions_fin.withColumn('fin_val', training_fin['subject_mean'] + training_fin['file_mean'] - global_mean)
+            predictions_fin = (predictions_fin.withColumn('fin_val',
+                               training_fin['subject_mean'] +
+                               training_fin['file_mean'] - global_mean))
 
     if is_binary_matrix(lines):  # assess the model
         # prediction will be rounded to closest integer
-        # TODO: check how the rounding can be done directly with the dataframe, to avoid converting to list
+        # TODO: check how the rounding can be done directly with the dataframe,
+        # to avoid converting to list
+        # ALS+BIAS or Just_BIAS
         if results.approach in {'ALS-Bias', 'Bias'}:
-            predictions_list = predictions_fin.rdd.map(lambda row: [row.ordered_file_id, row.subject, row.val, row.fin_val]).collect()  # ALS+BIAS or Just_BIAS
+            predictions_list = (predictions_fin.rdd.map(lambda row:
+                                [row.ordered_file_id, row.subject, row.val,
+                                 row.fin_val]).collect())
         else:
-            predictions_list = predictions.rdd.map(lambda row: [row.ordered_file_id, row.subject, row.val, row.prediction]).collect()  # ALS
+            predictions_list = (predictions.rdd.map(lambda row:
+                                [row.ordered_file_id, row.subject,
+                                 row.val, row.prediction]).collect())  # ALS
         predictions_list = round_values(predictions_list)
-        test_data_matrix = open(results.sampling_method+"_"+results.dataset+"_"+results.approach+"_"+str(results.training_ratio)+"_test_data_matrix.txt", "w+")
+        test_data_matrix = open(results.sampling_method+"_" + results.dataset +
+                                "_" + results.approach + "_" +
+                                str(results.training_ratio) +
+                                "_test_data_matrix.txt", "w+")
         for i in range(len(predictions_list)):
             write_matrix(predictions_list[i], test_data_matrix)
-        file_mean_list = file_mean_training.rdd.map(lambda row: [row.ordered_file_id, row.file_mean]).collect()
-        accuracy, pure_accuracy = compute_accuracy(predictions_list, file_mean_list)
+        file_mean_list = (file_mean_training
+                          .rdd.map(lambda row:
+                                   [row.ordered_file_id, row.file_mean])
+                          .collect())
+        accuracy, pure_accuracy = compute_accuracy(predictions_list,
+                                                   file_mean_list)
         sensitivity, specificity = sens_spec(predictions_list)
         print("Accuracy = " + str(accuracy))
         print("Accuracy ignores constant files = " + str(pure_accuracy))
         print("Sensitivity = " + str(sensitivity))
         print("Specificity = " + str(specificity))
-        print("Accuracy of dummy classifier = " + str(compute_accuracy_dummy(lines)))
-        predictions = create_dataframe_from_line_list(sc, spark, predictions_list, False)
+        print("Accuracy of dummy classifier = " +
+              str(compute_accuracy_dummy(lines)))
+        predictions = create_dataframe_from_line_list(sc, spark,
+                                                      predictions_list, False)
         predictions.toPandas().to_csv('prediction.csv')
         if results.approach in {'ALS-Bias', 'Bias'}:
-            evaluator = RegressionEvaluator(metricName="rmse", labelCol="val", predictionCol="fin_val")
+            evaluator = RegressionEvaluator(metricName="rmse", labelCol="val",
+                                            predictionCol="fin_val")
             rmse = evaluator.evaluate(predictions_fin)
         else:
-            evaluator = RegressionEvaluator(metricName="rmse", labelCol="val", predictionCol="prediction")
+            evaluator = RegressionEvaluator(metricName="rmse",
+                                            labelCol="val",
+                                            predictionCol="prediction")
             rmse = evaluator.evaluate(predictions)
 
         print("RMSE = " + str(rmse))
