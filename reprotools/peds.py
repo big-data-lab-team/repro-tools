@@ -156,7 +156,7 @@ def create_graph(pid, process_node, db_path):
     try:
         db = sqlite3.connect(db_path)
     except Error as e:
-        print (e)
+        print(e)
     process_cursor = db.cursor()
     openfile_cursor = db.cursor()
     executed_cursor = db.cursor()
@@ -784,8 +784,7 @@ def main():
                             with open(args.output_file, 'r') as rfile:
                                 data = json.load(rfile)
                                 multi_commands = data["multiWrite_cmd"]
-                        except IOError:
-                            print("commands_captured.json file does not exist")
+                        except RuntimeError:
                             multi_commands = {}
                         var = True
                         for key2, val in multi_commands.items():
@@ -945,8 +944,7 @@ def main():
     try:
         with open(args.output_file, 'r') as rfile:
             data = json.load(rfile)
-    except IOError:
-        print("commands.json file does not exist")
+    except RuntimeError:
         data = {}
     data['certain_cmd'] = command_lines
     data['multiWrite_cmd'] = multi_commands

@@ -119,38 +119,34 @@ def read_files(WD_test):
     try:
         with open(op.join(WD_test, 'commands.json'), 'r') as cfile:
             data = json.load(cfile)
-            if data["total_commands"]:
+            if "total_commands" not in data:
+                commands = {}
+            else:
                 command_dic = data["total_commands"]
                 commands = csv_parser(command_dic)
+            if "total_commands_multi" not in data:
+                mw_cmd = {}
             else:
-                commands = {}
-            if data["total_commands_multi"]:
                 multi_write = data["total_commands_multi"]
                 mw_cmd = csv_parser(multi_write)
-            else:
-                mw_cmd = {}
-    except IOError:
-        pass
-    else:
+    except RuntimeError:
         mw_cmd = {}
         commands = {}
 
     try:
         with open(op.join(WD_test, 'commands_captured.json'), 'r') as c_file:
             data = json.load(c_file)
-            if data["total_temp_proc"]:
+            if "total_temp_proc" not in data:
+                total_temp_commands = {}
+            else:
                 command_dic_temp = data["total_temp_proc"]
                 total_temp_commands = csv_parser(command_dic_temp)
+            if "total_multi_write_proc" not in data:
+                total_multi_commands_commands = {}
             else:
-                total_temp_commands = {}
-            if data["total_multi_write_proc"]:
                 command_dic_multi = data["total_multi_write_proc"]
                 total_multi_commands_commands = csv_parser(command_dic_multi)
-            else:
-                total_multi_commands_commands = {}
-    except IOError:
-        pass
-    else:
+    except RuntimeError:
         total_temp_commands = {}
         total_multi_commands_commands = {}
 

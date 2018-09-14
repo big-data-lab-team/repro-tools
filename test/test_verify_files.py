@@ -9,7 +9,8 @@ from reprotools.verify_files import read_file_contents
 from reprotools.verify_files import get_conditions_dict
 from reprotools.verify_files import get_conditions_checksum_dict
 
-#@pytest.mark.skip(reason="Files produced currently do not match")
+
+# @pytest.mark.skip(reason="Files produced currently do not match")
 def test_checksum():
     assert checksum("test/condition4") == "45a021d9910102aac726dd222a898334"
 

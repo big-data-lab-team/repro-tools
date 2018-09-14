@@ -212,7 +212,7 @@ def random_split_2D(lines, training_ratio, max_diff, sampling_method,
     p = 0
     for c in range(0, n_subject):
         n_last_file.append(0)
-    print ("n_files: ", n_files, "n_subject:", n_subject)
+    print("n_files: ", n_files, "n_subject:", n_subject)
     for i in range(0, n_subject):
         next_file.append(1)
     while(len(training) < target_training_size):
@@ -336,7 +336,7 @@ def random_split_2D(lines, training_ratio, max_diff, sampling_method,
             oversampling_training(training, test, target_training_size,
                                   lines, n_subject)
         final_effective_training_ratio = len(training)/(float(len(lines)))
-        print ("Modified_effective_training_ratio: ",
+        print("Modified_effective_training_ratio: ",
                final_effective_training_ratio)
         print("Updated training size is {0}".format(len(training)))
     return training, test
@@ -450,7 +450,7 @@ def main(args=None):
         seed = int(results.seed_number)
         rn.seed(seed)
         np.random.seed(seed)
-    except ValueError:
+    except RuntimeError:
         print("No seed")
 
     conf = SparkConf().setAppName("predict").setMaster("local")
@@ -475,7 +475,7 @@ def main(args=None):
         try:
             als.setSeed(seed)
             model = als.fit(training_df)
-        except ValueError:
+        except RuntimeError:
             model = als.fit(training_df)
         latentFactors(model, results.sampling_method, results.dataset,
                       results.approach, results.training_ratio)
@@ -492,7 +492,7 @@ def main(args=None):
                                 .agg(F.avg(training_df.val)
                                 .alias("global_mean")))
         global_mean = global_mean_training.collect()[0][0]
-        print ("global_mean", global_mean)
+        print("global_mean", global_mean)
         training_fin = (training_fin.withColumn('interaction',
                         (training_fin['val'] - (training_fin['subject_mean'] +
                          training_fin['file_mean'] - global_mean))))
@@ -502,7 +502,7 @@ def main(args=None):
         try:
             als.setSeed(seed)
             model = als.fit(training_fin)
-        except ValueError:
+        except RuntimeError:
             model = als.fit(training_fin)
         latentFactors(model, results.sampling_method, results.dataset,
                       results.approach, results.training_ratio)
