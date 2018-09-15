@@ -14,7 +14,8 @@ DEPS = [
 
 setup(name="reprotools",
       version=VERSION,
-      description=" A set of tools to evaluate the reproducibility of computations ",
+      description=(" A set of tools to evaluate the reproducibility "
+                   "of computations "),
       url="https://github.com/big-data-lab-team/repro-tools",
       author="Big Data Infrastructures for Neuroinformatics lab",
       classifiers=[
