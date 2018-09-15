@@ -784,7 +784,7 @@ def main():
                             with open(args.output_file, 'r') as rfile:
                                 data = json.load(rfile)
                                 multi_commands = data["multiWrite_cmd"]
-                        except RuntimeError:
+                        except Exception:
                             multi_commands = {}
                         var = True
                         for key2, val in multi_commands.items():
@@ -944,7 +944,7 @@ def main():
     try:
         with open(args.output_file, 'r') as rfile:
             data = json.load(rfile)
-    except RuntimeError:
+    except Exception:
         data = {}
     data['certain_cmd'] = command_lines
     data['multiWrite_cmd'] = multi_commands

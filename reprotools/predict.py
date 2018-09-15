@@ -337,7 +337,7 @@ def random_split_2D(lines, training_ratio, max_diff, sampling_method,
                                   lines, n_subject)
         final_effective_training_ratio = len(training)/(float(len(lines)))
         print("Modified_effective_training_ratio: ",
-               final_effective_training_ratio)
+              final_effective_training_ratio)
         print("Updated training size is {0}".format(len(training)))
     return training, test
 

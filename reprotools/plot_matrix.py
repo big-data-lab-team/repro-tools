@@ -4,8 +4,7 @@ import numpy as np
 import csv
 import argparse
 import matplotlib
-matplotlib.use('PS')
-
+matplotlib.use('PS')  # noqa: E402
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 

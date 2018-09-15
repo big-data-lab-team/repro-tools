@@ -129,7 +129,7 @@ def read_files(WD_test):
             else:
                 multi_write = data["total_commands_multi"]
                 mw_cmd = csv_parser(multi_write)
-    except RuntimeError:
+    except Exception:
         mw_cmd = {}
         commands = {}
 
@@ -146,7 +146,7 @@ def read_files(WD_test):
             else:
                 command_dic_multi = data["total_multi_write_proc"]
                 total_multi_commands_commands = csv_parser(command_dic_multi)
-    except RuntimeError:
+    except Exception:
         total_temp_commands = {}
         total_multi_commands_commands = {}
 

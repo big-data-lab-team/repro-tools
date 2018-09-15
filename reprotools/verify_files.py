@@ -155,7 +155,7 @@ def check_files(conditions_dict):
     for path_name in path_names:
         for condition in conditions_dict.keys():
             for subject in conditions_dict[condition].keys():
-                if not path_name in conditions_dict[condition][subject].keys():
+                if path_name not in conditions_dict[condition][subject].keys():
                     log_warning("File \"" + path_name +
                                 "\" is missing in subject \"" + subject +
                                 "\" of condition \"" + condition + "\".")
@@ -537,7 +537,7 @@ def check_subjects(conditions_dict):
         # if some subject is missing
         for subject in subject_names:
             for condition in conditions_dict.keys():
-                if not subject in conditions_dict[condition].keys():
+                if subject not in conditions_dict[condition].keys():
                     log_error("Subject \"" + subject +
                               "\" is missing under condition \"" +
                               condition + "\".")
