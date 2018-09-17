@@ -1,5 +1,4 @@
 [![Build Status](https://travis-ci.org/ali4006/repro-tools.svg?branch=auto-peds)](https://travis-ci.org/ali4006/repro-tools)
-[![codecov](https://codecov.io/gh/ali4006/repro-tools/branch/auto-peds/graph/badge.svg)](https://codecov.io/gh/ali4006/repro-tools)
 [![Coverage Status](https://coveralls.io/repos/github/ali4006/repro-tools/badge.svg?branch=auto-peds)](https://coveralls.io/github/ali4006/repro-tools?branch=auto-peds)
 
 # repro-tools
