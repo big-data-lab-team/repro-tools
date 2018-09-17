@@ -13,6 +13,7 @@ import logging
 import json
 import boutiques
 import docker
+from reprotools import __file__ as repro_path
 
 # Pre-processing: after preparing the result of first condition (CentOS6)
 # and getting the processes tree of pipeline using reprozip (db_sqlite),
@@ -117,7 +118,9 @@ def modify_docker_image(descriptor, peds_data_path, tag_name):
                                                {'bind': os.getcwd(),
                                                 'mode': 'rw'}},
                                       environment=(["PYTHONPATH=$PYTHONPATH:"
-                                                   + os.getcwd()]),
+                                                   + os.getcwd(),
+                                                   "REPRO_TOOLS_PATH=" +
+                                                    repro_path]),
                                       working_dir=os.getcwd(),
                                       detach=True)
     container.logs()

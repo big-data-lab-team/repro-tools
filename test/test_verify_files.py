@@ -67,6 +67,7 @@ def test_run_verify_files():
                 assert(out[key]['files'][f]['subjects'][s]['checksum'] ==
                        ref_out[key]['files'][f]['subjects'][s]['checksum'])
 
+
 def test_read_metrics():
     metrics = read_metrics_file("test/metrics-list.csv")
     assert metrics["Filter Text"]["output_file"] == "test/filter.csv"
