@@ -39,7 +39,6 @@ def test_conditions_checksum_dict():
                                         "checksums-after.txt"))
 
 
-@pytest.mark.skip(reason="mtime of files produced currently do not match")
 def test_run_verify_files():
     command_line_string = ("verify_files test/conditions.txt "
                            "results.json -e"
@@ -52,9 +51,21 @@ def test_run_verify_files():
     print(process.stdout.read().decode("utf-8"))
     print(process.stderr.read().decode("utf-8"))
     assert(code == 0), "Command failed"
-    assert filecmp.cmp("results.json",
-                       "test/differences-ref.json")
-
+    import json
+    out = json.loads(open('results.json').read())
+    ref_out = json.loads(open('test/differences-ref.json').read())
+    for key in ref_out.keys():
+        assert(out.get(key))
+        assert(out[key]['conditions'] ==
+               ref_out[key]['conditions'])
+        for f in ref_out[key]['files']:
+            assert(out[key]['files'].get(f))
+            assert(out[key]['files'][f]['sum']['checksum'] ==
+                   ref_out[key]['files'][f]['sum']['checksum'])
+            for s in ref_out[key]['files'][f]['subjects']:
+                assert(out[key]['files'][f]['subjects'].get(s))
+                assert(out[key]['files'][f]['subjects'][s]['checksum'] ==
+                       ref_out[key]['files'][f]['subjects'][s]['checksum'])
 
 def test_read_metrics():
     metrics = read_metrics_file("test/metrics-list.csv")
