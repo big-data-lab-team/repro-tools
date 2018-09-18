@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-import argparse
 import subprocess
 import sys
 import fileinput
@@ -198,7 +197,7 @@ def main(args=None):
         WD_multi = op.join(WD_test, "centos7/subject1")
         WD_multi_persist = op.join(WD_test, "centos7/subject1/multi_version")
 
-    elif OS_release == "6.10":
+    elif OS_release == "6.8":
         WD_temp = op.join(WD_test, "centos6/subject1")
         WD_temp_persist = op.join(WD_test, "centos6/subject1/peds_temp")
         WD_multi = op.join(WD_test, "centos6/subject1")

@@ -120,7 +120,8 @@ def modify_docker_image(descriptor, peds_data_path, tag_name):
                                       environment=(["PYTHONPATH=$PYTHONPATH:"
                                                    + os.getcwd(),
                                                    "REPRO_TOOLS_PATH=" +
-                                                    repro_path]),
+                                                    op.dirname(
+                                                    op.abspath(repro_path))]),
                                       working_dir=os.getcwd(),
                                       detach=True)
     container.logs()
@@ -212,6 +213,7 @@ def main(args=None):
         # (1) Start the Pipeline execution using bosh
         pipeline_executor(descriptor, invocation)  # CENTOS7
         pipeline_executor(descriptor_cond2, invocation_cond2)  # CENTOS6
+        log_info("pipelines executed on both conditions!")
 
         # (2) Get the error matrix file
         verify_command = 'verify_files ' + verify_cond + ' ' + \
