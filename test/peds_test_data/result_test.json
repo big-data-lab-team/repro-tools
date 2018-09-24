@@ -1,0 +1,23 @@
+{
+    "certain_cmd": {},
+    "multiWrite_cmd": {},
+    "total_commands": {
+        "grep\u00007.4\u0000/input_data/test/test/test_graph/centos7/subject1/f1.out\u0000": [
+            "/input_data/test/test/test_graph/centos7/subject1/f3.out"
+        ],
+        "grep\u00007.4\u0000input_file.txt\u0000": [
+            "/input_data/test/test/test_graph/centos7/subject1/f1.out"
+        ],
+        "grep\u0000line\u0000/input_data/test/test/test_graph/centos7/subject1/f1.out\u0000": [
+            "/input_data/test/test/test_graph/centos7/subject1/peds_temp/temp.out"
+        ]
+    },
+    "total_commands_multi": {
+        "grep\u00007.4\u0000/input_data/test/test/test_graph/centos7/subject1/temp.out\u0000": [
+            "/input_data/test/test/test_graph/centos7/subject1/f2.out"
+        ],
+        "grep\u0000line3\u0000/input_data/test/test/test_graph/centos7/subject1/f1.out\u0000": [
+            "/input_data/test/test/test_graph/centos7/subject1/f2.out"
+        ]
+    }
+}

@@ -1,0 +1,7 @@
+line: we are in 6.8centos7.5
+line1: mytemp line on 6.8centos7.5
+line1-1: mytemp line on 6.8centos
+7.5line2:
+line3: we are in 6.8centos
+7.5line4:
+7.5line5:
