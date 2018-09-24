@@ -87,6 +87,8 @@ def get_conditions_dict(condition_names, root_dir, exclude_items):
 
 # Returns a list where each element is a line in 'file_name'
 def read_file_contents(file_name):
+    if file_name is None:
+        return None
     with open(file_name, 'r') as infile:
         data = infile.read()
         directory_list = data.splitlines()
@@ -576,10 +578,11 @@ def log_warning(message):
 def check_file(parser, x):
     if os.path.exists(x):
         return x
+    print('cwd: {}'.format(os.getcwd()))
     parser.error("File does not exist: {}".format(x))
 
 
-def main():
+def main(args=None):
         parser = argparse.ArgumentParser(description="verifyFiles.py",
                                          formatter_class=argparse
                                          .RawTextHelpFormatter)
@@ -617,7 +620,8 @@ def main():
                             /home/$(USER)/CentOS6.FSL5.0.6
                             /home/$(USER)/CentOS7.FSL5.0.6
                             Each directory will contain subject folders
-                            like 100307,100308 etc'''))
+                            like 100307,100308 etc'''),
+                            type=lambda x: check_file(parser, x))
 
         parser.add_argument("result_file",
                             help='JSON file containing the results')
@@ -649,7 +653,7 @@ def main():
                             help="Writes all the processes that create "
                                  "an nii file is written into file name "
                                  "mentioned after the flag")
-        args = parser.parse_args()
+        args, params = parser.parse_known_args(args)
         logging.basicConfig(level=logging.INFO,
                             format='%(asctime)s %(message)s')
         conditions_list = read_file_contents(args.file_in)
