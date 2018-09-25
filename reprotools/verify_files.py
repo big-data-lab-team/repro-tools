@@ -330,6 +330,9 @@ def n_differences_across_subjects(conditions_dict,
                                                root_dir))
                             (diff_files[file_name]['subjects'][subject]
                              [metric['name']]) = diff_value
+                            name = metric['name']
+                            if(diff_files[file_name]['sum'].get(name) is None):
+                                    diff_files[file_name]['sum'][name] = 0
                             diff_files[file_name]['sum'][metric['name']] += (
                                                                   diff_value)
                         except ValueError as e:
@@ -399,13 +402,13 @@ def run_command(command, file_name, condition1, condition2,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
     return_value = process.wait()
-    print(process.stdout.read())
+    output = process.stdout.read()
+    print(output)
     print(process.stderr.read())
-    assert(code == 0), "Command failed"
     if return_value != 0:
         log_error(str(return_value)+" " + "Command " + command +
                   " failed (" + command_string + ").")
-    return output
+    return float(output)
 
 
 # Method read_checksum_from_file gets the file path containing the checksum

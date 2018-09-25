@@ -6,7 +6,7 @@ import json
 
 import os.path as op
 
-from reprotools.verify_files import get_dir_dict, read_metrics_file
+from reprotools.verify_files import get_dir_dict
 from reprotools.verify_files import checksum
 from reprotools.verify_files import read_file_contents
 from reprotools.verify_files import get_conditions_dict
@@ -34,7 +34,6 @@ def comp_json_files(ref_out, out):
                    ref_out[key]['files'][f]['subjects'][s]['checksum'])
 
 
-# @pytest.mark.skip(reason="Files produced currently do not match")
 def test_checksum():
     os.chdir(op.dirname(base_file))
     assert checksum("test/condition4") == "45a021d9910102aac726dd222a898334"
@@ -70,7 +69,8 @@ def test_run_verify_files():
         verify_files([repopath("test/conditions.txt"),
                       "results.json",
                       "-e",
-                      repopath("test/exclude_items.txt")])
+                      repopath("test/exclude_items.txt"),
+                      "-m", "test/metrics.csv"])
     except Exception as e:
         pytest.fail('Unexpected error')
     out = json.loads(open('results.json').read())
@@ -78,6 +78,3 @@ def test_run_verify_files():
     comp_json_files(ref_out, out)
 
 
-def test_read_metrics():
-    metrics = read_metrics_file(repopath("test/metrics-list.csv"))
-    assert metrics["Filter Text"]["output_file"] == "test/filter.csv"
