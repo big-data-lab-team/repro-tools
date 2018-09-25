@@ -30,7 +30,7 @@ def parse_matrix(csv_file_name, is_original):
     return matrix
 
 
-def main():
+def main(args=None):
     parser = argparse.ArgumentParser(description="Plots a difference matrix.")
     # plotting original-matrix
     # (row_index, subject, binary_difference, ordered_file_id)
@@ -52,7 +52,7 @@ def main():
     parser.add_argument("output_file",
                         help="Output file where the plot will be saved. "
                              "File type is determined from extension.")
-    args = parser.parse_args()
+    args = parser.parse_args(args)
     original_matrix = parse_matrix(args.original_matrix, True)
     if args.test_matrix is not None:
         test_matrix = parse_matrix(args.test_matrix, False)

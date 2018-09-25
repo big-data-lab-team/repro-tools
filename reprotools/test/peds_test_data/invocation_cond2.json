@@ -1,4 +1,4 @@
 {
-    "output_file": "./test/peds_test_data/centos6/subject1",
-    "input_file": "./test/peds_test_data/centos6/subject1/input_file.txt"
+    "output_file": "centos6/subject1",
+    "input_file": "centos6/subject1/input_file.txt"
 }

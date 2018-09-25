@@ -115,6 +115,7 @@ def read_metrics_file(file_name):
 # Returns the checksum of path 'path_name'
 def checksum(path_name):
     hasher = hashlib.md5()
+    assert(os.path.exists(path_name)), "File {} doesn't exist".format(path_name)
     if os.path.isfile(path_name):
         md5_sum = file_hash(hasher, path_name)
     elif os.path.isdir(path_name):
@@ -576,6 +577,8 @@ def log_warning(message):
 
 
 def check_file(parser, x):
+    if x is None:
+        parser.error('File is None')
     if os.path.exists(x):
         return x
     print('cwd: {}'.format(os.getcwd()))
