@@ -44,7 +44,8 @@ setup(name="reprotools",
             "peds=reprotools:peds",
             "auto_peds=reprotools:auto_peds",
             "plot_matrix=reprotools:plot_matrix",
-            "predict=reprotools:predict"
+            "predict=reprotools:predict",
+            "diff_file_size=reprotools:diff_file_size"
         ]
       },
       setup_requires=DEPS,
