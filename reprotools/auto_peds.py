@@ -14,6 +14,9 @@ import json
 import boutiques
 import docker
 from reprotools import __file__ as repro_path
+from reprotools.verify_files import main as verify_files
+from reprotools.peds import main as peds
+
 
 # Pre-processing: after preparing the result of first condition (CentOS6)
 # and getting the processes tree of pipeline using reprozip (db_sqlite),
@@ -44,20 +47,6 @@ def which(exe=None):
             if os.access(full_path, os.X_OK):
                 return full_path
     return None
-
-
-def bash_executor(execution_dir, command):
-    process = subprocess.Popen(command,
-                               shell=True,
-                               stderr=subprocess.PIPE,
-                               cwd=execution_dir)
-    output, error = process.communicate()
-    if(process.returncode):
-        if output:
-            print(output.decode("utf-8"))
-        if error:
-            print(error.decode("utf-8"))
-        raise Exception("Command execution failed")
 
 
 def pipeline_executor(descriptor, invocation):
@@ -158,127 +147,100 @@ def update_peds_json(total_commands, output_peds_file, cond):
         json.dump(data, ufile, indent=4, sort_keys=True)
 
 
-def main(args=None):
-    parser = argparse.ArgumentParser(description='Automation of pipeline '
-                                                 ' error detection')
-    parser.add_argument("output_directory", help='directory where to '
-                                                 'store the output')
-    parser.add_argument("-c", "--verify_condition",
-                        help="input the text file containing the path "
-                             "to the verify_file condition folders")
-    parser.add_argument("-r", "--verify_output",
-                        help="path of verify_file outputs")
-    parser.add_argument("-s", "--sqlite_db",
-                        help="sqlite file created by reprozip")
-    parser.add_argument("-o", "--peds_output",
-                        help=".json output file of peds")
-    parser.add_argument("-m", "--capture_mode",
-                        help="include two values (True and False) to indicate"
-                              "capturing temp and multi-write files (true)"
-                              " or making modification steps (false)")
-    parser.add_argument("-p", "--cap_condition",
-                        help="which condition to capture files")
-    parser.add_argument("-d", "--descriptor",
-                        help="Boutiques descriptor")
-    parser.add_argument("-i", "--invocation",
-                        help="Boutiques invocation")
-    parser.add_argument("-d2", "--descriptor_cond2",
-                        help="Boutiques descriptor for the second condition")
-    parser.add_argument("-i2", "--invocation_cond2",
-                        help="Boutiques invocation for the second condition")
+def capture(descriptor,
+            invocation,
+            descriptor_cond2,
+            invocation_cond2,
+            verify_cond,
+            verify_output,
+            peds_data_path,
+            sqlite_db,
+            peds_result,
+            peds_capture_output,
+            condition,
+            output_peds_file):
+    # (1) Start the Pipeline execution using bosh
+    pipeline_executor(descriptor, invocation)  # CENTOS7
+    pipeline_executor(descriptor_cond2, invocation_cond2)  # CENTOS6
+    log_info("pipelines executed on both conditions!")
 
-    logging.basicConfig(format='%(asctime)s:%(message)s', level=logging.INFO)
-    args = parser.parse_args()
-    descriptor = args.descriptor
-    invocation = args.invocation
-    descriptor_cond2 = args.descriptor_cond2
-    invocation_cond2 = args.invocation_cond2
-    peds_result = args.peds_output
-    peds_data_path = op.abspath(args.output_directory)
-    output_peds_file = op.join(peds_data_path, peds_result)
-    verify_cond = args.verify_condition
-    verify_output = args.verify_output
-    sqlite_db = op.abspath(args.sqlite_db)
+    # (2) Get the error matrix file
+    verify_files([verify_cond,
+                  op.join(verify_output, 'test_diff_file.json'),
+                  "-e",
+                  op.join(peds_data_path, 'exclude_items.txt')
+                  ])
+
+    # (3) Get total multi_write and temp commands
+    peds([sqlite_db,
+          "test_diff_file.json",
+          "-o", peds_result,
+          "-c"
+          ])
+
+    # (4) Capturing multi-write process in the ref condition (centos6)
+    # and all Temporary files in both conditions (Just One time)
     tag_name = 0
     tag_name_cond2 = 0
-    total_commands = {}
-    total_mutli_write = {}
-    peds_capture_output = (os.path.splitext(output_peds_file)[0] +
-                           '_captured.json')
-    capture_files = args.capture_mode
-    condition = args.cap_condition
+    with open(peds_capture_output, 'r') as tmp_cmd:
+        data = json.load(tmp_cmd)
+    if data["total_temp_proc"]:
+        tag_name += 1
+        tag_name_cond2 += 1
+        make_modify_script(peds_data_path, data["total_temp_proc"])
 
-# Start to persist temporary and multi version files in both conditions
-    if capture_files == 'true':
-        # (1) Start the Pipeline execution using bosh
-        pipeline_executor(descriptor, invocation)  # CENTOS7
-        pipeline_executor(descriptor_cond2, invocation_cond2)  # CENTOS6
-        log_info("pipelines executed on both conditions!")
-
-        # (2) Get the error matrix file
-        verify_command = 'verify_files ' + verify_cond + ' ' + \
-                         op.join(verify_output, 'test_diff_file.json') + \
-                         " -e ./test/peds_test_data/exclude_items.txt"
-        bash_executor(os.getcwd(), verify_command)
-        log_info("Verify_files has done!")
-
-        # (3) Get total multi_write and temp commands
-        peds_command = "peds " + sqlite_db + " " + \
-                       " test_diff_file.json" + \
-                       " -o " + peds_result + " -c " + capture_files
-        bash_executor(peds_data_path, peds_command)
-        log_info("peds has done!")
-        # (4) Capturing multi-write process in the ref condition (centos6)
-        # and all Temporary files in both conditions (Just One time)
-        with open(peds_capture_output, 'r') as tmp_cmd:
-            data = json.load(tmp_cmd)
-        if data["total_temp_proc"]:
-            tag_name += 1
-            tag_name_cond2 += 1
-            make_modify_script(peds_data_path, data["total_temp_proc"])
-
-            if condition == 'first':
-                modify_docker_image(descriptor, peds_data_path, tag_name)
-                log_info("Docker is modified on the First condition "
-                         "to capture all the temporaty files")
-            else:
-                modify_docker_image(descriptor_cond2, peds_data_path,
-                                    tag_name_cond2)
-                log_info("Docker is modified on the Second condition "
-                         "to capture all the temporaty files")
-
-        if data["total_multi_write_proc"]:
-            tag_name += 1
-            tag_name_cond2 += 1
-            make_modify_script(peds_data_path, data["total_multi_write_proc"])
-            if condition == 'first':
-                modify_docker_image(descriptor, peds_data_path, tag_name)
-                log_info("Docker is modified on the First condition "
-                         "to capture all the files with multi-writes")
-            else:
-                modify_docker_image(descriptor_cond2, peds_data_path,
-                                    tag_name_cond2)
-                log_info("Docker is modified on the Second condition "
-                         "to capture all the files with multi-writes")
-
-        # (4-1) Execute ref condition pipeline to persist the temporary
-        # and mnulti-write process in the second condition
-        json_file_editor(output_peds_file, '', 'None')
         if condition == 'first':
-            pipeline_executor(descriptor, invocation)  # CENTOS7
-            log_info("all the files are captured on the First condition")
+            modify_docker_image(descriptor, peds_data_path, tag_name)
+            log_info("Docker is modified on the First condition "
+                     "to capture all the temporaty files")
         else:
-            pipeline_executor(descriptor_cond2, invocation_cond2)  # CENTOS6
-            log_info("all the files are captured on the Second condition")
+            modify_docker_image(descriptor_cond2, peds_data_path,
+                                tag_name_cond2)
+            log_info("Docker is modified on the Second condition "
+                     "to capture all the temporaty files")
 
-        backup_path = op.join(peds_data_path, 'backup_scripts')
-        for f in os.listdir(backup_path):
-            os.remove(os.path.join(backup_path, f))
-        json_file_editor(descriptor, 'peds_centos7', 'image')
-        json_file_editor(descriptor_cond2, 'peds_centos6', 'image')
-        sys.exit("pipeline EXECUTION")
+    if data["total_multi_write_proc"]:
+        tag_name += 1
+        tag_name_cond2 += 1
+        make_modify_script(peds_data_path, data["total_multi_write_proc"])
+        if condition == 'first':
+            modify_docker_image(descriptor, peds_data_path, tag_name)
+            log_info("Docker is modified on the First condition "
+                     "to capture all the files with multi-writes")
+        else:
+            modify_docker_image(descriptor_cond2, peds_data_path,
+                                tag_name_cond2)
+            log_info("Docker is modified on the Second condition "
+                     "to capture all the files with multi-writes")
 
-# Start Modification Loop
+    # (4-1) Execute ref condition pipeline to persist the temporary
+    # and mnulti-write process in the second condition
+    json_file_editor(output_peds_file, '', 'None')
+    if condition == 'first':
+        pipeline_executor(descriptor, invocation)  # CENTOS7
+        log_info("all the files are captured on the First condition")
+    else:
+        pipeline_executor(descriptor_cond2, invocation_cond2)  # CENTOS6
+        log_info("all the files are captured on the Second condition")
+
+    backup_path = op.join(peds_data_path, 'backup_scripts')
+    for f in os.listdir(backup_path):
+        os.remove(os.path.join(backup_path, f))
+    json_file_editor(descriptor, 'peds_centos7', 'image')
+    json_file_editor(descriptor_cond2, 'peds_centos6', 'image')
+
+
+def iterate(descriptor,
+            invocation,
+            descriptor_cond2,
+            verify_cond,
+            verify_output,
+            peds_data_path,
+            sqlite_db,
+            peds_result,
+            peds_capture_output,
+            output_peds_file):
+    # Start Modification Loop
     while True:
         # (1) Start the Pipeline execution using bosh
         pipeline_executor(descriptor, invocation)
@@ -286,19 +248,30 @@ def main(args=None):
                  "going to find new process that create error!")
 
         # (2) Running VerifyFiles script to make error matrix file
-        verify_command = 'verify_files ' + verify_cond + ' ' + \
-                         op.join(verify_output, 'test_diff_file.json') + \
-                         " -e ./test/peds_test_data/exclude_items.txt"
-        bash_executor(os.getcwd(), verify_command)
-        log_info("Verify_files has done!")
+        verify_files([verify_cond,
+                      op.join(verify_output, 'test_diff_file.json'),
+                      "-e",
+                      op.join(verify_output, 'exclude_items.txt')
+                      ])
+
         # (3) Classification of processes, running peds script
-        peds_command = "peds " + sqlite_db + " " + \
-                       " test_diff_file.json" + \
-                       " -o " + peds_result + " -c " + capture_files
-        bash_executor(peds_data_path, peds_command)
+        print([sqlite_db,
+              "test_diff_file.json",
+              "-o", peds_result,
+              "-c"
+              ])
+        peds([sqlite_db,
+              "test_diff_file.json",
+              "-o", peds_result,
+              "-c"
+              ])
         json_file_editor(peds_capture_output, '', 'None')
         log_info("peds has done!")
+
         # Check if there exist processes that create error
+        total_commands = {}
+        total_mutli_write = {}
+        tag_name = 0
         with open(output_peds_file, 'r') as cmd_json:
             data = json.load(cmd_json)
         if data["multiWrite_cmd"]:
@@ -339,6 +312,72 @@ def main(args=None):
             json_file_editor(descriptor_cond2, 'peds_centos6', 'image')
 
             break
+
+
+def main(args=None):
+    parser = argparse.ArgumentParser(description='Automation of pipeline '
+                                                 ' error detection')
+    parser.add_argument("output_directory", help='directory where to '
+                                                 'store the output')
+    parser.add_argument("-c", "--verify_condition",
+                        help="input the text file containing the path "
+                             "to the verify_file condition folders")
+    parser.add_argument("-r", "--verify_output",
+                        help="path of verify_file outputs")
+    parser.add_argument("-s", "--sqlite_db",
+                        help="sqlite file created by reprozip")
+    parser.add_argument("-o", "--peds_output",
+                        help=".json output file of peds")
+    parser.add_argument("-m", "--capture_mode", action='store_true',
+                        help="include two values (True and False) to indicate"
+                              "capturing temp and multi-write files (true)"
+                              " or making modification steps (false)")
+    parser.add_argument("-p", "--cap_condition",
+                        help="which condition to capture files")
+    parser.add_argument("-d", "--descriptor",
+                        help="Boutiques descriptor")
+    parser.add_argument("-i", "--invocation",
+                        help="Boutiques invocation")
+    parser.add_argument("-d2", "--descriptor_cond2",
+                        help="Boutiques descriptor for the second condition")
+    parser.add_argument("-i2", "--invocation_cond2",
+                        help="Boutiques invocation for the second condition")
+
+    logging.basicConfig(format='%(asctime)s:%(message)s', level=logging.INFO)
+    args = parser.parse_args(args)
+
+    output_peds_file = op.join(op.abspath(args.output_directory),
+                               args.peds_output)
+    peds_capture_output = (os.path.splitext(output_peds_file)[0] +
+                           '_captured.json')
+    condition = args.cap_condition
+
+# Start to persist temporary and multi version files in both conditions
+    if args.capture_mode:
+        capture(args.descriptor,
+                args.invocation,
+                args.descriptor_cond2,
+                args.invocation_cond2,
+                args.verify_condition,
+                args.verify_output,
+                op.abspath(args.output_directory),
+                op.abspath(args.sqlite_db),
+                args.peds_output,
+                peds_capture_output,
+                condition,
+                output_peds_file)
+    else:
+        iterate(args.descriptor,
+                args.invocation,
+                args.descriptor_cond2,
+                args.verify_condition,
+                args.verify_output,
+                op.abspath(args.output_directory),
+                op.abspath(args.sqlite_db),
+                args.peds_output,
+                peds_capture_output,
+                output_peds_file
+                )
 
 
 if __name__ == '__main__':

@@ -155,7 +155,7 @@ def main(args=None):
 
     repro_path = os.getenv('REPRO_TOOLS_PATH')
     assert(repro_path), 'REPRO_TOOLS_PATH is not defined'
-    WD_test = op.join(repro_path, '../test/peds_test_data')
+    WD_test = op.join(repro_path, 'test/peds_test_data')
     # single_cmd  refer to the single processes that create errors
     # mw_cmd refers to the multi-write processes that create errors
     mw_cmd, single_cmd, total_temp_commands, total_multi_commands = (

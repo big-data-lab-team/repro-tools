@@ -25,8 +25,8 @@ install:
 - pip install --upgrade setuptools
 - pip install coveralls pytest pytest-runner pycodestyle
 - pip install .
-- docker build -t peds_centos7 test/peds_test_data/centos7/subject1 &>docker.log || cat docker.log
-- docker build -t peds_centos6 test/peds_test_data/centos6/subject1 &>docker.log || cat docker.log
+- docker build -t peds_centos7 reprotools/test/peds_test_data/centos7/subject1 &>docker.log || cat docker.log
+- docker build -t peds_centos6 reprotools/test/peds_test_data/centos6/subject1 &>docker.log || cat docker.log
 
 script:
 - export SPARK_HOME=`pwd`/spark-2.3.1-bin-hadoop2.7

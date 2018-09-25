@@ -522,7 +522,7 @@ def log_error(message):
     sys.exit(1)
 
 
-def main():
+def main(args=None):
     parser = argparse.ArgumentParser(description='Classification of the nodes'
                                                  ' in the pipeline graph.')
     parser.add_argument("sqlite_db",
@@ -542,13 +542,13 @@ def main():
     parser.add_argument('-o', '--output_file',
                         help='.Json output file include all commandlines of'
                               'uncertain, unknown, and certain red processes')
-    parser.add_argument('-c', '--capture_mode',
+    parser.add_argument('-c', '--capture_mode', action='store_true',
                         help='include two values (true and false) to indicate'
                               'capture mode of the script'
                               'modification steps (false)'
                               'capturing temp and multi-write files'
                               'or making graph file (true)')
-    args = parser.parse_args()
+    args = parser.parse_args(args)
     logging.basicConfig(format='%(asctime)s:%(message)s', level=logging.INFO)
     # INITIALIZE THE PROGRAM
     if args.graph:
@@ -570,11 +570,9 @@ def main():
     blue_nodes = []
     ignore = []
     capture_mode = args.capture_mode
-    if capture_mode == 'true':
-        capture_mode = True
+    if capture_mode:
         log_info("Prepare to capturing files")
     else:
-        capture_mode = False
         log_info("Prepare to classifying process")
     db_path = args.sqlite_db
     read_matrix_file = args.matrix
