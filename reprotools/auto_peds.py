@@ -255,11 +255,6 @@ def iterate(descriptor,
                       ])
 
         # (3) Classification of processes, running peds script
-        print([sqlite_db,
-              "test_diff_file.json",
-              "-o", peds_result,
-              "-c"
-              ])
         peds([sqlite_db,
               "test_diff_file.json",
               "-o", peds_result,
