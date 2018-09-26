@@ -39,11 +39,11 @@ __Pytest syntax__
 test/test_differences_plot.txt output.png` will produce the following
 plot:
 
-![Alt text](./test/test_differences_plot.png?raw=true "Title")
+![Alt text](./reprotools/test/test_differences_plot.png?raw=true "Title")
 
 `-t` argument gives the possibility to superimpose the predicted matrices achived by `predict.py` over the difference matrices produced by `verifyFiles.py`. For example, `python plot_matrix.py test/predict_test/test_differences.txt -t test/predict_test/triangular-S_0.6_test_data_matrix.txt test_plot_matrix.png` will make the following plot:  
 
-![Alt text](./test/test_plot_matrix.png?raw=true "Title")
+![Alt text](./reprotools/test/test_plot_matrix.png?raw=true "Title")
 ___
 ## Predict
 
@@ -117,4 +117,4 @@ output_directory,             Output directory to keep result files.
 ```
 
 Figure shows the iteration of error recognition and the final graph produced by `auto-peds` script in a simple example.
-![Alt text](./test/peds_test_data/classification.png?raw=true "Title")
+![Alt text](./reprotools/test/peds_test_data/classification.png?raw=true "Title")

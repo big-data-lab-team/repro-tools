@@ -388,28 +388,28 @@ def make_squared_green_node(graph, id, pid, name, node_label,
 
 
 # ~ # Create a file include all dependency files info
-def write_to_file(write_diff_list, read_diff_list, read_tmp_list,
-                  write_tmp_list, write_files, proc, count_diff_w,
-                  count_diff_r, count_tmp_r, count_tmp_w):
-    wf = pd.DataFrame(write_diff_list, columns=['process_ID', 'name'])
-    rf = pd.DataFrame(read_diff_list, columns=['process_ID', 'name',
-                                               'created_process'])
-    tr = pd.DataFrame(read_tmp_list, columns=['process_ID', 'name',
-                                              'created_process'])
-    tw = pd.DataFrame(write_tmp_list, columns=['process_ID', 'name'])
-    write_files.write(str(proc.id) + "\t" + str(proc.name) +
-                      "\ntotal write/read files:\t" + str(len(proc.data)) +
-                      "\ntotal write files with diff: " +
-                      str(count_diff_w) + "\n\n")
-    wf.to_csv(write_files, sep='\t', index=False)
-    write_files.write("\ntotal read files with diff: " +
-                      str(count_diff_r) + "\n\n")
-    rf.to_csv(write_files, sep='\t', index=False)
-    write_files.write("\ntotal read temp files: " + str(count_tmp_r) + "\n\n")
-    tr.to_csv(write_files, sep='\t', index=False)
-    write_files.write("\ntotal write temp files: " + str(count_tmp_w) + "\n\n")
-    tw.to_csv(write_files, sep='\t', index=False)
-    write_files.write("\n************************************\n\n")
+# ~ def write_to_file(write_diff_list, read_diff_list, read_tmp_list,
+                  # ~ write_tmp_list, write_files, proc, count_diff_w,
+                  # ~ count_diff_r, count_tmp_r, count_tmp_w):
+    # ~ wf = pd.DataFrame(write_diff_list, columns=['process_ID', 'name'])
+    # ~ rf = pd.DataFrame(read_diff_list, columns=['process_ID', 'name',
+                                               # ~ 'created_process'])
+    # ~ tr = pd.DataFrame(read_tmp_list, columns=['process_ID', 'name',
+                                              # ~ 'created_process'])
+    # ~ tw = pd.DataFrame(write_tmp_list, columns=['process_ID', 'name'])
+    # ~ write_files.write(str(proc.id) + "\t" + str(proc.name) +
+                      # ~ "\ntotal write/read files:\t" + str(len(proc.data)) +
+                      # ~ "\ntotal write files with diff: " +
+                      # ~ str(count_diff_w) + "\n\n")
+    # ~ wf.to_csv(write_files, sep='\t', index=False)
+    # ~ write_files.write("\ntotal read files with diff: " +
+                      # ~ str(count_diff_r) + "\n\n")
+    # ~ rf.to_csv(write_files, sep='\t', index=False)
+    # ~ write_files.write("\ntotal read temp files: " + str(count_tmp_r) + "\n\n")
+    # ~ tr.to_csv(write_files, sep='\t', index=False)
+    # ~ write_files.write("\ntotal write temp files: " + str(count_tmp_w) + "\n\n")
+    # ~ tw.to_csv(write_files, sep='\t', index=False)
+    # ~ write_files.write("\n************************************\n\n")
 
 
 def path_parser(path):

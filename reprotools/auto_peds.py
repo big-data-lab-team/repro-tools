@@ -71,6 +71,7 @@ def make_modify_script(peds_data_path, command_dic):
     cmd_file = open(op.join(peds_data_path, 'cmd.sh'), 'w+')
     cmd_file.write('#!/usr/bin/env bash \n')
     cmd_list = []
+    cwd = op.abspath(op.join(os.getcwd(), '../..'))
     for command, files in command_dic.items():
         pipeline_command = command.split('\x00')[0]
         if pipeline_command not in cmd_list:
@@ -89,10 +90,11 @@ def make_modify_script(peds_data_path, command_dic):
                     os.makedirs(op.dirname(backup_path))
                 cmd_file.write('cp ' + '`which '+pipeline_command + '` '
                                + backup_path + '\n')
-                cwd = op.abspath(op.join(os.getcwd(), '../..'))
                 cmd_file.write('cp ' + op.join(cwd,
                                'make_copy.py') + ' `which ' +
                                pipeline_command + '`' + '\n')
+    cmd_file.write('python ' + op.join(cwd,
+                   'make_copy.py') + '\n')
                 # ~ cmd_file.write('cp ' + op.join(op.dirname(__file__),
                 #               # ~ 'make_copy.py') + ' `which ' +
                 #               # ~ pipeline_command + '`' + '\n')
