@@ -86,6 +86,8 @@ def test_verify_files_running():
 
 
 def test_auto_peds():
+    # ~ test_capture_first_cond()
+    # ~ test_capture_second_cond()
     os.chdir(op.join(repopath(), 'test', 'peds_test_data'))
     auto_peds([".",
                "-c", "conditions.txt",

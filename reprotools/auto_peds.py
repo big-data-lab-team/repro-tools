@@ -83,7 +83,7 @@ def make_modify_script(peds_data_path, command_dic):
             else:
                 backup_path = op.join(peds_data_path,
                                       'backup_scripts', pipeline_command)
-    
+
             if not op.exists(backup_path):
                 if not op.exists(op.dirname(backup_path)):
                     os.makedirs(op.dirname(backup_path))
@@ -94,8 +94,8 @@ def make_modify_script(peds_data_path, command_dic):
                                'make_copy.py') + ' `which ' +
                                pipeline_command + '`' + '\n')
                 # ~ cmd_file.write('cp ' + op.join(op.dirname(__file__),
-                               # ~ 'make_copy.py') + ' `which ' +
-                               # ~ pipeline_command + '`' + '\n')
+                #               # ~ 'make_copy.py') + ' `which ' +
+                #               # ~ pipeline_command + '`' + '\n')
 
 
 def modify_docker_image(descriptor, peds_data_path, tag_name):
@@ -105,9 +105,7 @@ def modify_docker_image(descriptor, peds_data_path, tag_name):
     client = docker.from_env()
     # print("Running command: {}".format(cmd_list))
     cwd = op.abspath(op.join(os.getcwd(), '../..'))
-    # ~ cwd = op.dirname(op.abspath(repro_path))
-    # ~ print(cwd)
-    # ~ cwd = '/Users/Ali/Desktop/backup/git_repo/repro-tools_last_modif/repro-tools/reprotools'
+
     print(cwd)
     cmd_file_path = op.join(peds_data_path, 'cmd.sh')
     with open(cmd_file_path, 'r') as cmdFile:
@@ -271,9 +269,9 @@ def iterate(descriptor,
 
         # (3) Classification of processes, running peds script
         print([sqlite_db,
-              "test_diff_file.json",
-              "-o", peds_result
-              ])
+               "test_diff_file.json",
+               "-o", peds_result
+               ])
         peds([sqlite_db,
               "test_diff_file.json",
               "-o", peds_result

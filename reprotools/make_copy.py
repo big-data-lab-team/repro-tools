@@ -75,8 +75,8 @@ def csv_parser(command_dic):
 def check_arguments(pipe_com, input_arg_cmd):
     check = False
     pipeline_commad = pipe_com.split(' ')
-    msg = ('\ncommand from pipeline: '+ str(pipeline_commad) +
-           ' \ncommand from reprozip: '+ str(sys.argv))
+    msg = ('\ncommand from pipeline: ' + str(pipeline_commad) +
+           ' \ncommand from reprozip: ' + str(sys.argv))
     log_info(msg)
     if which(pipeline_commad[0]) == which(input_arg_cmd):
         if len(pipeline_commad)-1 == len(sys.argv):
@@ -172,7 +172,7 @@ def main(args=None):
                         format='%(asctime)s:%(message)s', level=logging.INFO)
     repro_path = os.getenv('REPRO_TOOLS_PATH')
     assert(repro_path), 'REPRO_TOOLS_PATH is not defined'
-    WD_test = repro_path #op.join(repro_path, 'test/peds_test_data')
+    WD_test = repro_path  # op.join(repro_path, 'test/peds_test_data')
     # single_cmd  refer to the single processes that create errors
     # mw_cmd refers to the multi-write processes that create errors
     mw_cmd, single_cmd, total_temp_commands, total_multi_commands = (
