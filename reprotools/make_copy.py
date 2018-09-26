@@ -11,11 +11,16 @@ import os.path as op
 from shutil import copyfile
 import platform
 import hashlib
+import logging
 
 # Modification Step: In order to make appropriate file copy to
 # fix processes artificially, first, we replace the current script with
 # the main pipeline process that create errors. after that, script will
 # make a copy of file if arguments are the same with backup command-lines.
+
+
+def log_info(message):
+    logging.info("INFO: " + message)
 
 
 def is_intstring(s):
@@ -45,6 +50,7 @@ def csv_parser(command_dic):
     command_parsed = {}
     for cmd, files in command_dic.items():
         fname_list = []
+        check = False
         # ~ command = str(line).split('##')[:1]
         # ~ command = str(command[0].replace('\x00', ' '))
         command = str(cmd.replace('\x00', ' '))
@@ -53,11 +59,15 @@ def csv_parser(command_dic):
             for f in file.split('/'):
                 # if f == "exec":
                 if f == "subject1":
+                    check = True
                     count += 1
                     break
                 else:
                     count += 1
-            fname_list.append("/".join(file.split('/')[count:]))
+            if check:
+                fname_list.append("/".join(file.split('/')[count:]))
+            else:
+                fname_list.append(file)
         command_parsed[command] = fname_list
     return command_parsed
 
@@ -65,6 +75,9 @@ def csv_parser(command_dic):
 def check_arguments(pipe_com, input_arg_cmd):
     check = False
     pipeline_commad = pipe_com.split(' ')
+    msg = ('\ncommand from pipeline: '+ str(pipeline_commad) +
+           ' \ncommand from reprozip: '+ str(sys.argv))
+    log_info(msg)
     if which(pipeline_commad[0]) == which(input_arg_cmd):
         if len(pipeline_commad)-1 == len(sys.argv):
             check = True
@@ -76,6 +89,7 @@ def check_arguments(pipe_com, input_arg_cmd):
                     check = False
                     break
                 i += 1
+    log_info("Argument comparison is: " + str(check))
     return check
 
 
@@ -86,11 +100,12 @@ def make_copies(pipe_com, pipe_files, WD_ref, WD_dest, val):
         # ~ Fname = proc_name + "_" + file
         hash_object = hashlib.sha1(pipe_com.encode('utf-8'))
         hex_dig_file = hash_object.hexdigest()
-        Fname = hex_dig_file + "_" + file
+        Fname = hex_dig_file + "_" + op.basename(file)
+        log_info("FIle NAME: " + str(file))
         if val == 'normal':
             if 'peds_temp/' in file:
                 file2 = file.replace('peds_temp/', '')
-                Fname2 = hex_dig_file + "_" + file2
+                Fname2 = hex_dig_file + "_" + op.basename(file2)
                 from_path = op.join(WD_ref, op.join('peds_temp', Fname2))
                 To_path = op.join(WD_dest, file2)
                 cp_command2 = "cp " + from_path + " " + To_path
@@ -109,6 +124,7 @@ def make_copies(pipe_com, pipe_files, WD_ref, WD_dest, val):
             # ~ Fname = proc_name + "_" + Fname
             # ~ To_path = op.join(WD_dest, Fname)
         cp_command = "cp " + from_path + " " + To_path
+        log_info("copy commands inside the pipeline script: \n" + cp_command)
         subprocess.Popen(cp_command, shell=True,
                          stderr=subprocess.PIPE)
 
@@ -152,7 +168,8 @@ def read_files(WD_test):
 
 
 def main(args=None):
-
+    logging.basicConfig(filename='peds_commands.log',
+                        format='%(asctime)s:%(message)s', level=logging.INFO)
     repro_path = os.getenv('REPRO_TOOLS_PATH')
     assert(repro_path), 'REPRO_TOOLS_PATH is not defined'
     WD_test = repro_path #op.join(repro_path, 'test/peds_test_data')
@@ -172,6 +189,8 @@ def main(args=None):
         i += 1
     subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)
 
+    msg = 'OS_RELEASE: ' + str(OS_release) + "\ncommand executed: " + command
+    log_info(msg)
 # ####### ON FIRST CONDITION (CENTOS7  ######## iteratively
     # Capture single write error files
     WD_ref = op.join(WD_test, "centos6/subject1")

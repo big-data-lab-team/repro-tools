@@ -272,13 +272,11 @@ def iterate(descriptor,
         # (3) Classification of processes, running peds script
         print([sqlite_db,
               "test_diff_file.json",
-              "-o", peds_result,
-              "-c"
+              "-o", peds_result
               ])
         peds([sqlite_db,
               "test_diff_file.json",
-              "-o", peds_result,
-              "-c"
+              "-o", peds_result
               ])
         json_file_editor(peds_capture_output, '', 'None')
         log_info("peds has done!")
@@ -287,6 +285,7 @@ def iterate(descriptor,
         with open(output_peds_file, 'r') as cmd_json:
             data = json.load(cmd_json)
         if data["multiWrite_cmd"]:
+            print("MULTI:  ")
             total_mutli_write.update(data["multiWrite_cmd"])
             update_peds_json(total_mutli_write, output_peds_file, "multi")
             tag_name += 1
@@ -297,6 +296,7 @@ def iterate(descriptor,
                      "going to the next iteration")
 
         if data["certain_cmd"]:
+            print("Certain:  ")
             # (4) Start the modification through docker image
             total_commands.update(data["certain_cmd"])
             update_peds_json(total_commands, output_peds_file, "single")
