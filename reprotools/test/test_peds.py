@@ -85,29 +85,17 @@ def test_verify_files_running():
     comp_json_files(ref_out, out)
 
 
-# ~ def test_auto_peds():
-    # ~ os.chdir(op.join(repopath(), 'test', 'peds_test_data'))
-    # ~ auto_peds([".",
-               # ~ "-c", "conditions.txt",
-               # ~ "-r", ".",
-               # ~ "-s", "trace_test.sqlite3",
-               # ~ "-o", "commands.json",
-               # ~ "-m",
-               # ~ "-p", "second",
-               # ~ "-d", "descriptor.json",
-               # ~ "-i", "invocation.json",
-               # ~ "-d2", "descriptor_cond2.json",
-               # ~ "-i2", "invocation_cond2.json"
-               # ~ ])
-    # ~ auto_peds([".",
-               # ~ "-c", "conditions.txt",
-               # ~ "-r", ".",
-               # ~ "-s", "trace_test.sqlite3",
-               # ~ "-o", "commands.json",
-               # ~ "-p", "first",
-               # ~ "-d", "descriptor.json",
-               # ~ "-i", "invocation.json",
-               # ~ "-d2", "descriptor_cond2.json",
-               # ~ "-i2", "invocation_cond2.json"])
-    # ~ assert(open("commands.json", "r").read()
-           # ~ == open("result_test.json", "r").read())
+def test_auto_peds():
+    os.chdir(op.join(repopath(), 'test', 'peds_test_data'))
+    auto_peds([".",
+               "-c", "conditions.txt",
+               "-r", ".",
+               "-s", "trace_test.sqlite3",
+               "-o", "commands.json",
+               "-p", "first",
+               "-d", "descriptor.json",
+               "-i", "invocation.json",
+               "-d2", "descriptor_cond2.json",
+               "-i2", "invocation_cond2.json"])
+    assert(open("commands.json", "r").read()
+           == open("result_test.json", "r").read())
