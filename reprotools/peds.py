@@ -387,6 +387,7 @@ def make_squared_green_node(graph, id, pid, name, node_label,
             graph.edge(str(e), str(id))
 
 
+'''
 # ~ # Create a file include all dependency files info
 # ~ def write_to_file(write_diff_list, read_diff_list, read_tmp_list,
                   # ~ write_tmp_list, write_files, proc, count_diff_w,
@@ -405,11 +406,14 @@ def make_squared_green_node(graph, id, pid, name, node_label,
     # ~ write_files.write("\ntotal read files with diff: " +
                       # ~ str(count_diff_r) + "\n\n")
     # ~ rf.to_csv(write_files, sep='\t', index=False)
-    # ~ write_files.write("\ntotal read temp files: " + str(count_tmp_r) + "\n\n")
+    # ~ write_files.write("\ntotal read temp files: " + str(count_tmp_r)
+                          # ~ + "\n\n")
     # ~ tr.to_csv(write_files, sep='\t', index=False)
-    # ~ write_files.write("\ntotal write temp files: " + str(count_tmp_w) + "\n\n")
+    # ~ write_files.write("\ntotal write temp files: " + str(count_tmp_w)
+                          # ~ + "\n\n")
     # ~ tw.to_csv(write_files, sep='\t', index=False)
     # ~ write_files.write("\n************************************\n\n")
+'''
 
 
 def path_parser(path):

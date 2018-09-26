@@ -93,11 +93,11 @@ def make_modify_script(peds_data_path, command_dic):
                 cmd_file.write('cp ' + op.join(cwd,
                                'make_copy.py') + ' `which ' +
                                pipeline_command + '`' + '\n')
-    cmd_file.write('python ' + op.join(cwd,
-                   'make_copy.py') + '\n')
                 # ~ cmd_file.write('cp ' + op.join(op.dirname(__file__),
                 #               # ~ 'make_copy.py') + ' `which ' +
                 #               # ~ pipeline_command + '`' + '\n')
+    cmd_file.write('python ' + op.join(cwd,
+                   'make_copy.py') + '\n')
 
 
 def modify_docker_image(descriptor, peds_data_path, tag_name):
