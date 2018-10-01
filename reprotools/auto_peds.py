@@ -68,27 +68,36 @@ def pipeline_executor(descriptor, invocation):
 
 
 def make_modify_script(peds_data_path, command_dic):
+    cmd_file = open(op.join(peds_data_path, 'cmd.sh'), 'w+')
+    cmd_file.write('#!/usr/bin/env bash \n')
+    cmd_list = []
+    cwd = op.abspath(op.join(os.getcwd(), '../..'))
     for command, files in command_dic.items():
         pipeline_command = command.split('\x00')[0]
-        # Make a copy of process to backup folder if doesn't exist
-        if pipeline_command.split('/')[0] == '':
-            pipeline_command_new = pipeline_command[1:]
-            backup_path = op.join(peds_data_path,
-                                  'backup_scripts', pipeline_command_new)
-        else:
-            backup_path = op.join(peds_data_path,
-                                  'backup_scripts', pipeline_command)
-        cmd_file = open(op.join(peds_data_path, 'cmd.sh'), 'w+')
-        cmd_file.write('#!/usr/bin/env bash \n')
+        if pipeline_command not in cmd_list:
+            cmd_list.append(pipeline_command)
+            # Make a copy of process to backup folder if doesn't exist
+            if pipeline_command.split('/')[0] == '':
+                pipeline_command_new = pipeline_command[1:]
+                backup_path = op.join(peds_data_path,
+                                      'backup_scripts', pipeline_command_new)
+            else:
+                backup_path = op.join(peds_data_path,
+                                      'backup_scripts', pipeline_command)
 
-        if not op.exists(backup_path):
-            if not op.exists(op.dirname(backup_path)):
-                os.makedirs(op.dirname(backup_path))
-            cmd_file.write('cp ' + '`which '+pipeline_command + '` '
-                           + backup_path + '\n')
-            cmd_file.write('cp ' + op.join(op.dirname(__file__),
-                           'make_copy.py') + ' `which ' +
-                           pipeline_command + '`' + '\n')
+            if not op.exists(backup_path):
+                if not op.exists(op.dirname(backup_path)):
+                    os.makedirs(op.dirname(backup_path))
+                cmd_file.write('cp ' + '`which '+pipeline_command + '` '
+                               + backup_path + '\n')
+                cmd_file.write('cp ' + op.join(cwd,
+                               'make_copy.py') + ' `which ' +
+                               pipeline_command + '`' + '\n')
+                # ~ cmd_file.write('cp ' + op.join(op.dirname(__file__),
+                #               # ~ 'make_copy.py') + ' `which ' +
+                #               # ~ pipeline_command + '`' + '\n')
+    cmd_file.write('python ' + op.join(cwd,
+                   'make_copy.py') + '\n')
 
 
 def modify_docker_image(descriptor, peds_data_path, tag_name):
@@ -97,21 +106,22 @@ def modify_docker_image(descriptor, peds_data_path, tag_name):
     image_name = data["container-image"]["image"]
     client = docker.from_env()
     # print("Running command: {}".format(cmd_list))
+    cwd = op.abspath(op.join(os.getcwd(), '../..'))
 
+    print(cwd)
     cmd_file_path = op.join(peds_data_path, 'cmd.sh')
     with open(cmd_file_path, 'r') as cmdFile:
         cmd = cmdFile.readlines()
     container = client.containers.run(image_name,
                                       command='sh ' + cmd_file_path,
-                                      volumes={os.getcwd():
-                                               {'bind': os.getcwd(),
+                                      volumes={cwd:
+                                               {'bind': cwd,
                                                 'mode': 'rw'}},
                                       environment=(["PYTHONPATH=$PYTHONPATH:"
-                                                   + os.getcwd(),
+                                                   + cwd,
                                                    "REPRO_TOOLS_PATH=" +
-                                                    op.dirname(
-                                                    op.abspath(repro_path))]),
-                                      working_dir=os.getcwd(),
+                                                    os.getcwd()]),
+                                      working_dir=cwd,
                                       detach=True)
     container.logs()
     container.wait()
@@ -233,6 +243,7 @@ def capture(descriptor,
 def iterate(descriptor,
             invocation,
             descriptor_cond2,
+            invocation_cond2,
             verify_cond,
             verify_output,
             peds_data_path,
@@ -241,6 +252,10 @@ def iterate(descriptor,
             peds_capture_output,
             output_peds_file):
     # Start Modification Loop
+    tag_name = 0
+    total_commands = {}
+    total_mutli_write = {}
+    pipeline_executor(descriptor_cond2, invocation_cond2)
     while True:
         # (1) Start the Pipeline execution using bosh
         pipeline_executor(descriptor, invocation)
@@ -257,16 +272,12 @@ def iterate(descriptor,
         # (3) Classification of processes, running peds script
         peds([sqlite_db,
               "test_diff_file.json",
-              "-o", peds_result,
-              "-c"
+              "-o", peds_result
               ])
         json_file_editor(peds_capture_output, '', 'None')
         log_info("peds has done!")
 
         # Check if there exist processes that create error
-        total_commands = {}
-        total_mutli_write = {}
-        tag_name = 0
         with open(output_peds_file, 'r') as cmd_json:
             data = json.load(cmd_json)
         if data["multiWrite_cmd"]:
@@ -293,7 +304,7 @@ def iterate(descriptor,
             log_info("Docker is modified on the Reference condition"
                      "to fix process that create errors with certain cmd, "
                      "goint to the next iteration")
-
+            # ~ sys.exit(1)
         if not (data["certain_cmd"] or data["multiWrite_cmd"]):
             log_info("there are no error in the pipeline!")
             # print out the final recognized processes
@@ -365,6 +376,7 @@ def main(args=None):
         iterate(args.descriptor,
                 args.invocation,
                 args.descriptor_cond2,
+                args.invocation_cond2,
                 args.verify_condition,
                 args.verify_output,
                 op.abspath(args.output_directory),
