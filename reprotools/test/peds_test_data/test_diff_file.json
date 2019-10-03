@@ -1,0 +1,89 @@
+{
+    "condition1 vs condition2": {
+        "conditions": [
+            "centos6", 
+            "centos7"
+        ], 
+        "files": {
+            "Dockerfile": {
+                "subjects": {
+                    "subject1": {
+                        "MD5": "d0b766646642506bb857f20770ea2bb6", 
+                        "MD5-cond1": "d0b766646642506bb857f20770ea2bb6", 
+                        "MD5-cond2": "4905b4ad14cf2bc01021a878772fa912", 
+                        "checksum": 1
+                    }
+                }, 
+                "sum": {
+                    "checksum": 1
+                }
+            }, 
+            "f1.out": {
+                "subjects": {
+                    "subject1": {
+                        "MD5": "daa0656d9064eacdd5a40cf73c0a13d4", 
+                        "checksum": 0
+                    }
+                }, 
+                "sum": {
+                    "checksum": 0
+                }
+            }, 
+            "f2.out": {
+                "subjects": {
+                    "subject1": {
+                        "MD5": "daa0656d9064eacdd5a40cf73c0a13d4", 
+                        "checksum": 0
+                    }
+                }, 
+                "sum": {
+                    "checksum": 0
+                }
+            }, 
+            "f3.out": {
+                "subjects": {
+                    "subject1": {
+                        "MD5": "daa0656d9064eacdd5a40cf73c0a13d4", 
+                        "checksum": 0
+                    }
+                }, 
+                "sum": {
+                    "checksum": 0
+                }
+            }, 
+            "f4.out": {
+                "subjects": {
+                    "subject1": {
+                        "MD5": "daa0656d9064eacdd5a40cf73c0a13d4", 
+                        "checksum": 0
+                    }
+                }, 
+                "sum": {
+                    "checksum": 0
+                }
+            }, 
+            "input_file.txt": {
+                "subjects": {
+                    "subject1": {
+                        "MD5": "095faa1de38ef944c6fbc8cc68bc22ba", 
+                        "checksum": 0
+                    }
+                }, 
+                "sum": {
+                    "checksum": 0
+                }
+            }, 
+            "test_script.sh": {
+                "subjects": {
+                    "subject1": {
+                        "MD5": "2b79de79284434deb99a37bc37bbe7c8", 
+                        "checksum": 0
+                    }
+                }, 
+                "sum": {
+                    "checksum": 0
+                }
+            }
+        }
+    }
+}

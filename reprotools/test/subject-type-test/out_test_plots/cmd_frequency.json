@@ -1,0 +1,105 @@
+{
+    "ACPCAlignment": {
+        "flirt": {
+            "flirt -interp spline -in robustroi.nii.gz -ref MNI152_T1_0.7mm.nii.gz -omat roi2std.mat -out acpc_final.nii.gz -searchrx -30 30 -searchry -30 30 -searchrz -30 30 ": "5 outof 5", 
+            "flirt -interp spline -in robustroi.nii.gz -ref MNI152_T2_0.7mm.nii.gz -omat roi2std.mat -out acpc_final.nii.gz -searchrx -30 30 -searchry -30 30 -searchrz -30 30 ": "5 outof 5"
+        }
+    }, 
+    "AnatomicalAverage": {
+        "flirt": {
+            "flirt -in T1w1_gdc_roi -ref MNI152_T1_0.7mm.nii.gz -omat T1w1_gdcroi_to_std.mat -out T1w1_gdcroi_to_std -dof 12 -searchrx -30 30 -searchry -30 30 -searchrz -30 30 ": "0 outof 3", 
+            "flirt -in T1w2_gdc_roi -init T1w2_gdc_to_im1.mat -omat T1w2_gdc_to_im1_linmask.mat -out T1w2_gdc_to_im1_linmask -ref T1w1_gdc_roi -refweight T1w1_gdc_roi_linmask -nosearch ": "0 outof 3", 
+            "flirt -in T1w2_gdc_roi -ref MNI152_T1_0.7mm.nii.gz -omat T1w2_gdcroi_to_std.mat -out T1w2_gdcroi_to_std -dof 12 -searchrx -30 30 -searchry -30 30 -searchrz -30 30 ": "0 outof 3", 
+            "flirt -in T1w2_gdc_roi -ref T1w1_gdc_roi -omat T1w2_gdc_to_im1.mat -out T1w2_gdc_to_im1 -dof 6 -searchrx -30 30 -searchry -30 30 -searchrz -30 30 ": "0 outof 3", 
+            "flirt -in T2w1_gdc_roi -ref MNI152_T2_0.7mm.nii.gz -omat T2w1_gdcroi_to_std.mat -out T2w1_gdcroi_to_std -dof 12 -searchrx -30 30 -searchry -30 30 -searchrz -30 30 ": "0 outof 2", 
+            "flirt -in T2w2_gdc_roi -init T2w2_gdc_to_im1.mat -omat T2w2_gdc_to_im1_linmask.mat -out T2w2_gdc_to_im1_linmask -ref T2w1_gdc_roi -refweight T2w1_gdc_roi_linmask -nosearch ": "0 outof 2", 
+            "flirt -in T2w2_gdc_roi -ref MNI152_T2_0.7mm.nii.gz -omat T2w2_gdcroi_to_std.mat -out T2w2_gdcroi_to_std -dof 12 -searchrx -30 30 -searchry -30 30 -searchrz -30 30 ": "0 outof 2", 
+            "flirt -in T2w2_gdc_roi -ref T2w1_gdc_roi -omat T2w2_gdc_to_im1.mat -out T2w2_gdc_to_im1 -dof 6 -searchrx -30 30 -searchry -30 30 -searchrz -30 30 ": "0 outof 2", 
+            "flirt -init T1w1_gdc_std2roi.mat -in MNI152_T1_0.7mm_brain_mask.nii.gz -ref T1w1_gdc_roi -out T1w1_gdc_roi_linmask -applyxfm ": "0 outof 3", 
+            "flirt -init T2w1_gdc_std2roi.mat -in MNI152_T1_0.7mm_brain_mask.nii.gz -ref T2w1_gdc_roi -out T2w1_gdc_roi_linmask -applyxfm ": "0 outof 2"
+        }, 
+        "fslmaths": {
+            "fslmaths ImToHalf0001.nii.gz -add ImToHalf0002.nii.gz -div 2 T1w ": "3 outof 3", 
+            "fslmaths ImToHalf0001.nii.gz -add ImToHalf0002.nii.gz -div 2 T2w ": "1 outof 2"
+        }
+    }, 
+    "AtlasRegistrationToMNI152": {
+        "flirt": {
+            "flirt -interp spline -dof 12 -in T1w_acpc_dc_restore_brain -ref MNI152_T1_0.7mm_brain.nii.gz -omat acpc2MNILinear.mat -out T1w_acpc_dc_restore_brain_to_MNILinear ": "3 outof 5"
+        }, 
+        "fnirt": {
+            "fnirt T1w_acpc_dc_restore MNI152_T1_2mm.nii.gz acpc2MNILinear.mat MNI152_T1_2mm_brain_mask_dil.nii.gz acpc_dc2standard.nii.gz NonlinearRegJacobians.nii.gz IntensityModulatedT1.nii.gz 2mmReg.nii.gz NonlinearReg.txt NonlinearIntensities.nii.gz NonlinearReg.nii.gz T1_2_MNI152_2mm.cnf ": "1 outof 5"
+        }, 
+        "fslmaths": {
+            "fslmaths T1w_restore -mas T1w_restore_brain T1w_restore_brain ": "0 outof 5", 
+            "fslmaths T2w_restore -mas T2w_restore_brain T2w_restore_brain ": "0 outof 5"
+        }, 
+        "new_invwarp": {
+            "new_invwarp -w acpc_dc2standard.nii.gz -o standard2acpc_dc.nii.gz -r MNI152_T1_2mm.nii.gz ": "2 outof 5"
+        }
+    }, 
+    "BiasFieldCorrection": {
+        "fslmaths": {
+            "fslmaths T1w_acpc_dc -div BiasField_acpc_dc -mas T1w_acpc_dc_brain T1w_acpc_dc_restore_brain -odt float ": "0 outof 5", 
+            "fslmaths T1w_acpc_dc -div BiasField_acpc_dc T1w_acpc_dc_restore -odt float ": "0 outof 5", 
+            "fslmaths T1w_acpc_dc -mul T2w_acpc_dc -abs -sqrt T1wmulT2w.nii.gz -odt float ": "0 outof 5", 
+            "fslmaths T1wmulT2w.nii.gz -mas T1w_acpc_dc_brain T1wmulT2w_brain.nii.gz ": "0 outof 5", 
+            "fslmaths T1wmulT2w_brain.nii.gz -div X X T1wmulT2w_brain_norm.nii.gz ": "0 outof 5", 
+            "fslmaths T1wmulT2w_brain_norm.nii.gz -bin -s 5 SmoothNorm_s5.nii.gz ": "0 outof 5", 
+            "fslmaths T1wmulT2w_brain_norm.nii.gz -div T1wmulT2w_brain_norm_s5.nii.gz T1wmulT2w_brain_norm_modulate.nii.gz ": "0 outof 5", 
+            "fslmaths T1wmulT2w_brain_norm.nii.gz -mas T1wmulT2w_brain_norm_modulate_mask.nii.gz -dilall bias_raw.nii.gz -odt float ": "0 outof 5", 
+            "fslmaths T1wmulT2w_brain_norm.nii.gz -s 5 -div SmoothNorm_s5.nii.gz T1wmulT2w_brain_norm_s5.nii.gz ": "0 outof 5", 
+            "fslmaths T1wmulT2w_brain_norm_modulate -thr X -bin -ero -mul X T1wmulT2w_brain_norm_modulate_mask ": "0 outof 5", 
+            "fslmaths T2w_acpc_dc -div BiasField_acpc_dc -mas T1w_acpc_dc_brain T2w_acpc_dc_restore_brain -odt float ": "0 outof 5", 
+            "fslmaths T2w_acpc_dc -div BiasField_acpc_dc T2w_acpc_dc_restore -odt float ": "0 outof 5", 
+            "fslmaths bias_raw.nii.gz -s 5 BiasField_acpc_dc ": "0 outof 5"
+        }
+    }, 
+    "BrainExtraction": {
+        "flirt": {
+            "flirt -interp spline -dof 12 -in T1w_acpc -ref MNI152_T1_2mm.nii.gz -omat roughlin.mat -out T1w_acpc_to_MNI_roughlin.nii.gz -nosearch ": "2 outof 5", 
+            "flirt -interp spline -dof 12 -in T2w_acpc -ref MNI152_T2_2mm.nii.gz -omat roughlin.mat -out T2w_acpc_to_MNI_roughlin.nii.gz -nosearch ": "0 outof 5"
+        }, 
+        "fnirt": {
+            "fnirt T1w_acpc MNI152_T1_2mm.nii.gz roughlin.mat MNI152_T1_2mm_brain_mask_dil.nii.gz str2standard.nii.gz NonlinearRegJacobians.nii.gz IntensityModulatedT1.nii.gz T1w_acpc_to_MNI_nonlin.nii.gz NonlinearReg.txt NonlinearIntensities.nii.gz NonlinearReg.nii.gz T1_2_MNI152_2mm.cnf ": "2 outof 5", 
+            "fnirt T2w_acpc MNI152_T2_2mm.nii.gz roughlin.mat MNI152_T1_2mm_brain_mask_dil.nii.gz str2standard.nii.gz NonlinearRegJacobians.nii.gz IntensityModulatedT1.nii.gz T2w_acpc_to_MNI_nonlin.nii.gz NonlinearReg.txt NonlinearIntensities.nii.gz NonlinearReg.nii.gz T1_2_MNI152_2mm.cnf ": "0 outof 5"
+        }, 
+        "fslmaths": {
+            "fslmaths T1w_acpc -mas T1w_acpc_brain_mask T1w_acpc_brain ": "0 outof 5", 
+            "fslmaths T2w_acpc -mas T2w_acpc_brain_mask T2w_acpc_brain ": "0 outof 5"
+        }, 
+        "new_invwarp": {
+            "new_invwarp MNI152_T1_2mm.nii.gz -w str2standard.nii.gz -o standard2str.nii.gz ": "4 outof 5", 
+            "new_invwarp MNI152_T2_2mm.nii.gz -w str2standard.nii.gz -o standard2str.nii.gz ": "3 outof 5"
+        }
+    }, 
+    "T2wToT1wDistortionCorrectAndReg": {
+        "flirt": {
+            "flirt -in FieldMap.nii.gz -ref T1w_acpc -applyxfm -init Fieldmap2T1w_acpc.mat -out FieldMap2T1w_acpc ": "0 outof 5", 
+            "flirt -in FieldMap.nii.gz -ref T2w_acpc -applyxfm -init Fieldmap2T2w_acpc.mat -out FieldMap2T2w_acpc ": "0 outof 5", 
+            "flirt -interp spline -dof 6 -in Magnitude_warppedT1w -ref T1w_acpc -out Magnitude_warppedT1w2T1w_acpc -omat Fieldmap2T1w_acpc.mat -searchrx -30 30 -searchry -30 30 -searchrz -30 30 ": "5 outof 5", 
+            "flirt -interp spline -dof 6 -in Magnitude_warppedT2w -ref T2w_acpc -out Magnitude_warppedT2w2T2w_acpc -omat Fieldmap2T2w_acpc.mat -searchrx -30 30 -searchry -30 30 -searchrz -30 30 ": "5 outof 5", 
+            "flirt -ref T1w_acpc -in T2w_acpc_brain -dof 6 -cost bbr -wmseg T2w_reg_fast_wmseg -init T2w_reg_init.mat -omat T2w_reg.mat -out T2w_reg -schedule bbr.sch ": "0 outof 5", 
+            "flirt -ref T1w_acpc_brain -in T2w_acpc_brain -dof 6 -omat T2w_reg_init.mat ": "5 outof 5"
+        }, 
+        "fslmaths": {
+            "fslmaths FieldMap -mas fsl_X_tmp_eromask -add fsl_X_tmp_fmapfiltedge FieldMap ": "0 outof 5", 
+            "fslmaths FieldMap -mas fsl_X_tmp_mask fsl_X_tmp_fmapmasked ": "0 outof 5", 
+            "fslmaths FieldMap -sub X X -mas fsl_X_tmp_mask FieldMap -odt float ": "0 outof 5", 
+            "fslmaths Magnitude_brain -thr 0.00000001 -bin fsl_X_tmp_mask ": "0 outof 5", 
+            "fslmaths Phase -div 2 fsl_X_tmp_phase ": "0 outof 5", 
+            "fslmaths T1w_acpc -mas T1w_acpc_brain T1w_acpc_brain ": "0 outof 5", 
+            "fslmaths T2w_acpc -mas T2w_acpc_brain T2w_acpc_brain ": "0 outof 5", 
+            "fslmaths T2w_reg -mul T1w_acpc -sqrt sqrtT1wbyT2w -odt float ": "0 outof 5", 
+            "fslmaths T2w_reg.nii.gz -add 1 T2w_reg.nii.gz -odt float ": "0 outof 5", 
+            "fslmaths T2w_reg_fast_pve_2 -thr 0.5 -bin T2w_reg_fast_wmseg ": "0 outof 5", 
+            "fslmaths T2w_reg_fast_wmseg -edge -bin -mas T2w_reg_fast_wmseg T2w_reg_fast_wmedge ": "0 outof 5", 
+            "fslmaths X_3T_FieldMap_Magnitude.nii.gz -Tmean Magnitude ": "0 outof 5", 
+            "fslmaths fsl_X_tmp_fmapfilt -mas fsl_X_tmp_edgemask fsl_X_tmp_fmapfiltedge ": "0 outof 5", 
+            "fslmaths fsl_X_tmp_mask -kernel 2D -ero fsl_X_tmp_eromask ": "0 outof 5", 
+            "fslmaths fsl_X_tmp_mask -sub fsl_X_tmp_eromask -thr 0.5 -bin fsl_X_tmp_edgemask ": "0 outof 5", 
+            "fslmaths fsl_X_tmp_ph_radians_unwrapped -div .00246000000000000000 fsl_X_tmp_ph_rps -odt float ": "0 outof 5", 
+            "fslmaths fsl_X_tmp_phase -div 2048 -sub 1 -mul 3.14159 -mas fsl_X_tmp_mask fsl_X_tmp_ph_radians -odt float ": "0 outof 5"
+        }
+    }
+}

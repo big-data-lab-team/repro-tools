@@ -68,7 +68,7 @@ def main(args=None):
                 # file and subject are in the test set
                 if test_matrix.get(file_id) is None or \
                    test_matrix[file_id].get(subject_id) is None:
-                        continue
+                    continue
                 # no difference
                 if test_matrix[file_id][subject_id] == original_value:
                     if test_matrix[file_id][subject_id] == 1:

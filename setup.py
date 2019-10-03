@@ -6,10 +6,15 @@ VERSION = "0.0.1"
 DEPS = [
          "graphviz",
          "pandas",
-         "matplotlib",
+         "matplotlib==2.2.3",
+         "plotly",
          "boutiques",
          "docker",
-         "pyspark"
+         "zss",
+         "scipy",
+         "sklearn",
+         "seaborn",
+         "scikit-learn"
        ]
 
 setup(name="reprotools",
@@ -20,13 +25,6 @@ setup(name="reprotools",
       author="Big Data Infrastructures for Neuroinformatics lab",
       classifiers=[
                 "Programming Language :: Python",
-                "Programming Language :: Python :: 2",
-                "Programming Language :: Python :: 3",
-                "Programming Language :: Python :: 2.7",
-                "Programming Language :: Python :: 3.4",
-                "Programming Language :: Python :: 3.5",
-                "Programming Language :: Python :: 3.6",
-                "Programming Language :: Python :: 3.7",
                 "Programming Language :: Python :: Implementation :: PyPy",
                 "License :: OSI Approved :: MIT License",
                 "Topic :: Software Development :: Libraries :: Python Modules",
@@ -43,9 +41,9 @@ setup(name="reprotools",
             "verify_files=reprotools:verify_files",
             "peds=reprotools:peds",
             "auto_peds=reprotools:auto_peds",
-            "plot_matrix=reprotools:plot_matrix",
-            "predict=reprotools:predict",
-            "diff_file_size=reprotools:diff_file_size"
+            "make_copy=reprotools:make_copy",
+            "subject_clustering=reprotools:subject_clustering"
+
         ]
       },
       setup_requires=DEPS,
