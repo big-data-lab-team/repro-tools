@@ -38,6 +38,16 @@ def test_subj_clustering():
           "subject-type-test/out_test_plots/"])
 
 
+# def test_subj_clustering2():
+#     os.chdir(op.join(repopath(), 'test'))
+#     subject_clustering(["-t", "1.0",
+#           "subject-type-test/in_test_subjects/",
+#           "subject-type-test/out_test_plots/"])
+    
+#     assert(open("subject-type-test/clusters_test.txt", "r").read() 
+#            == open("subject-type-test/output-trees/clusters.txt", "r").read())
+
+
 def test_auto_peds():
     # ~ test_capture_first_cond()
     # ~ test_capture_second_cond()
@@ -59,16 +69,6 @@ def test_auto_peds():
 
 #     assert(open("commands.json", "r").read()
 #            == open("result_test.json", "r").read())
-
-
-# def test_subj_clustering():
-#     os.chdir(op.join(repopath(), 'test'))
-#     subj_clustering(["-t", "1.0",
-#           "subject-type-test/reprozip-traced-files/",
-#           "subject-type-test/output-trees/"])
-    
-#     assert(open("subject-type-test/clusters_test.txt", "r").read() 
-#            == open("subject-type-test/output-trees/clusters.txt", "r").read())
 
 
 def test_make_copy():

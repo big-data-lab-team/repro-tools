@@ -657,7 +657,7 @@ def main(args=None):
             json.dump(total_freq_union, fp, indent=4, sort_keys=True)
 
         # start to cluster command line arguments
-        cmd_args_clustering(total_freq_union)
+#        cmd_args_clustering(total_freq_union)
 
     # 3) start of hierarchical clustering of process trees
     if args.threshold:
