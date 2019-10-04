@@ -89,7 +89,7 @@ def test_peds():
     peds(["trace_test.sqlite3",
           "ref_diff_file.json",
           "-i", "toremove.txt",
-          "-o", "commands.json"])
+          "-o", "commands_test2.json"])
 #     assert(open("graph.dot", "r").read() == open("graph_test.dot", "r").read())
 
 
