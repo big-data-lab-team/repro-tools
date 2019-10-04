@@ -10,6 +10,7 @@ DEPS = [
          "plotly",
          "boutiques",
          "docker",
+         "pyspark",
          "zss",
          "scipy",
          "sklearn",
@@ -48,5 +49,5 @@ setup(name="reprotools",
         ]
       },
       setup_requires=DEPS,
-      install_requires=DEPS,
-      zip_safe=False)
+      install_requires=DEPS)
+#      zip_safe=False)
