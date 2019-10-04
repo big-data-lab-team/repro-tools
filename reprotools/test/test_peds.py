@@ -56,6 +56,7 @@ def test_auto_peds():
                "-r", "centos6",
                "-b", "centos7"
                ])
+
 #     assert(open("commands.json", "r").read()
 #            == open("result_test.json", "r").read())
 
@@ -66,14 +67,21 @@ def test_auto_peds():
 #           "subject-type-test/reprozip-traced-files/",
 #           "subject-type-test/output-trees/"])
     
-#     assert(open("subject-type-test/clusters_test.txt", "r").read() 
-#            == open("subject-type-test/output-trees/clusters.txt", "r").read())
+    assert(open("subject-type-test/clusters_test.txt", "r").read() 
+           == open("subject-type-test/output-trees/clusters.txt", "r").read())
 
 
-# def test_make_copy():
-#     os.chdir(op.join(repopath(), 'test', 'peds_test_data'))
-#     os.environ["REPRO_TOOLS_PATH"] = os.getcwd()
-#     make_copy()
+def test_make_copy():
+    peds_data_path = op.join(repopath(), 'test', 'peds_test_data')
+    from_path = op.join(op.abspath("centos6"), "subject1")
+    to_path = op.join(op.abspath("centos7"), "subject1")
+    os.chdir(peds_data_path)
+    os.environ["REPRO_TOOLS_PATH"] = os.getcwd()
+    os.environ["NURM_OUTPUT_PATH"] = peds_data_path
+    os.environ["PROCESS_LIST"] = op.join(peds_data_path, "commands.json")
+    os.environ["FROM_PATH"] = from_path
+    os.environ["TO_PATH"] = to_path
+    make_copy()
 
 
 # def test_peds():
