@@ -67,8 +67,8 @@ def test_auto_peds():
 #           "subject-type-test/reprozip-traced-files/",
 #           "subject-type-test/output-trees/"])
     
-    assert(open("subject-type-test/clusters_test.txt", "r").read() 
-           == open("subject-type-test/output-trees/clusters.txt", "r").read())
+#     assert(open("subject-type-test/clusters_test.txt", "r").read() 
+#            == open("subject-type-test/output-trees/clusters.txt", "r").read())
 
 
 def test_make_copy():
