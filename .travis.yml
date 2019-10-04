@@ -7,7 +7,6 @@ python:
 - 3.5-dev
 - 3.6
 - 3.6-dev
-- 3.7
 - 3.7-dev
 - nightly
 
@@ -23,7 +22,8 @@ before_install:
 install:
 - pip install --upgrade setuptools
 - pip install coveralls pytest pytest-runner pycodestyle
-- pip install .
+  #- pip install .
+- python setup.py install
 - docker pull salari/reprotools_project:nurm_centos7_latest
 - docker tag salari/reprotools_project:nurm_centos7_latest nurm_centos7_latest
 - docker pull salari/reprotools_project:nurm_centos6_latest
