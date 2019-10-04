@@ -586,8 +586,8 @@ def cmd_args_clustering(total_freq_union):
             else:
                 val_list.append('#FFF380')  # yellow
         color_list.append(val_list)
-    fig = go.Figure(data=[go.Table(header=dict(values=p_options.keys()),
-                    cells=dict(values=label_list, fill_color=color_list))])
+    # fig = go.Figure(data=[go.Table(header=dict(values=p_options.keys()),
+    #                 cells=dict(values=label_list, fill_color=color_list))])
     # fig.write_image('tabelofoptions.png')
     # fig.show()
 

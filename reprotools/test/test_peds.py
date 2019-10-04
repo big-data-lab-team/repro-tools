@@ -38,11 +38,11 @@ def test_subj_clustering():
           "subject-type-test/out_test_plots/"])
 
 
-# def test_subj_clustering2():
-#     os.chdir(op.join(repopath(), 'test'))
-#     subject_clustering(["-t", "1.0",
-#           "subject-type-test/in_test_subjects/",
-#           "subject-type-test/out_test_plots/"])
+def test_subj_clustering2():
+    os.chdir(op.join(repopath(), 'test'))
+    subject_clustering(["-t", "1.0",
+          "subject-type-test/in_test_subjects/",
+          "subject-type-test/out_test_plots/"])
     
 #     assert(open("subject-type-test/clusters_test.txt", "r").read() 
 #            == open("subject-type-test/output-trees/clusters.txt", "r").read())
