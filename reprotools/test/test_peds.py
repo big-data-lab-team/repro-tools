@@ -78,7 +78,7 @@ def test_make_copy():
     os.chdir(peds_data_path)
     os.environ["REPRO_TOOLS_PATH"] = os.getcwd()
     os.environ["NURM_OUTPUT_PATH"] = peds_data_path
-    os.environ["PROCESS_LIST"] = op.join(peds_data_path, "commands.json")
+    os.environ["PROCESS_LIST"] = op.join(peds_data_path, "commands_test.json")
     os.environ["FROM_PATH"] = from_path
     os.environ["TO_PATH"] = to_path
     make_copy()
