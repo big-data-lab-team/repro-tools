@@ -84,14 +84,12 @@ def test_make_copy():
     make_copy()
 
 
-# def test_peds():
-#     os.chdir(op.join(repopath(), 'test', 'peds_test_data'))
-#     peds(["trace_test.sqlite3",
-#           "ref_diff_file.json",
-#           "-i", "toremove.txt",
-#           "-g", "graph.dot",
-#           "-o", "commands.json",
-#           "-c"])
+def test_peds():
+    os.chdir(op.join(repopath(), 'test', 'peds_test_data'))
+    peds(["trace_test.sqlite3",
+          "ref_diff_file.json",
+          "-i", "toremove.txt",
+          "-o", "commands.json"])
 #     assert(open("graph.dot", "r").read() == open("graph_test.dot", "r").read())
 
 

@@ -187,6 +187,7 @@ def read_copy_files(process_list, subj_name):
 
 
 def read_captured_files(captured_file, subj_name):
+    command_parsed_id = {}
     try:
         with open(captured_file, 'r') as c_file:
             data = json.load(c_file)
