@@ -42,6 +42,7 @@ setup(name="reprotools",
             "peds=reprotools:peds",
             "auto_peds=reprotools:auto_peds",
             "make_copy=reprotools:make_copy",
+            "predict=reprotools:predict",
             "subject_clustering=reprotools:subject_clustering"
 
         ]
