@@ -589,7 +589,7 @@ def cmd_args_clustering(total_freq_union):
     fig = go.Figure(data=[go.Table(header=dict(values=p_options.keys()),
                     cells=dict(values=label_list, fill_color=color_list))])
     # fig.write_image('tabelofoptions.png')
-    #fig.show()
+    # fig.show()
 
 
 def get_processes_list(db_path):
@@ -657,7 +657,7 @@ def main(args=None):
             json.dump(total_freq_union, fp, indent=4, sort_keys=True)
 
         # start to cluster command line arguments
-#        cmd_args_clustering(total_freq_union)
+        cmd_args_clustering(total_freq_union)
 
     # 3) start of hierarchical clustering of process trees
     if args.threshold:
