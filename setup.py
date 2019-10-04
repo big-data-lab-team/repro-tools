@@ -45,6 +45,7 @@ setup(name="reprotools",
             "make_copy=reprotools:make_copy",
             "predict=reprotools:predict",
             "plot_matrix=reprotools:plot_matrix",
+            "diff_file_size=reprotools:diff_file_size",
             "subject_clustering=reprotools:subject_clustering"
 
         ]
