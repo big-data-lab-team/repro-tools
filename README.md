@@ -9,19 +9,10 @@ A set of tools to evaluate the reproducibility of computations.
 ## Table of Contents
 
 * [File Comparison](#file-comparison)
-  * [Usage](#usage)
 * [Predict Differences](#predict-differences)
-  * [Prerequisites](#prerequisites)
-  * [Usage](#usage)
 * [Plot Differences](#plot-differences)
-  * [Usage](#usage)
-  * [Examples](#examples) 
 * [Process Labeling](#process-labeling)
-  * [Prerequisites](#prerequisites)
-  * [Usage](#usage)
 * [NURM-tool](#nurm-tool)
-  * [Prerequisites](#prerequisites)
-  * [Usage](#usage)
 * [License](#license)
 
 
