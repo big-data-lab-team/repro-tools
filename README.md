@@ -136,7 +136,7 @@ diff_file,                    A json file computed differences between pipeline 
 
 The Numerical Reproducibility Measurement (NURM) tool is a framework to automate the procedure of 
 process labeling in the pipelines in two steps including: (1) capturing intermediary files (e.g. temp files)
-(2) labeling the pipeline processes. `auto-peds.py` script creates a json file contains of all the process that create 
+(2) labeling the pipeline processes. `auto-peds` script creates a json file contains of all the process that create 
 differences.
 
 - Figure 3 shows the iterations of the NURM-tool in a simple pipeline.
