@@ -784,8 +784,8 @@ def main(args=None):
                              "mentioned after the flag")
     parser.add_argument("-r", "--one_condition",
                         type=lambda x: check_file(parser, x),
-                        help="Just capture files and thier MD5 values  "
-                             "on one condition and not any comparisons")
+                        help="List files and thier MD5 values  "
+                             "on one condition without any comparison")
     args, params = parser.parse_known_args(args)
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s %(message)s')
