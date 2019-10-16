@@ -5,11 +5,9 @@
 # repro-tools
 A set of tools to evaluate the reproducibility of computations.
 
-
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
 
-* [About the Project](#about-the-project)
 * [File Comparison](#file-comparison)
   * [Usage](#usage)
 * [Predict Differences](#predict-differences)
@@ -24,10 +22,7 @@ A set of tools to evaluate the reproducibility of computations.
 * [NURM-tool](#nurm-tool)
   * [Prerequisites](#prerequisites)
   * [Usage](#usage)
-  * [Examples](#examples) 
 * [License](#license)
-
-## About the Project
 
 
 ## File Comparison
@@ -35,7 +30,6 @@ A set of tools to evaluate the reproducibility of computations.
 `verifyFiles` script compares the output files produced by pipelines in different conditions. 
 It identifies the files that are common to all conditions, and for these files, 
 it compares them based on their checksums and other metrics configurable by file type.
-
 
 ### Usage
 
@@ -125,7 +119,6 @@ over the difference matrices produced by `verifyFiles.py`.
 This script works based on the file dependencies created by reprozip tool and 
 the difference file created by veryfyFiles script.
 
-
 ### Usage
 
 ```
@@ -143,8 +136,14 @@ diff_file,                    A json file computed differences between pipeline 
 
 The Numerical Reproducibility Measurement (NURM) tool is a framework to automate the procedure of 
 process labeling in the pipelines in two steps including: (1) capturing intermediary files (e.g. temp files)
-(2) labeling the pipeline processes. Finally, `auto-peds.py` script creates a json file contains of all the process that create 
+(2) labeling the pipeline processes. `auto-peds.py` script creates a json file contains of all the process that create 
 differences.
+
+- Figure 3 shows the iterations of the NURM-tool in a simple pipeline.
+
+| ![Alt text](./reprotools/test/peds_test_data/classification.png?raw=true "Title") |
+|:---:|
+| **Figure 3** |
 
 ### Prerequisites
 
@@ -169,15 +168,6 @@ output_directory,             Output directory to keep result files.
 -i2 INVOCATION_COND2,         Boutiques invocation file of the second pipeline condition (e.g. Centos6).
 -r REFERENCE_COND,            Path to the output files of the reference condition to capture temp and multi-write files. Also, it make copies FROM this directory.
 -b BASE_COND,                 Path to the output files of the base condition that make copies TO this directory.
-```
-
-### Examples
-
-- Figure 3 shows the iterations of the NURM-tool in a simple pipeline.
-
-| ![Alt text](./reprotools/test/peds_test_data/classification.png?raw=true "Title") |
-|:---:|
-| **Figure 3** | 
-
+``` 
 
 ## License
