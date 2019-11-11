@@ -26,6 +26,7 @@ import sys
 import seaborn as sns
 from pylab import *
 import plotly.graph_objects as go
+from collections import Counter
 
 
 def strdist(a, b):
@@ -454,10 +455,11 @@ def plot_heatmap(subsets_dic, interesting_p, output_folder):
     first = 0
     # grid = plt.GridSpec(len(ylabels)+1, len(interesting_p)+1,
     #                     hspace=0.05, wspace=0.05)
-    fig, axes = plt.subplots(len(ylabels), len(interesting_p))
+    fig, axes = plt.subplots(len(ylabels), len(interesting_p),
+                             figsize=(47, 18))
     plt.subplots_adjust(hspace=0.05, wspace=0.04)
-    cbar_ax = fig.add_axes([.91, .2, .02, .5])
-
+    cbar_ax = fig.add_axes([.91, .2, .02, .6])
+    cbar_ax.tick_params(labelsize=26)
     for element in subsets_dic.keys():
         xlabels = {}
         j = j + 1
@@ -496,18 +498,34 @@ def plot_heatmap(subsets_dic, interesting_p, output_folder):
             heatmap_label.append(freq_label)
             xlabel_ = [str(x).split(' ')[0] for x in xlabel_]
             sns.set(font_scale=1.1)
+            my_annot_kws = {"size": 30}  # , "weight":"bold"
+            counted_ = Counter(frequency_matrix[0]).values()
+            frequency_matrix = [Counter(frequency_matrix[0]).keys()]
+            heatmap_label = [Counter(heatmap_label[0]).keys()]
+            heatmap_label2 = [[]]
+            for ind, val in enumerate(frequency_matrix[0]):
+                for val_c in heatmap_label[0]:
+                    hh = val_c.split(' ')[0]
+                    if val_c.split(' ')[0] == str(val):
+                        if counted_[ind] > 1:
+                            val_c = val_c + ' x ' + str(counted_[ind])
+                            heatmap_label2[0].append(val_c)
+                        else:
+                            heatmap_label2[0].append(val_c)
+                        break
+
             sns.heatmap(frequency_matrix, cbar=first == 0,
                         cbar_ax=None if first else cbar_ax, vmin=0, vmax=1,
-                        annot=np.array(heatmap_label), fmt='',
-                        annot_kws={"size": 12}, linewidths=2,
+                        annot=np.array(heatmap_label2), fmt='',
+                        annot_kws=my_annot_kws, linewidths=2,
                         xticklabels='', yticklabels='', cmap=own_cmap1,
                         ax=axes[j, i])
             # linewidths=.1
             first = first + 1
             if i == 0:
-                axes[j, i].set_ylabel(short_name[element], fontsize=28)
+                axes[j, i].set_ylabel(short_name[element], fontsize=40)
             if j == len(ylabels)-1:
-                axes[j, i].set_xlabel(xlab, fontsize=28)
+                axes[j, i].set_xlabel(xlab, fontsize=40)
 
         # add gray subplots to show the process that is not presented
         # in the element
@@ -517,11 +535,11 @@ def plot_heatmap(subsets_dic, interesting_p, output_folder):
             sns.heatmap([[0.6]], cbar=False, vmin=0, vmax=1, xticklabels='',
                         yticklabels='', cmap="gist_gray", ax=axes[j, i])
             if i == 0:
-                axes[j, i].set_ylabel(short_name[element], fontsize=28)
+                axes[j, i].set_ylabel(short_name[element], fontsize=40)
             if j == len(ylabels)-1:
-                axes[j, i].set_xlabel(emp, fontsize=28)
-    plt.savefig(output_folder + 'heatmap.png')
-    # plt.show()
+                axes[j, i].set_xlabel(emp, fontsize=40)
+    plt.savefig(output_folder + 'heatmapn.png', bbox_inches='tight')
+    plt.show()
 
 
 def plot_totall_items(total_freq, output_folder):
