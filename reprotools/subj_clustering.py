@@ -499,7 +499,7 @@ def plot_heatmap(subsets_dic, interesting_p, output_folder):
             xlabel_ = [str(x).split(' ')[0] for x in xlabel_]
             sns.set(font_scale=1.1)
             my_annot_kws = {"size": 30}  # , "weight":"bold"
-            counted_ = Counter(frequency_matrix[0]).values()
+            counted_ = list(Counter(frequency_matrix[0]).values())
             frequency_matrix = [Counter(frequency_matrix[0]).keys()]
             heatmap_label = [Counter(heatmap_label[0]).keys()]
             heatmap_label2 = [[]]
