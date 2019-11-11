@@ -539,7 +539,7 @@ def plot_heatmap(subsets_dic, interesting_p, output_folder):
             if j == len(ylabels)-1:
                 axes[j, i].set_xlabel(emp, fontsize=40)
     plt.savefig(output_folder + 'heatmapn.png', bbox_inches='tight')
-    plt.show()
+    # plt.show()
 
 
 def plot_totall_items(total_freq, output_folder):
