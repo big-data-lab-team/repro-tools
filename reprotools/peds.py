@@ -46,14 +46,14 @@ class linked_list:
     def is_empty(self):
         return (self.head is None)
 
-    # Returns the size of the list
-    def size(self):
-        current = self.head
-        count = 0
-        while current is not None:
-            count = count + 1
-            current = current.next
-        return count
+    # # Returns the size of the list
+    # def size(self):
+    #     current = self.head
+    #     count = 0
+    #     while current is not None:
+    #         count = count + 1
+    #         current = current.next
+    #     return count
 
     # Returns the list of graph nodes
     def to_list(self):
@@ -70,17 +70,17 @@ class linked_list:
         new_node.next = self.head
         self.head = new_node
 
-    # Reverse the list which the head of list refer to the root process
-    def reverse(self):
-        prev = None
-        current = self.head
-        while (current is not None):
-            next = current.next
-            current.next = prev
-            prev = current
-            current = next
-        self.head = prev
-        return prev
+    # # Reverse the list which the head of list refer to the root process
+    # def reverse(self):
+    #     prev = None
+    #     current = self.head
+    #     while (current is not None):
+    #         next = current.next
+    #         current.next = prev
+    #         prev = current
+    #         current = next
+    #     self.head = prev
+    #     return prev
 
     # keep the correspond processes in the pipeline
     # and remove the other processes
@@ -169,21 +169,21 @@ class linked_list:
             else:
                 current = current.next
 
-    # Remove the process from list
-    def remove(self, item):
-        current = self.head
-        previous = None
-        found = False
-        while not found:
-            if current.data == item:
-                found = True
-            else:
-                previous = current
-                current = current.next
-        if previous is None:
-            self.head = current.next
-        else:
-            previous.setNext(current.next)
+    # # Remove the process from list
+    # def remove(self, item):
+    #     current = self.head
+    #     previous = None
+    #     found = False
+    #     while not found:
+    #         if current.data == item:
+    #             found = True
+    #         else:
+    #             previous = current
+    #             current = current.next
+    #     if previous is None:
+    #         self.head = current.next
+    #     else:
+    #         previous.setNext(current.next)
 
     def get_name(self, item):
         current = self.head
