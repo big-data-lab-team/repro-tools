@@ -93,6 +93,15 @@ def test_peds():
 #     assert(open("graph.dot", "r").read() == open("graph_test.dot", "r").read())
 
 
+def test_peds2():
+    os.chdir(op.join(repopath(), 'test', 'peds_test_data'))
+    peds(["trace_test.sqlite3",
+          "ref_diff_file.json",
+          "-i", "toremove.txt",
+          "-o", "commands_test2.json",
+          "-a", "grep 6.8 input_file.txt"])
+
+
 # def test_verify_files_running():
 #     os.chdir(op.join(repopath(), 'test', 'peds_test_data'))
 #     verify_files(["conditions.txt",
