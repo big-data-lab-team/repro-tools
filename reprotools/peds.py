@@ -114,16 +114,16 @@ class linked_list:
                     current.level = 0
                     # current.next = prev
                     # prev = current
-                # # here we can expand the final result to
-                # # more sub-process details instead of first-level
-                # for line2 in level_id:
-                #     tmp = current.pid[0]
-                #     if line2[0] == tmp[0]:
-                #         if line2[1] < level:
-                #             level_id.append([current.id, line2[1] + 1])
-                #             current.level = line2[1] + 1
-                #             # current.next = prev
-                #             # prev = current
+                # here we can expand the final result to
+                # more sub-process details instead of first-level
+                for line2 in level_id:
+                    tmp = current.pid[0]
+                    if line2[0] == tmp[0]:
+                        if line2[1] < level:
+                            level_id.append([current.id, line2[1] + 1])
+                            current.level = line2[1] + 1
+                            # current.next = prev
+                            # prev = current
 
                 current.next = prev
                 prev = current
