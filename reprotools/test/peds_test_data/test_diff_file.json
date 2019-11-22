@@ -33,33 +33,33 @@
                 "subjects": {
                     "subject1": {
                         "MD5": "daa0656d9064eacdd5a40cf73c0a13d4", 
-                        "checksum": 0
+                        "checksum": 1
                     }
                 }, 
                 "sum": {
-                    "checksum": 0
+                    "checksum": 1
                 }
             }, 
             "f3.out": {
                 "subjects": {
                     "subject1": {
                         "MD5": "daa0656d9064eacdd5a40cf73c0a13d4", 
-                        "checksum": 0
+                        "checksum": 1
                     }
                 }, 
                 "sum": {
-                    "checksum": 0
+                    "checksum": 1
                 }
             }, 
             "f4.out": {
                 "subjects": {
                     "subject1": {
                         "MD5": "daa0656d9064eacdd5a40cf73c0a13d4", 
-                        "checksum": 0
+                        "checksum": 1
                     }
                 }, 
                 "sum": {
-                    "checksum": 0
+                    "checksum": 1
                 }
             }, 
             "input_file.txt": {

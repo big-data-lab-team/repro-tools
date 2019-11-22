@@ -71,17 +71,30 @@ def test_auto_peds():
 #            == open("result_test.json", "r").read())
 
 
-# def test_make_copy():
-#     peds_data_path = op.join(repopath(), 'test', 'peds_test_data')
-#     from_path = op.join(op.abspath("centos6"), "subject1")
-#     to_path = op.join(op.abspath("centos7"), "subject1")
-#     os.chdir(peds_data_path)
-#     os.environ["REPRO_TOOLS_PATH"] = os.getcwd()
-#     os.environ["NURM_OUTPUT_PATH"] = peds_data_path
-#     os.environ["PROCESS_LIST"] = op.join(peds_data_path, "commands_test.json")
-#     os.environ["FROM_PATH"] = from_path
-#     os.environ["TO_PATH"] = to_path
-#     make_copy()
+def test_make_copy():
+    peds_data_path = op.join(repopath(), 'test', 'peds_test_data')
+    from_path = op.join(op.abspath("centos6"), "subject1")
+    to_path = op.join(op.abspath("centos7"), "subject1")
+    os.chdir(peds_data_path)
+    os.environ["REPRO_TOOLS_PATH"] = os.getcwd()
+    os.environ["NURM_OUTPUT_PATH"] = peds_data_path
+    os.environ["PROCESS_LIST"] = op.join(peds_data_path, "commands_test.json")
+    os.environ["FROM_PATH"] = from_path
+    os.environ["TO_PATH"] = to_path
+    make_copy()
+
+
+def test_make_copy_cap():
+    peds_data_path = op.join(repopath(), 'test', 'peds_test_data')
+    from_path = op.join(op.abspath("centos6"), "subject1")
+    to_path = op.join(op.abspath("centos7"), "subject1")
+    os.chdir(peds_data_path)
+    os.environ["REPRO_TOOLS_PATH"] = os.getcwd()
+    os.environ["NURM_OUTPUT_PATH"] = peds_data_path
+    os.environ["PROCESS_LIST"] = op.join(peds_data_path, "commands_cap_test.json")
+    os.environ["FROM_PATH"] = from_path
+    os.environ["TO_PATH"] = to_path
+    make_copy()
 
 
 def test_peds():
