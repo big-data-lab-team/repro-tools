@@ -22,7 +22,7 @@
         }
     },
     "total_temp_proc": {
-        "make_copy.pyc\u0000": {
+        "/home/travis/build/ali4006/repro-tools/reprotools/make_copy.py\u0000": {
             "files": [
                 "/home/travis/build/ali4006/repro-tools/reprotools/test/peds_test_data/centos6/subject1/f2.out"
             ],
