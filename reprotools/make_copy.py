@@ -353,6 +353,12 @@ def main(args=None):
         if capturing:
             log_info("capturing is TRUE")
             # COMPARE ARGS and then capture files
+            # with open('/home/Ali/Desktop/git_repo/repo/repo_backup/repro-tools/reprotools/test.json', 'w+') as testfile:
+            #     json.dump(total_temp_cmd, testfile, indent=4)
+            #     #testfile.write(total_temp_cmd)
+            # with open('/home/Ali/Desktop/git_repo/repo/repo_backup/repro-tools/reprotools/test.txt', 'w+') as testfile2:
+            #     testfile2.write(cmd_key)
+            print("Here is cmd out put:" + cmd_key)
             capture_files(from_path, total_temp_cmd, total_multi_cmd, cmd_key)
 
         else:
