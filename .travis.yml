@@ -29,7 +29,7 @@ install:
 - docker tag salari/reprotools_project:nurm_centos6_latest nurm_centos6_latest
 script:
 - pycodestyle --max-line-length=80 *.py */*.py
-- coverage run --source reprotools setup.py pytest -s
+- coverage run --source reprotools setup.py pytest --capture=no
 
 after_success:
 - coveralls
