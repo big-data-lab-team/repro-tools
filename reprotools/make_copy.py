@@ -30,25 +30,25 @@ def log_info(message):
     logging.info("INFO: " + message)
 
 
-def is_intstring(s):
-    try:
-        float(s)
-        return False
-    except ValueError:
-        return True
+# def is_intstring(s):
+#     try:
+#         float(s)
+#         return False
+#     except ValueError:
+#         return True
 
 
-def which(exe=None):
-    """Python clone of POSIX's /usr/bin/which."""
-    if exe:
-        (path, name) = op.split(exe)
-        if os.access(exe, os.X_OK):
-            return exe
-        for path in os.environ.get('PATH').split(os.pathsep):
-            full_path = op.join(path, exe)
-            if os.access(full_path, os.X_OK):
-                return full_path
-    return None
+# def which(exe=None):
+#     """Python clone of POSIX's /usr/bin/which."""
+#     if exe:
+#         (path, name) = op.split(exe)
+#         if os.access(exe, os.X_OK):
+#             return exe
+#         for path in os.environ.get('PATH').split(os.pathsep):
+#             full_path = op.join(path, exe)
+#             if os.access(full_path, os.X_OK):
+#                 return full_path
+#     return None
 
 
 def convert_to_key(cmd):
