@@ -613,7 +613,7 @@ def get_condition_checksum_dict(condition, root_dir, subjects,
 
 
 # # Write binary_difference_matrix
-# def matrix_text_files(bDiff, conditions_dict, fileDiff, 
+# def matrix_text_files(bDiff, conditions_dict, fileDiff,
 #                       mode, condition_pairs):
 #     r = 0
 #     c = 0
@@ -674,7 +674,7 @@ def check_subjects(conditions_dict):
 
 
 # # function to write the individual file detials to files
-# def write_filewise_details(metric_values_subject_wise, 
+# def write_filewise_details(metric_values_subject_wise,
 #                            metric_name, file_name):
 #     log_info(metric_name +
 #              " values getting written to subject wise into a csv file: " +
