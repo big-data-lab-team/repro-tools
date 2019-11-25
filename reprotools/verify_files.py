@@ -260,7 +260,7 @@ def check_file_data(abs_path_c, abs_path_d):
                   '.pial.postT2.pass1.conformed', '.white.prehires',
                   '.white.deformed']
     lta_list = ['.lta']
-    txt_list = ['.stats', '.sum', '.gii']
+    txt_list = ['.stats', '.sum', '.gii', '.txt']
 
     if os.path.splitext(abs_path_c)[1] in mri_list:
         return mri_check_file(abs_path_c, abs_path_d)
@@ -576,82 +576,82 @@ def get_condition_checksum_dict(condition, root_dir, subjects,
     return condition_checksum_dict
 
 
-# Write column_index text file of the matrix
-def matrix_column(bDiff, condition, condition_id, column_index):
-    column_index.write(str(condition_id))
-    column_index.write(";")
-    column_index.write(str(condition))
-    column_index.write("\n")
+# # Write column_index text file of the matrix
+# def matrix_column(bDiff, condition, condition_id, column_index):
+#     column_index.write(str(condition_id))
+#     column_index.write(";")
+#     column_index.write(str(condition))
+#     column_index.write("\n")
 
 
-# Write the text file of matrix according to the define conditions for it
-def matrix_differences(bDiff, condition, subject, path, r, c, mode,
-                       differences):
-    differences.write(str(r))
-    differences.write(";")
-    differences.write(str(c))
-    differences.write(";")
-    differences.write(str(bDiff[condition][subject][path]))
-    if mode is True:
-        differences.write(";")
-        differences.write(str([bDiff[condition][subject]
-                              ['mtime_files_list'].index(t) for t in
-                              bDiff[condition][subject]['mtime_files_list']
-                              if t[0] == path])[1:-1])  # file_index
-    differences.write("\n")
+# # Write the text file of matrix according to the define conditions for it
+# def matrix_differences(bDiff, condition, subject, path, r, c, mode,
+#                        differences):
+#     differences.write(str(r))
+#     differences.write(";")
+#     differences.write(str(c))
+#     differences.write(";")
+#     differences.write(str(bDiff[condition][subject][path]))
+#     if mode is True:
+#         differences.write(";")
+#         differences.write(str([bDiff[condition][subject]
+#                               ['mtime_files_list'].index(t) for t in
+#                               bDiff[condition][subject]['mtime_files_list']
+#                               if t[0] == path])[1:-1])  # file_index
+#     differences.write("\n")
 
 
-# Write row_index text file of the matrix
-def matrix_row(bDiff, subject, path, r, mode, row_index):
-    row_index.write(str(r))
-    row_index.write(";")
-    if mode is False:
-        row_index.write(str(subject))
-        row_index.write(";")
-    row_index.write(str(path))
-    row_index.write("\n")
+# # Write row_index text file of the matrix
+# def matrix_row(bDiff, subject, path, r, mode, row_index):
+#     row_index.write(str(r))
+#     row_index.write(";")
+#     if mode is False:
+#         row_index.write(str(subject))
+#         row_index.write(";")
+#     row_index.write(str(path))
+#     row_index.write("\n")
 
 
-# Write binary_difference_matrix
-def matrix_text_files(bDiff, conditions_dict, fileDiff, mode, condition_pairs):
-    r = 0
-    c = 0
-    if mode is True:
-        file_name = "_2D_"+str(condition_pairs)
-        file_name = file_name.replace(' ', '').replace("/", "_")
-    else:
-        file_name = "_3D"
-    row_index = open(fileDiff + file_name + "_row_index.txt", "w+")
-    column_index = open(fileDiff + file_name + "_column_index.txt", "w+")
-    differences = open(fileDiff + file_name + "_differences.txt", "w+")
-    if mode is True:
-        for subject in bDiff[list(bDiff.keys())[0]].keys():
-            matrix_column(bDiff, subject, c, column_index)
-            for path in list(list(conditions_dict.values())[0]
-                             .values())[0].keys():
-                matrix_differences(bDiff, condition_pairs, subject, path,
-                                   r, c, mode, differences)
-                matrix_row(bDiff, subject, path, r, mode, row_index)
-                r += 1
-            r = 0
-            c += 1
-    else:
-        for condition in bDiff.keys():
-            matrix_column(bDiff, condition, c, column_index)
-            for subject in bDiff[list(bDiff.keys())[c]].keys():
-                for path in list(list(conditions_dict.values())[c]
-                                 .values())[c].keys():
-                    matrix_differences(bDiff, condition, subject, path,
-                                       r, c, mode, differences)
-                    matrix_row(bDiff, subject, path, r, mode, row_index)
-                    r += 1
-            r = 0
-            c += 1
-    return (row_index, column_index, differences)
+# # Write binary_difference_matrix
+# def matrix_text_files(bDiff, conditions_dict, fileDiff, mode, condition_pairs):
+#     r = 0
+#     c = 0
+#     if mode is True:
+#         file_name = "_2D_"+str(condition_pairs)
+#         file_name = file_name.replace(' ', '').replace("/", "_")
+#     else:
+#         file_name = "_3D"
+#     row_index = open(fileDiff + file_name + "_row_index.txt", "w+")
+#     column_index = open(fileDiff + file_name + "_column_index.txt", "w+")
+#     differences = open(fileDiff + file_name + "_differences.txt", "w+")
+#     if mode is True:
+#         for subject in bDiff[list(bDiff.keys())[0]].keys():
+#             matrix_column(bDiff, subject, c, column_index)
+#             for path in list(list(conditions_dict.values())[0]
+#                              .values())[0].keys():
+#                 matrix_differences(bDiff, condition_pairs, subject, path,
+#                                    r, c, mode, differences)
+#                 matrix_row(bDiff, subject, path, r, mode, row_index)
+#                 r += 1
+#             r = 0
+#             c += 1
+#     else:
+#         for condition in bDiff.keys():
+#             matrix_column(bDiff, condition, c, column_index)
+#             for subject in bDiff[list(bDiff.keys())[c]].keys():
+#                 for path in list(list(conditions_dict.values())[c]
+#                                  .values())[c].keys():
+#                     matrix_differences(bDiff, condition, subject, path,
+#                                        r, c, mode, differences)
+#                     matrix_row(bDiff, subject, path, r, mode, row_index)
+#                     r += 1
+#             r = 0
+#             c += 1
+#     return (row_index, column_index, differences)
 
 
-def pretty_string(diff_dict, conditions_dict):
-    return json.dumps(diff_dict, indent=4, sort_keys=True)
+# def pretty_string(diff_dict, conditions_dict):
+#     return json.dumps(diff_dict, indent=4, sort_keys=True)
 
 
 # Returns a string containing a 'pretty' matrix representation of the
@@ -672,20 +672,20 @@ def check_subjects(conditions_dict):
                               condition + "\".")
 
 
-# function to write the individual file detials to files
-def write_filewise_details(metric_values_subject_wise, metric_name, file_name):
-    log_info(metric_name +
-             " values getting written to subject wise into a csv file: " +
-             file_name)
-    with open(file_name, 'wb') as f:
-        writer = csv.writer(f)
-        for item in metric_values_subject_wise[metric_name]:
-            for subject in metric_values_subject_wise[metric_name][item]:
-                for file_name in (metric_values_subject_wise[metric_name]
-                                  [item][subject]):
-                    writer.writerow([item, subject, file_name,
-                                     metric_values_subject_wise[metric_name]
-                                     [item][subject][file_name]])
+# # function to write the individual file detials to files
+# def write_filewise_details(metric_values_subject_wise, metric_name, file_name):
+#     log_info(metric_name +
+#              " values getting written to subject wise into a csv file: " +
+#              file_name)
+#     with open(file_name, 'wb') as f:
+#         writer = csv.writer(f)
+#         for item in metric_values_subject_wise[metric_name]:
+#             for subject in metric_values_subject_wise[metric_name][item]:
+#                 for file_name in (metric_values_subject_wise[metric_name]
+#                                   [item][subject]):
+#                     writer.writerow([item, subject, file_name,
+#                                      metric_values_subject_wise[metric_name]
+#                                      [item][subject][file_name]])
 
 
 # Logging functions
