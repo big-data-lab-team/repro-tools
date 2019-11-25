@@ -1,4 +1,3 @@
-import pytest
 import subprocess
 import os
 import json
@@ -14,21 +13,6 @@ from os.path import join as opj
 
 def repopath():
     return op.dirname(repo_init_file_path)
-
-
-def comp_json_files(ref_out, out):
-    for key in ref_out.keys():
-        assert(out.get(key))
-        assert(out[key]['conditions'] ==
-               ref_out[key]['conditions'])
-    for f in ref_out[key]['files']:
-        assert(out[key]['files'].get(f))
-        assert(out[key]['files'][f]['sum']['checksum'] ==
-               ref_out[key]['files'][f]['sum']['checksum'])
-        for s in ref_out[key]['files'][f]['subjects']:
-            assert(out[key]['files'][f]['subjects'].get(s))
-            assert(out[key]['files'][f]['subjects'][s]['checksum'] ==
-                   ref_out[key]['files'][f]['subjects'][s]['checksum'])
 
 
 def test_make_copy():
@@ -69,7 +53,6 @@ def test_subj_clustering2():
     subject_clustering(["-t", "1.0",
           "subject-type-test/in_test_subjects/",
           "subject-type-test/out_test_plots/"])
-    
 #     assert(open("subject-type-test/clusters_test.txt", "r").read() 
 #            == open("subject-type-test/output-trees/clusters.txt", "r").read())
 
@@ -92,7 +75,6 @@ def test_auto_peds():
                "-r", "centos6",
                "-b", "centos7"
                ])
-
 #     assert(open("commands.json", "r").read()
 #            == open("result_test.json", "r").read())
 
@@ -113,17 +95,3 @@ def test_peds2():
           "-i", "toremove.txt",
           "-o", "commands_test2.json",
           "-a", "grep 6.8 input_file.txt"])
-
-
-# def test_verify_files_running():
-#     os.chdir(op.join(repopath(), 'test', 'peds_test_data'))
-#     verify_files(["conditions.txt",
-#                   "test_diff_file.json",
-#                   "-e", "exclude_items.txt"
-#                   ])
-#     out = json.loads(open("test_diff_file.json",
-#                           "r").read())
-#     ref_out = json.loads(open("ref_diff_file.json",
-#                               "r").read())
-#     comp_json_files(ref_out, out)
-
