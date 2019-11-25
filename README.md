@@ -9,8 +9,6 @@ A set of tools to evaluate the reproducibility of computations.
 ## Table of Contents
 
 * [File Comparison](#file-comparison)
-* [Predict Differences](#predict-differences)
-* [Plot Differences](#plot-differences)
 * [Process Labeling](#process-labeling)
 * [NURM-tool](#nurm-tool)
 * [License](#license)
@@ -39,66 +37,6 @@ output_file,                                      JSON file format to keep outpu
 -t TRACK PROCESSES,     --trackProcesses          If this flag is set, it traces all the processes using reprozip to record the details and writes it into a CSV with the given name
 -r ONECONDITION,        --one_condition           List files and thier MD5 values on one condition without any comparison
 ```
-
-## Predict Differences
-
-`predict` script can be used to predict the elements of utility matrix M ij when following the sequential generating of elements is a concern.
-(Ex. a comparison matrix of generated files from a same pipeline process in two different versions of an operating system) 
-
-The sampling method options for fitting the training sets of the Alternating Least Square (ALS) are consist of:  
-	- columns  
-	- rows,random-real  
-	- random-unreal  
-	- diagonal (random picking of j from a uniform distribution)  
-	- triangular-L (Random-triangle-L: fewer i, more j)  
-	- triangular-S (Random-triangular-S: more i, fewer j)  
-	- Bias 
-
-### Prerequisites
-Spark 2.2.0, Python 2.7.13
-
-### Usage
-```
-predict.py matrix_file training_ratio approach dataset sampling_method 
-           [-p PREDICTIONS] [-r RANDOM-RATIO-ERROR] [-s SEED-NUMBER]
-
-matrix_file,                                         The matrix file produced by verifyFiles. Each line must be formated as '<file_id>;<condition_id>;<value>'.
-training_ratio,                                      The ratio of matrix elements that will be added to the training set. Has to be in [0,1].
-approach,                                            Prediction strategy: ALS, ALS-Bias or Bias.
-dataset,                                             Name of the dataset. Just to be used in the name of the output files.
-sampling_method,                                     Sampling method to use to build the training set.
--p PREDICTIONS,           --predictions              Text file where the predictions will be stored.
--r RANDOM-RATIO-ERROR,    --random-ratio-error       Maximum acceptable difference between target and effective training ratios.Defaults to 0.01.
--s SEED-NUMBER,           --seed_number              set seed number.
-```
-
-
-## Plot Differences
-
-`plot_matrix` script plots heatmap of difference matrices produced by
-`verifyFiles` script. 
-
-### Usage
-```
-plot_matrix.py original_matrix output_file [-t TEST-MATRIX]
-
-original_matrix,                                  Matrix file to plot. Each row should be in the following format: <ignored> <subject_id>  <binary_difference> <file_id>. File ids should be ordered according to their latest modification time.
-output_file,                                      Output file where the plot will be saved. File type is determined from extension.
--t TEST-MATRIX,           --test_matrix            Matrix file to plot. Each row should be in the following format: <file_id> <subject_id> <ignored> <predic_value>.
-File ids should be ordered according to their latest modification time.
-```
-
-* `-t` argument gives the possibility to superimpose the predicted matrices achived by `predict.py` 
-over the difference matrices produced by `verifyFiles.py`.
-
-### Examples
-
-- `./plot_matrix.py test/test_differences_plot.txt output.png` (Figure 1)
-- `python plot_matrix.py test/predict_test/test_differences.txt -t test/predict_test/triangular-S_0.6_test_data_matrix.txt test_plot_matrix.png` (Figure 2)
-
-| ![Alt text](./reprotools/test/test_differences_plot.png?raw=true "Figure 1") | ![Alt text](./reprotools/test/test_plot_matrix.png?raw=true "Figure 2") |
-|:---:|:---:|
-| **Figure 1** | **Figure 2** | 
 
 ## Process Labeling
 
