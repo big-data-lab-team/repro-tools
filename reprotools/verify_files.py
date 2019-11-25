@@ -260,7 +260,7 @@ def check_file_data(abs_path_c, abs_path_d):
                   '.pial.postT2.pass1.conformed', '.white.prehires',
                   '.white.deformed']
     lta_list = ['.lta']
-    txt_list = ['.stats', '.sum', '.gii', '.txt']
+    txt_list = ['.stats', '.sum', '.gii']
 
     if os.path.splitext(abs_path_c)[1] in mri_list:
         return mri_check_file(abs_path_c, abs_path_d)
