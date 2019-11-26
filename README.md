@@ -83,7 +83,7 @@ differences.
 
 - Figure 3 shows the iterations of the NURM-tool in a simple pipeline.
 
-| ![Alt text](./reprotools/test/peds_test_data/classification.png?raw=true "Title") |
+| ![Alt text](./reprotools/test/peds_test_data/iterative_modif.png?raw=true "Title") |
 |:---:|
 | **Figure 3** |
 
