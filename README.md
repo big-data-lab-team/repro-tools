@@ -8,10 +8,21 @@ A set of tools to evaluate the reproducibility of computations.
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
 
+* [Installation](#installation)
 * [File Comparison](#file-comparison)
 * [Process Labeling](#process-labeling)
 * [NURM-tool](#nurm-tool)
+* [How to Contribute](#how-to-contribute)
 * [License](#license)
+
+
+## Installation
+
+Simply install the package with `pip`
+
+    $ pip install reprotools
+
+Use parameter `--help` for additional info.
 
 
 ## File Comparison
@@ -23,8 +34,8 @@ it compares them based on their checksums and other metrics configurable by file
 ### Usage
 
 ```
-verifyFiles.py file_in output_file [-h] [-c CHECKSUMFILE] [-d FILEDIFF] [-m METRICSFILE] [-e EXCLUDEITEMS]
-               [-k CHECKCORRUPTION] [-s SQLITEFILE] [-x EXECFILE] [-t TRACKPROCESSES] [-r ONECONDITION]
+verifyFiles file_in output_file [-h] [-c CHECKSUMFILE] [-d FILEDIFF] [-m METRICSFILE] [-e EXCLUDEITEMS]
+            [-k CHECKCORRUPTION] [-s SQLITEFILE] [-x EXECFILE] [-t TRACKPROCESSES] [-r ONECONDITION]
 
 file_in,                                          Mandatory parameter.Directory path to the file containing the conditions.
 output_file,                                      JSON file format to keep output results.
@@ -99,4 +110,13 @@ output_directory,             Output directory to keep result files.
 -b BASE_COND,                 Path to the output files of the base condition that make copies TO this directory.
 ``` 
 
+## How to Contribute
+
+1. Clone repo and create a new branch: `$ git checkout https://github.com/big-data-lab-team/repro-tools -b name_for_new_branch`.
+2. Make changes and test
+3. Submit Pull Request with comprehensive description of changes
+
+
 ## License
+
+[MIT](LICENSE) © BIN Lab
