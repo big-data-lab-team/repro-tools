@@ -1,3 +1,5 @@
+[![PyPI version](https://badge.fury.io/py/reprotools.svg)](https://badge.fury.io/py/reprotools)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3553132.svg)](https://doi.org/10.5281/zenodo.3553132)
 [![Build Status](https://travis-ci.org/ali4006/repro-tools.svg?branch=develop)](https://travis-ci.org/ali4006/repro-tools)
 [![Coverage Status](https://coveralls.io/repos/github/ali4006/repro-tools/badge.svg?branch=develop)](https://coveralls.io/github/ali4006/repro-tools?branch=develop)
 
