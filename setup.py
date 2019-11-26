@@ -10,7 +10,6 @@ DEPS = [
          "plotly",
          "boutiques",
          "docker",
-         "pyspark",
          "zss",
          "scipy",
          "sklearn",
