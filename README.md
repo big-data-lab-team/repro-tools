@@ -13,7 +13,7 @@ A set of tools to evaluate the reproducibility of computations.
 * [Installation](#installation)
 * [File Comparison](#file-comparison)
 * [Process Labeling](#process-labeling)
-* [NURM-tool](#nurm-tool)
+* [Spot-tool](#spot-tool)
 * [How to Contribute](#how-to-contribute)
 * [License](#license)
 
@@ -74,14 +74,14 @@ diff_file,                    A json file computed differences between pipeline 
 -a COMMAND_LINE,              Pass the command line executed in the pipeline to capture data that write differences.
 ```
 
-## NURM tool
+## Spot tool
 
-The Numerical Reproducibility Measurement (NURM) tool is a framework to automate the procedure of 
+Spot tool is a framework to automate the procedure of 
 process labeling in the pipelines in two steps including: (1) capturing intermediary files (e.g. temp files)
 (2) labeling the pipeline processes. `auto-peds` script creates a json file contains of all the process that create 
 differences.
 
-- Figure 3 shows the iterations of the NURM-tool in a simple pipeline.
+- Figure 3 shows the iterations of the Spot tool in a simple pipeline.
 
 | ![Alt text](./reprotools/test/peds_test_data/iterative_modif.png?raw=true "Title") |
 |:---:|
@@ -121,4 +121,4 @@ output_directory,             Output directory to keep result files.
 
 ## License
 
-[MIT](LICENSE) © BIN Lab
+[MIT](LICENSE) © /bin Lab
