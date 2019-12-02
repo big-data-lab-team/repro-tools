@@ -18,6 +18,7 @@ def main(args=None):
     args = parser.parse_args(args)
     diff = abs(os.path.getsize(args.file1) - os.path.getsize(args.file2))
     print(diff)
+    return diff
 
 
 if __name__ == '__main__':

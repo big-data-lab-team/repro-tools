@@ -1,23 +1,36 @@
 {
-    "certain_cmd": {},
-    "multiWrite_cmd": {},
+    "certain_cmd": {}, 
+    "execution_info": {
+        "captured_list": "/home/travis/build/big-data-lab-team/repro-tools/reprotools/test/peds_test_data/commands_captured.json", 
+        "conditions": "/home/travis/build/big-data-lab-team/repro-tools/reprotools/test/peds_test_data/conditions.txt", 
+        "exclude_items": "/home/travis/build/big-data-lab-team/repro-tools/reprotools/test/peds_test_data/exclude_items.txt", 
+        "sqlite_db": "/home/travis/build/big-data-lab-team/repro-tools/reprotools/test/peds_test_data/trace_test.sqlite3", 
+        "subject_name": "subject1"
+    }, 
+    "ignored_multi": [
+        8
+    ], 
+    "multiWrite_cmd": {}, 
     "total_commands": {
-        "grep\u00007.4\u0000/input_data/test/test/test_graph/centos7/subject1/f1.out\u0000": [
-            "/input_data/test/test/test_graph/centos7/subject1/f3.out"
-        ],
-        "grep\u00007.4\u0000input_file.txt\u0000": [
-            "/input_data/test/test/test_graph/centos7/subject1/f1.out"
-        ],
-        "grep\u0000line\u0000/input_data/test/test/test_graph/centos7/subject1/f1.out\u0000": [
-            "/input_data/test/test/test_graph/centos7/subject1/peds_temp/temp.out"
-        ]
-    },
+        "grep\u00007.4\u0000/input_data/test/test/test_graph/centos7/subject1/f1.out\u0000": {
+            "files": [
+                "/input_data/test/test/test_graph/centos7/subject1/f3.out"
+            ], 
+            "id": 9
+        }, 
+        "grep\u00007.4\u0000input_file.txt\u0000": {
+            "files": [
+                "/input_data/test/test/test_graph/centos7/subject1/f1.out"
+            ], 
+            "id": 6
+        }
+    }, 
     "total_commands_multi": {
-        "grep\u00007.4\u0000/input_data/test/test/test_graph/centos7/subject1/temp.out\u0000": [
-            "/input_data/test/test/test_graph/centos7/subject1/f2.out"
-        ],
-        "grep\u0000line3\u0000/input_data/test/test/test_graph/centos7/subject1/f1.out\u0000": [
-            "/input_data/test/test/test_graph/centos7/subject1/f2.out"
-        ]
+        "grep\u00007.4\u0000/input_data/test/test/test_graph/centos7/subject1/temp.out\u0000": {
+            "files": [
+                "/home/travis/build/big-data-lab-team/repro-tools/reprotools/test/peds_test_data/centos6/subject1/f2.out"
+            ], 
+            "id": 10
+        }
     }
 }

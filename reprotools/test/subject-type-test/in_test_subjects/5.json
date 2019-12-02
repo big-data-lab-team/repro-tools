@@ -1,0 +1,102 @@
+{
+    "certain_cmd": {}, 
+    "execution_info": {
+        "captured_list": "/data/asalari/ali-tests/nurm-out/PFS_resutls/15/commands_captured.json", 
+        "conditions": "/data/asalari/ali-tests/nurm-out/PFS_resutls/15/conditions.txt", 
+        "exclude_items": "/data/asalari/ali-tests/nurm-out/PFS_resutls/15/exclude_items.txt", 
+        "sqlite_db": "/data/asalari/ali-tests/nurm-out/PFS_resutls/15/trace.sqlite3", 
+        "subject_name": "113922"
+    }, 
+    "ignored_multi": [
+        3789, 
+        3790, 
+        4496, 
+        4497, 
+        6548, 
+        6551, 
+        6556, 
+        6665, 
+        6666, 
+        6819, 
+        6820, 
+        7019, 
+        7020, 
+        7240, 
+        7241, 
+        7606, 
+        7610, 
+        8669, 
+        8670, 
+        8673, 
+        8674
+    ], 
+    "multiWrite_cmd": {}, 
+    "total_commands": {
+        "/usr/local/src/fsl/bin/flirt\u0000-interp\u0000spline\u0000-dof\u000012\u0000-in\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T1w/T1w_acpc\u0000-ref\u0000/usr/local/src/projects/Pipelines/global/templates/MNI152_T1_2mm.nii.gz\u0000-omat\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T1w/BrainExtraction_FNIRTbased/roughlin.mat\u0000-out\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T1w/BrainExtraction_FNIRTbased/T1w_acpc_to_MNI_roughlin.nii.gz\u0000-nosearch\u0000": {
+            "files": [
+                "/data/asalari/ali-tests/trace_files/15/exec/113922/T1w/BrainExtraction_FNIRTbased/roughlin.mat", 
+                "/data/asalari/ali-tests/trace_files/15/exec/113922/T1w/BrainExtraction_FNIRTbased/T1w_acpc_to_MNI_roughlin.nii.gz"
+            ], 
+            "id": 3788
+        }, 
+        "/usr/local/src/fsl/bin/flirt\u0000-interp\u0000spline\u0000-dof\u000012\u0000-in\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T1w/T1w_acpc_dc_restore_brain\u0000-ref\u0000/usr/local/src/projects/Pipelines/global/templates/MNI152_T1_0.7mm_brain.nii.gz\u0000-omat\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/MNINonLinear/xfms/acpc2MNILinear.mat\u0000-out\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/MNINonLinear/xfms/T1w_acpc_dc_restore_brain_to_MNILinear\u0000": {
+            "files": [
+                "/data/asalari/ali-tests/trace_files/15/exec/113922/MNINonLinear/xfms/acpc2MNILinear.mat", 
+                "/data/asalari/ali-tests/trace_files/15/exec/113922/MNINonLinear/xfms/T1w_acpc_dc_restore_brain_to_MNILinear.nii.gz"
+            ], 
+            "id": 8663
+        }, 
+        "/usr/local/src/fsl/bin/flirt\u0000-interp\u0000spline\u0000-dof\u00006\u0000-in\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T2w/T2wToT1wDistortionCorrectAndReg/Magnitude_warppedT1w\u0000-ref\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T1w/T1w_acpc\u0000-out\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T2w/T2wToT1wDistortionCorrectAndReg/Magnitude_warppedT1w2T1w_acpc\u0000-omat\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T2w/T2wToT1wDistortionCorrectAndReg/Fieldmap2T1w_acpc.mat\u0000-searchrx\u0000-30\u000030\u0000-searchry\u0000-30\u000030\u0000-searchrz\u0000-30\u000030\u0000": {
+            "files": [
+                "/data/asalari/ali-tests/trace_files/15/exec/113922/T2w/T2wToT1wDistortionCorrectAndReg/Fieldmap2T1w_acpc.mat", 
+                "/data/asalari/ali-tests/trace_files/15/exec/113922/T2w/T2wToT1wDistortionCorrectAndReg/Magnitude_warppedT1w2T1w_acpc.nii.gz"
+            ], 
+            "id": 6660
+        }, 
+        "/usr/local/src/fsl/bin/flirt\u0000-interp\u0000spline\u0000-dof\u00006\u0000-in\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T2w/T2wToT1wDistortionCorrectAndReg/Magnitude_warppedT2w\u0000-ref\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T2w/T2w_acpc\u0000-out\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T2w/T2wToT1wDistortionCorrectAndReg/Magnitude_warppedT2w2T2w_acpc\u0000-omat\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T2w/T2wToT1wDistortionCorrectAndReg/Fieldmap2T2w_acpc.mat\u0000-searchrx\u0000-30\u000030\u0000-searchry\u0000-30\u000030\u0000-searchrz\u0000-30\u000030\u0000": {
+            "files": [
+                "/data/asalari/ali-tests/trace_files/15/exec/113922/T2w/T2wToT1wDistortionCorrectAndReg/Fieldmap2T2w_acpc.mat", 
+                "/data/asalari/ali-tests/trace_files/15/exec/113922/T2w/T2wToT1wDistortionCorrectAndReg/Magnitude_warppedT2w2T2w_acpc.nii.gz"
+            ], 
+            "id": 6814
+        }, 
+        "/usr/local/src/fsl/bin/flirt\u0000-interp\u0000spline\u0000-in\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T1w/ACPCAlignment/robustroi.nii.gz\u0000-ref\u0000/usr/local/src/projects/Pipelines/global/templates/MNI152_T1_0.7mm.nii.gz\u0000-omat\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T1w/ACPCAlignment/roi2std.mat\u0000-out\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T1w/ACPCAlignment/acpc_final.nii.gz\u0000-searchrx\u0000-30\u000030\u0000-searchry\u0000-30\u000030\u0000-searchrz\u0000-30\u000030\u0000": {
+            "files": [
+                "/data/asalari/ali-tests/trace_files/15/exec/113922/T1w/ACPCAlignment/roi2std.mat", 
+                "/data/asalari/ali-tests/trace_files/15/exec/113922/T1w/ACPCAlignment/acpc_final.nii.gz"
+            ], 
+            "id": 3538
+        }, 
+        "/usr/local/src/fsl/bin/flirt\u0000-interp\u0000spline\u0000-in\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T2w/ACPCAlignment/robustroi.nii.gz\u0000-ref\u0000/usr/local/src/projects/Pipelines/global/templates/MNI152_T2_0.7mm.nii.gz\u0000-omat\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T2w/ACPCAlignment/roi2std.mat\u0000-out\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T2w/ACPCAlignment/acpc_final.nii.gz\u0000-searchrx\u0000-30\u000030\u0000-searchry\u0000-30\u000030\u0000-searchrz\u0000-30\u000030\u0000": {
+            "files": [
+                "/data/asalari/ali-tests/trace_files/15/exec/113922/T2w/ACPCAlignment/roi2std.mat", 
+                "/data/asalari/ali-tests/trace_files/15/exec/113922/T2w/ACPCAlignment/acpc_final.nii.gz"
+            ], 
+            "id": 4245
+        }, 
+        "/usr/local/src/fsl/bin/flirt\u0000-ref\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T2w/T2wToT1wDistortionCorrectAndReg/T1w_acpc_brain\u0000-in\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T2w/T2wToT1wDistortionCorrectAndReg/T2w_acpc_brain\u0000-dof\u00006\u0000-omat\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T2w/T2wToT1wDistortionCorrectAndReg/T2w2T1w/T2w_reg_init.mat\u0000": {
+            "files": [
+                "/data/asalari/ali-tests/trace_files/15/exec/113922/T2w/T2wToT1wDistortionCorrectAndReg/T2w2T1w/T2w_reg_init.mat"
+            ], 
+            "id": 7018
+        }, 
+        "/usr/local/src/fsl/bin/fslmaths\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T1w/AverageT1wImages/ImToHalf0001.nii.gz\u0000-add\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T1w/AverageT1wImages/ImToHalf0002.nii.gz\u0000-div\u00002\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T1w/T1w\u0000": {
+            "files": [
+                "/data/asalari/ali-tests/trace_files/15/exec/113922/T1w/T1w.nii.gz"
+            ], 
+            "id": 3401
+        }, 
+        "/usr/local/src/fsl/bin/new_invwarp\u0000--ref=/usr/local/src/projects/Pipelines/global/templates/MNI152_T1_2mm.nii.gz\u0000-w\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T1w/BrainExtraction_FNIRTbased/str2standard.nii.gz\u0000-o\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T1w/BrainExtraction_FNIRTbased/standard2str.nii.gz\u0000": {
+            "files": [
+                "/data/asalari/ali-tests/trace_files/15/exec/113922/T1w/BrainExtraction_FNIRTbased/standard2str.nii.gz"
+            ], 
+            "id": 3792
+        }, 
+        "/usr/local/src/fsl/bin/new_invwarp\u0000--ref=/usr/local/src/projects/Pipelines/global/templates/MNI152_T2_2mm.nii.gz\u0000-w\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T2w/BrainExtraction_FNIRTbased/str2standard.nii.gz\u0000-o\u0000/data/asalari/ali-tests/trace_files/15/exec/113922/T2w/BrainExtraction_FNIRTbased/standard2str.nii.gz\u0000": {
+            "files": [
+                "/data/asalari/ali-tests/trace_files/15/exec/113922/T2w/BrainExtraction_FNIRTbased/standard2str.nii.gz"
+            ], 
+            "id": 4499
+        }
+    }
+}
