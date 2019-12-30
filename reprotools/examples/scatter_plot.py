@@ -79,22 +79,22 @@ def main():
     data2.pop('0.0')
     col, row = data2.shape
     cmap = get_cmap(12)
+    data3 = pd.DataFrame(data2)
+    data2 = data3.sort_values(by=5, ascending=False, axis=1)
     markers = ['o', 'v', '*', 'P']
+    markers2 = ['s', 'X', '>', '1']
     colors = ['r', 'g', 'b', 'c', 'm', 'y', 'k']
     # [(a,b) for a,b in zip(markers, colors)]
     groups = [(k, j) for j in markers for k in colors]
+    groups2 = [(k, j) for j in markers2 for k in colors]
     i = 1
+    j = 1
     x2 = data2['2.0'][1::2]
     for d in data2.columns:
         list_ = data2[d]
         x, y = list_[1::2], np.round(list_[::2], 5)
         out = np.polyfit(x, y, 2)
-        # x = [int(sum(x)/len(x))] * len(x)
         label_ = region_labels[float(d)]
-        ax2.scatter(x, y, c='b', label=label_, marker='o')
-        ax2.legend(loc='bottom right')
-        ax2.set_xlabel('Region Size (voxels)', fontsize=22)
-        ax2.set_ylabel('Dice Coefficients', fontsize=22)
         if int(sum(x)/len(x)) < 10000:
             ax1.scatter(x, y, c=groups[i][0], label=label_,
                         marker=groups[i][1])
@@ -102,14 +102,17 @@ def main():
             ax1.set_xlabel('Region Size (voxels)', fontsize=22)
             ax1.set_ylabel('Dice Coefficients', fontsize=22)
             i = i + 1
+        else:
+            ax2.scatter(x, y, c=groups2[j][0], label=label_,
+                        marker=groups2[j][1])
+            ax2.legend(loc='bottom right')
+            ax2.set_xlabel('Region Size (voxels)', fontsize=22)
+            ax2.set_ylabel('Dice Coefficients', fontsize=22)
+            j = j + 1
 
-    # plt.xlabel('Region Size (voxels)', fontsize=22)
-    # plt.ylabel('Similarity (Dice coe)', fontsize=22)
-    # plt.legend(loc='bottom right')
-    # plt.xscale('log')
     plt.rc('axes', titlesize=48)
     plt.savefig(args.output+'scatter_plot.png', bbox_inches='tight')
-#    plt.show()
+    # plt.show()
 
 
 if __name__ == '__main__':
