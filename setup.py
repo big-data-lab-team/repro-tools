@@ -42,7 +42,8 @@ setup(name="reprotools",
             "peds=reprotools:peds",
             "auto_peds=reprotools:auto_peds",
             "make_copy=reprotools:make_copy",
-            "subject_clustering=reprotools:subject_clustering"
+            "subject_clustering=reprotools:subject_clustering",
+            "provenance_graph=reprotools:provenance_graph"
 
         ]
       },

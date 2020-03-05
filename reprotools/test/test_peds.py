@@ -6,6 +6,7 @@ from reprotools.auto_peds import main as auto_peds
 from reprotools.make_copy import main as make_copy
 from reprotools.subj_clustering import main as subject_clustering
 from reprotools.verify_files import main as verify_files
+from reprotools.provenance_graph import main as provenance_graph
 from reprotools import __file__ as repo_init_file_path
 from os import path as op
 from os.path import join as opj
@@ -95,3 +96,12 @@ def test_peds2():
           "-i", "toremove.txt",
           "-o", "commands_test2.json",
           "-a", "grep 6.8 input_file.txt"])
+
+
+def test_provenance_graph():
+    os.chdir(op.join(repopath(), 'test', 'peds_test_data'))
+    provenance_graph(["centos7/subject1",
+                      ".",
+                      "-r", "trace_test.sqlite3",
+                      "-t", "commands_cap_test.json",
+                      "-l", "commands_test.json"])

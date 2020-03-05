@@ -5,3 +5,4 @@ from .peds import main as peds
 from .auto_peds import main as auto_peds
 from .make_copy import main as make_copy
 from .subj_clustering import main as subject_clustering
+from .provenance_graph import main as provenance_graph

@@ -12,7 +12,6 @@ import os
 import re
 import sqlite3
 from sqlite3 import Error
-from graphviz import Digraph as Di
 import scipy
 from scipy.cluster.hierarchy import fcluster, dendrogram, linkage, fclusterdata
 from sklearn.preprocessing import LabelEncoder
@@ -29,35 +28,17 @@ import plotly.graph_objects as go
 from collections import Counter
 
 
-def strdist(a, b):
-    if a == b:
-        return 0
-    else:
-        return 0.1
-
-# def strdist(s1, s2):
-#     m=len(s1)+1
-#     n=len(s2)+1
-
-#     tbl = {}
-#     for i in range(m): tbl[i,0]=i
-#     for j in range(n): tbl[0,j]=j
-#     for i in range(1, m):
-#         for j in range(1, n):
-#             cost = 0 if s1[i-1] == s2[j-1] else 1
-#             tbl[i,j] = min(tbl[i, j-1]+1, tbl[i-1, j]+1, tbl[i-1, j-1]+cost)
-
-#     return tbl[i,j]
-
-
 def check_file(parser, x):
     if os.path.exists(x):
         return x
     parser.error("File does not exist: {}".format(x))
 
 
-def weird_dist(A, B):
-    return 10*strdist(A, B)
+def strdist(a, b):
+    if a == b:
+        return 0
+    else:
+        return 0.1
 
 
 class WeirdNode(object):
@@ -85,6 +66,7 @@ class WeirdNode(object):
 def clustering_process_trees(db_file_list, threshold, output_folder):
     indofsubj = le.transform(db_file_list)
     pairs_fin = ([[x] for i, x in enumerate(indofsubj)])
+    ss = np.array(pairs_fin)
     linked = linkage(np.array(pairs_fin), metric=edit_dist)
     fclust1 = fcluster(linked, t=threshold, criterion='distance')
 
@@ -112,7 +94,7 @@ def clustering_process_trees(db_file_list, threshold, output_folder):
 
 
 def edit_dist(p1, p2):
-    global pipe_proc
+    # global pipe_proc
     lst = []
     lst.append(int(p1[0]))
     lst.append(int(p2[0]))
@@ -124,7 +106,7 @@ def edit_dist(p1, p2):
     root2 = (WeirdNode("root"))
     p_tree2 = make_process_tree(f2, root2, pipe_proc, 1)
     dist = zss.simple_distance(p_tree, p_tree2, WeirdNode.get_children,
-                               WeirdNode.get_label, weird_dist)
+                               WeirdNode.get_label, strdist)
     print("Distance %s vs %s is %s" % (f1, f2, dist))
     # if dist == 0:
     #     return 5
@@ -636,13 +618,10 @@ def main(args=None):
     parser.add_argument("input_folder",
                         help='input folder of sqlite databases ')
     parser.add_argument("output_folder",
-                        help='output folder to save the figures each '
-                             'process-tree using graphviz')
+                        help='output folder to save clusters, plots, '
+                             'and figures.')
     parser.add_argument('-p', '--plot',
                         help='plot barchart and heatmap of total differences')
-    parser.add_argument('-g', '--graph',
-                        help='make .dot and .png files for the graphs if '
-                             'this parameter triggers')
     parser.add_argument('-t', '--threshold',
                         help='The threshold is defined as the minimum '
                              'distance required to separate clusters')
@@ -683,22 +662,6 @@ def main(args=None):
         le = LabelEncoder()
         le.fit(db_file_list)
         clustering_process_trees(db_file_list, args.threshold, output_folder)
-
-    # 4) make tree representation of diffrence process tree
-    # see subj_clustering.orig.py section resurce
-    # if args.graph:
-    #     process_freq = {}
-    #     subsets_dic = {}
-    #     graph = Di('Graph',
-    #                filename = os.path.join(output_folder, "Union_graph_hsv"),
-    #                format='svg',
-    #                strict=False)
-    #     # graph.attr(compound=True)
-    #     root = (WeirdNode("root"))
-    #     represent_diff_tree(sqlite_file, root, 1, trees_dic, process_freq,
-    #                         total_freq.keys(),
-    #                         sep_item_freq, subsets_dic, graph)
-    #     graph.render()
 
 
 if __name__ == '__main__':

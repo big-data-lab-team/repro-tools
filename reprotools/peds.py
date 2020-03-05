@@ -882,9 +882,9 @@ def main(args=None):
 
     # FIND TEMP PROCESSES THAT CREATE DIFFERENCES IN MODE W/R
             if capture_mode:
-                if (len(read_diff_list) > 0 or len(read_nodiff_list) > 0 or
-                    len(write_diff_list) > 0 or
-                    len(write_nodiff_list) > 0) and \
+                if (len(read_diff_list) >= 0 or len(read_nodiff_list) >= 0 or
+                    len(write_diff_list) >= 0 or
+                    len(write_nodiff_list) >= 0) and \
                    len(write_tmp_list) > 0:
                     temp_w = []
                     for tmp in write_tmp_list:
