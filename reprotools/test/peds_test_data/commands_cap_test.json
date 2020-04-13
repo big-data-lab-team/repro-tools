@@ -1,30 +1,30 @@
 {
     "certain_cmd": {}, 
     "execution_info": {
-        "captured_list": "/home/travis/build/big-data-lab-team/repro-tools/reprotools/test/peds_test_data/commands_cap_test.json", 
-        "conditions": "/home/travis/build/big-data-lab-team/repro-tools/reprotools/test/peds_test_data/conditions.txt", 
-        "exclude_items": "/home/travis/build/big-data-lab-team/repro-tools/reprotools/test/peds_test_data/exclude_items.txt", 
-        "sqlite_db": "/home/travis/build/big-data-lab-team/repro-tools/reprotools/test/peds_test_data/trace_test.sqlite3", 
+        "captured_list": "/home/travis/build/ali4006/repro-tools/reprotools/test/peds_test_data/commands_cap_test.json", 
+        "conditions": "/home/travis/build/ali4006/repro-tools/reprotools/test/peds_test_data/conditions.txt", 
+        "exclude_items": "/home/travis/build/ali4006/repro-tools/reprotools/test/peds_test_data/exclude_items.txt", 
+        "sqlite_db": "/home/travis/build/ali4006/repro-tools/reprotools/test/peds_test_data/trace_test.sqlite3", 
         "subject_name": "subject1"
     }, 
     "total_multi_write_proc": {
         "grep\u00006.8\u0000./temp.out\u0000": {
             "files": [
-                "/home/travis/build/big-data-lab-team/repro-tools/reprotools/test/peds_test_data/centos6/subject1/f2.out"
+                "/home/travis/build/ali4006/repro-tools/reprotools/test/peds_test_data/centos6/subject1/f2.out"
             ],
             "id": 10
         },
-        "/home/travis/build/big-data-lab-team/repro-tools/reprotools/make_copy.py\u0000": {
+        "/home/travis/build/ali4006/repro-tools/reprotools/make_copy.py\u0000": {
             "files": [
-                "/home/travis/build/big-data-lab-team/repro-tools/reprotools/test/peds_test_data/centos6/subject1/f2.out"
+                "/home/travis/build/ali4006/repro-tools/reprotools/test/peds_test_data/centos6/subject1/f2.out"
             ],
             "id": 8
         }
     },
     "total_temp_proc": {
-        "/home/travis/build/big-data-lab-team/repro-tools/reprotools/make_copy.py\u0000": {
+        "/home/travis/build/ali4006/repro-tools/reprotools/make_copy.py\u0000": {
             "files": [
-                "/home/travis/build/big-data-lab-team/repro-tools/reprotools/test/peds_test_data/centos6/subject1/f2.out"
+                "/home/travis/build/ali4006/repro-tools/reprotools/test/peds_test_data/centos6/subject1/f2.out"
             ],
             "id": 12
         }

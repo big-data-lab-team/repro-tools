@@ -485,7 +485,7 @@ def get_write_files(pipeline_files, proc, capture_mode, data_parsed_name,
     """Label processes and corresponding files in W mode."""
     tmp_flag = True
     for diff_file in pipeline_files:
-        temp_folder = 'peds_temp/'
+        temp_folder = 'spot_temp/'
         file_name = str(diff_file.split(" ")[0])
         file_stat = int(diff_file.split(" ")[1][:-1])
 
@@ -524,7 +524,7 @@ def get_read_files(pipeline_files, capture_mode, data_parsed_name, origin_p,
     """Label processes and corresponding files in R mode."""
     tmp_flag = True
     for diff_file in pipeline_files:
-        temp_folder = 'peds_temp/'
+        temp_folder = 'spot_temp/'
         file_name = str(diff_file.split(" ")[0])
         file_stat = int(diff_file.split(" ")[1][:-1])
 

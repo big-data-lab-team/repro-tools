@@ -39,11 +39,10 @@ setup(name="reprotools",
       entry_points={
         "console_scripts": [
             "verify_files=reprotools:verify_files",
-            "peds=reprotools:peds",
-            "auto_peds=reprotools:auto_peds",
+            "spot=reprotools:spot",
+            "auto_spot=reprotools:auto_spot",
             "make_copy=reprotools:make_copy",
             "subject_clustering=reprotools:subject_clustering",
-            "provenance_graph=reprotools:provenance_graph"
 
         ]
       },

@@ -1,6 +1,6 @@
 ![PyPI](https://img.shields.io/pypi/v/reprotools)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3553132.svg)](https://doi.org/10.5281/zenodo.3553132)
-[![Build Status](https://travis-ci.org/big-data-lab-team/repro-tools.svg?branch=develop)](https://travis-ci.org/big-data-lab-team/repro-tools)
+[![Build Status](https://travis-ci.org/ali4006/repro-tools.svg?branch=develop)](https://travis-ci.org/ali4006/repro-tools)
 [![Coverage Status](https://coveralls.io/repos/github/big-data-lab-team/repro-tools/badge.svg?branch=develop)](https://coveralls.io/github/big-data-lab-team/repro-tools?branch=develop)
 
 # repro-tools
