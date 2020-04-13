@@ -63,7 +63,10 @@ def clustering_process_trees(db_file_list, threshold, output_folder):
     fclust1 = fcluster(linked, t=threshold, criterion='distance')
 
     indices = cluster_indices(fclust1)
-    clusterfiles = open(output_folder+"clusters.txt", 'w+')
+    output = os.path.join(output_folder, "clusters.txt")
+    if not op.exists(op.dirname(output)):
+        os.makedirs(op.dirname(output))
+    clusterfiles = open(output, 'w+')
     label_list = []
     for k, ind in enumerate(indices):
         basename_list = []

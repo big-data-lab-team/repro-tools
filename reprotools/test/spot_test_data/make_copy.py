@@ -30,25 +30,25 @@ def log_info(message):
     logging.info("INFO: " + message)
 
 
-def is_intstring(s):
-    try:
-        float(s)
-        return False
-    except ValueError:
-        return True
+# def is_intstring(s):
+#     try:
+#         float(s)
+#         return False
+#     except ValueError:
+#         return True
 
 
-def which(exe=None):
-    """Python clone of POSIX's /usr/bin/which."""
-    if exe:
-        (path, name) = op.split(exe)
-        if os.access(exe, os.X_OK):
-            return exe
-        for path in os.environ.get('PATH').split(os.pathsep):
-            full_path = op.join(path, exe)
-            if os.access(full_path, os.X_OK):
-                return full_path
-    return None
+# def which(exe=None):
+#     """Python clone of POSIX's /usr/bin/which."""
+#     if exe:
+#         (path, name) = op.split(exe)
+#         if os.access(exe, os.X_OK):
+#             return exe
+#         for path in os.environ.get('PATH').split(os.pathsep):
+#             full_path = op.join(path, exe)
+#             if os.access(full_path, os.X_OK):
+#                 return full_path
+#     return None
 
 
 def convert_to_key(cmd):
@@ -187,6 +187,7 @@ def read_copy_files(process_list, subj_name):
 
 
 def read_captured_files(captured_file, subj_name):
+    command_parsed_id = {}
     try:
         with open(captured_file, 'r') as c_file:
             data = json.load(c_file)
@@ -351,7 +352,6 @@ def main(args=None):
         log_info(msg)
         if capturing:
             log_info("capturing is TRUE")
-            # COMPARE ARGS and then capture files
             capture_files(from_path, total_temp_cmd, total_multi_cmd, cmd_key)
 
         else:
