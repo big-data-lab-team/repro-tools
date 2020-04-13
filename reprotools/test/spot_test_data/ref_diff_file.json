@@ -93,7 +93,7 @@
                     "checksum": 0
                 }
             }, 
-            "peds_temp/temp.out": {
+            "spot_temp/temp.out": {
                 "subjects": {
                     "subject1": {
                         "MD5": "daa0656d9064eacdd5a40cf73c0a13d4", 

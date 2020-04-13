@@ -11,13 +11,15 @@ def main():
     args = parser.parse_args()
 
     # Load images using nibabel
-    assert(op.exists(args.image_file)), 'Cannot find file {}'.format(args.image_file)
+    assert(op.exists(args.image_file)), 'Cannot find file {}' \
+                                        .format(args.image_file)
     im1 = nibabel.load(args.image_file)
 
     # Print image info
     print("Image shape is: {}".format(im1.header.get_data_shape()))
     print("Image type is: {}".format(im1.header.get_data_dtype()))
     print("Image voxel size in mm is: {}".format(im1.header.get_zooms()))
+
 
 if __name__ == '__main__':
     main()
