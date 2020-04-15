@@ -233,7 +233,7 @@ def create_graph(pid, process_node, db_path):
     total_files = get_the_written_file_list(writefile_cursor)
     # select the parent id of pid from process list
     parent_id = get_the_parent_id(parent_cursor, pid)
-    # Getting the total opened files from the repro-tools matrix file
+    # Getting the total opened files from the spot-tools matrix file
     topenedf = []
     for file in opened_file_list:
         for line in total_files:

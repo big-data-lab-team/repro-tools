@@ -1,12 +1,12 @@
 import subprocess
 import os
 import json
-from reprotools.spot import main as spot
-from reprotools.auto_spot import main as auto_spot
-from reprotools.make_copy import main as make_copy
-from reprotools.subj_clustering import main as subject_clustering
-from reprotools.verify_files import main as verify_files
-from reprotools import __file__ as repo_init_file_path
+from spot.spot import main as spot
+from spot.auto_spot import main as auto_spot
+from spot.make_copy import main as make_copy
+from spot.subj_clustering import main as subject_clustering
+from spot.verify_files import main as verify_files
+from spot import __file__ as repo_init_file_path
 from os import path as op
 from os.path import join as opj
 
@@ -20,7 +20,7 @@ def test_make_copy():
     from_path = op.join(op.abspath("centos6"), "subject1")
     to_path = op.join(op.abspath("centos7"), "subject1")
     os.chdir(spot_data_path)
-    os.environ["REPRO_TOOLS_PATH"] = os.getcwd()
+    os.environ["SPOT_TOOLS_PATH"] = os.getcwd()
     os.environ["SPOT_OUTPUT_PATH"] = spot_data_path
     os.environ["PROCESS_LIST"] = op.join(spot_data_path, "commands_test.json")
     os.environ["FROM_PATH"] = from_path
@@ -33,7 +33,7 @@ def test_make_copy_cap():
     from_path = op.join(op.abspath("centos6"), "subject1")
     to_path = op.join(op.abspath("centos7"), "subject1")
     os.chdir(spot_data_path)
-    os.environ["REPRO_TOOLS_PATH"] = os.getcwd()
+    os.environ["SPOT_TOOLS_PATH"] = os.getcwd()
     os.environ["SPOT_OUTPUT_PATH"] = spot_data_path
     os.environ["PROCESS_LIST"] = op.join(spot_data_path, "commands_cap_test.json")
     os.environ["FROM_PATH"] = from_path

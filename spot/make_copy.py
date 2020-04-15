@@ -21,9 +21,9 @@ import platform
 import hashlib
 import logging
 import pipes
-from reprotools import __file__ as repro_path
-from reprotools.verify_files import main as verify_files
-from reprotools.spot import main as spot
+from spot import __file__ as spot_path
+from spot.verify_files import main as verify_files
+from spot.spot import main as spot
 
 
 def log_info(message):
@@ -311,8 +311,8 @@ def add_to_ignored_multi(cmd_id, process_list):
 
 
 def main(args=None):
-    repro_path = os.getenv('REPRO_TOOLS_PATH')
-    assert(repro_path), 'REPRO_TOOLS_PATH is not defined'
+    spot_path = os.getenv('SPOT_TOOLS_PATH')
+    assert(spot_path), 'SPOT_TOOLS_PATH is not defined'
     spot_output = os.getenv('SPOT_OUTPUT_PATH')
     from_path = os.getenv("FROM_PATH")
     to_path = os.getenv("TO_PATH")

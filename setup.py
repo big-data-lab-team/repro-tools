@@ -17,11 +17,11 @@ DEPS = [
          "scikit-learn"
        ]
 
-setup(name="reprotools",
+setup(name="spot",
       version=VERSION,
       description=(" A set of tools to evaluate the reproducibility "
                    "of computations "),
-      url="https://github.com/big-data-lab-team/repro-tools",
+      url="https://github.com/big-data-lab-team/spot",
       author="Big Data Infrastructures for Neuroinformatics lab",
       classifiers=[
                 "Programming Language :: Python",
@@ -32,17 +32,17 @@ setup(name="reprotools",
                 "Natural Language :: English"
                   ],
       license="MIT",
-      packages=["reprotools"],
+      packages=["spot"],
       include_package_data=True,
       test_suite="pytest",
       tests_require=["pytest"],
       entry_points={
         "console_scripts": [
-            "verify_files=reprotools:verify_files",
-            "spot=reprotools:spot",
-            "auto_spot=reprotools:auto_spot",
-            "make_copy=reprotools:make_copy",
-            "subject_clustering=reprotools:subject_clustering",
+            "verify_files=spot:verify_files",
+            "spot=spot:spot",
+            "auto_spot=spot:auto_spot",
+            "make_copy=spot:make_copy",
+            "subject_clustering=spot:subject_clustering",
 
         ]
       },

@@ -19,9 +19,9 @@ import shutil
 import boutiques
 import docker
 import sqlite3
-from reprotools import __file__ as repro_path
-from reprotools.verify_files import main as verify_files
-from reprotools.spot import main as spot
+from spot import __file__ as spot_path
+from spot.verify_files import main as verify_files
+from spot.spot import main as spot
 
 
 # The procedure of labeling pipeline is as following steps:
@@ -187,7 +187,7 @@ def modify_docker_image(descriptor, spot_data_path, tag_name, from_path,
                                                 'mode': 'rw'}},
                                       environment=(["PYTHONPATH=$PYTHONPATH:"
                                                    + cwd,
-                                                   "REPRO_TOOLS_PATH=" +
+                                                   "SPOT_TOOLS_PATH=" +
                                                     os.getcwd(),
                                                     "SPOT_OUTPUT_PATH=" +
                                                     spot_data_path,
