@@ -384,7 +384,7 @@ def main(args=None):
         data = json.load(tmp_cmd)
 
     subj_name = data["execution_info"]["subject_name"]
-    # write arguments on json file to read from make_copy file
+    # write arguments on json file to read from wrapper file
     write_arguments(subj_name, op.abspath(args.verify_condition),
                     op.abspath(args.exclude_items),
                     op.abspath(args.sqlite_db),

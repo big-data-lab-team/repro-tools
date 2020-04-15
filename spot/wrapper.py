@@ -340,7 +340,7 @@ def main(args=None):
     sqlite_db = info_["execution_info"]["sqlite_db"]
     captured_list = info_["execution_info"]["captured_list"]
 
-    if cmd_name != 'make_copy':
+    if cmd_name != 'wrapper':
         capturing, total_temp_cmd, total_multi_cmd = \
                                 read_to_capture_files(captured_list, subj_name)
 

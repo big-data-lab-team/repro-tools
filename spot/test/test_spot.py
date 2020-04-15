@@ -3,7 +3,7 @@ import os
 import json
 from spot.spottool import main as spot
 from spot.auto_spot import main as auto_spot
-from spot.make_copy import main as make_copy
+from spot.wrapper import main as wrapper
 from spot.subj_clustering import main as subject_clustering
 from spot.verify_files import main as verify_files
 from spot import __file__ as repo_init_file_path
@@ -15,7 +15,7 @@ def repopath():
     return op.dirname(repo_init_file_path)
 
 
-def test_make_copy():
+def test_wrapper():
     spot_data_path = op.join(repopath(), 'test', 'spot_test_data')
     from_path = op.join(op.abspath("centos6"), "subject1")
     to_path = op.join(op.abspath("centos7"), "subject1")
@@ -25,10 +25,10 @@ def test_make_copy():
     os.environ["PROCESS_LIST"] = op.join(spot_data_path, "commands_test.json")
     os.environ["FROM_PATH"] = from_path
     os.environ["TO_PATH"] = to_path
-    make_copy()
+    wrapper()
 
 
-def test_make_copy_cap():
+def test_wrapper_cap():
     spot_data_path = op.join(repopath(), 'test', 'spot_test_data')
     from_path = op.join(op.abspath("centos6"), "subject1")
     to_path = op.join(op.abspath("centos7"), "subject1")
@@ -38,7 +38,7 @@ def test_make_copy_cap():
     os.environ["PROCESS_LIST"] = op.join(spot_data_path, "commands_cap_test.json")
     os.environ["FROM_PATH"] = from_path
     os.environ["TO_PATH"] = to_path
-    make_copy()
+    wrapper()
 
 
 def test_subj_clustering2():
@@ -54,7 +54,7 @@ def test_auto_spot():
     # ~ test_capture_first_cond()
     # ~ test_capture_second_cond()
     os.chdir(op.join(repopath(), 'test', 'spot_test_data'))
-    wrapper_script = op.join(repopath(), 'make_copy.py')
+    wrapper_script = op.join(repopath(), 'wrapper.py')
     auto_spot([".",
                "-c", "conditions.txt",
                "-e", "exclude_items.txt",

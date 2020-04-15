@@ -41,7 +41,7 @@ setup(name="spot",
             "verify_files=spot:verify_files",
             "spottool=spot:spottool",
             "auto_spot=spot:auto_spot",
-            "make_copy=spot:make_copy",
+            "wrapper=spot:wrapper",
             "subject_clustering=spot:subject_clustering",
 
         ]
