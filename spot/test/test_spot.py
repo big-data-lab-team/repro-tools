@@ -60,7 +60,7 @@ def test_auto_spot():
                "-e", "exclude_items.txt",
                "-s", "trace_test.sqlite3",
                "-o", "commands.json",
-               "-m", "make_copy.py",
+               "-m", wrapper_script,
                "-d", "descriptor.json",
                "-i", "invocation.json",
                "-d2", "descriptor_cond2.json",
