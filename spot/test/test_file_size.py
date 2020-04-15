@@ -1,5 +1,5 @@
-from reprotools.diff_file_size import main as diff_file_size
-from reprotools import __file__ as repo_init_file_path
+from spot.diff_file_size import main as diff_file_size
+from spot import __file__ as repo_init_file_path
 import os
 from os import path as op
 
