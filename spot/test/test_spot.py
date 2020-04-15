@@ -1,7 +1,7 @@
 import subprocess
 import os
 import json
-from spot.spot import main as spot
+from spot.spottool import main as spot
 from spot.auto_spot import main as auto_spot
 from spot.make_copy import main as make_copy
 from spot.subj_clustering import main as subject_clustering

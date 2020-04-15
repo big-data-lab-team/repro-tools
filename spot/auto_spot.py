@@ -21,7 +21,7 @@ import docker
 import sqlite3
 from spot import __file__ as spot_path
 from spot.verify_files import main as verify_files
-from spot.spot import main as spot
+from spot.spottool import main as spot
 
 
 # The procedure of labeling pipeline is as following steps:

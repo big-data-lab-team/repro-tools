@@ -39,7 +39,7 @@ setup(name="spot",
       entry_points={
         "console_scripts": [
             "verify_files=spot:verify_files",
-            "spot=spot:spot",
+            "spottool=spot:spottool",
             "auto_spot=spot:auto_spot",
             "make_copy=spot:make_copy",
             "subject_clustering=spot:subject_clustering",

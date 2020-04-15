@@ -23,7 +23,7 @@ import logging
 import pipes
 from spot import __file__ as spot_path
 from spot.verify_files import main as verify_files
-from spot.spot import main as spot
+from spot.spottool import main as spot
 
 
 def log_info(message):
