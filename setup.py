@@ -4,7 +4,6 @@ import sys
 
 VERSION = "0.0.2"
 DEPS = [
-         "graphviz",
          "pandas",
          "matplotlib==2.2.3",
          "boutiques",

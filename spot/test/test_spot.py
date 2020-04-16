@@ -78,7 +78,6 @@ def test_spot():
           "ref_diff_file.json",
           "-i", "toremove.txt",
           "-o", "commands_test2.json"])
-#     assert(open("graph.dot", "r").read() == open("graph_test.dot", "r").read())
 
 
 def test_spot2():
