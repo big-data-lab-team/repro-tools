@@ -88,27 +88,6 @@ def csv_parser(command_dic, subj_name):
     return command_parsed, command_parsed_id
 
 
-# def check_arguments(pipe_com, input_arg_cmd):
-#     check = False
-#     pipeline_commad = pipe_com.split(' ')
-#     msg = ('\ncommand from cmd json file: ' + str(pipeline_commad) +
-#            ' \nCurrent command: ' + str(sys.argv))
-#     log_info(msg)
-#     if which(pipeline_commad[0]) == which(input_arg_cmd):
-#         if len(pipeline_commad)-1 == len(sys.argv):
-#             check = True
-#             i = 1
-#             while i < len(sys.argv):
-#                 if (op.basename(pipeline_commad[i]) !=
-#                         op.basename(sys.argv[i]) and
-#                         is_intstring(sys.argv[i])):
-#                     check = False
-#                     break
-#                 i += 1
-#     log_info("Argument comparison is: " + str(check))
-#     return check
-
-
 def make_copies(pipe_com, pipe_files, WD_ref, WD_dest, val, original_cp):
     for file in pipe_files:
         if val == 'normal':

@@ -19,7 +19,6 @@ import shutil
 import boutiques
 import docker
 import sqlite3
-from spot import __file__ as spot_path
 from spot.verify_files import main as verify_files
 from spot.spottool import main as spot
 
@@ -75,7 +74,7 @@ def get_processes_list(db_path):
     return execp_cursor.fetchall()
 
 
-def make_modify_script(spot_data_path, lst_proc, modif_script):
+def make_modify_script(spot_data_path, lst_proc, wrapper_script):
     cmd_file = open(op.join(spot_data_path, 'cmd.sh'), 'w+')
     cmd_file.write('#!/usr/bin/env bash \n')
     cmd_list = []
@@ -121,7 +120,7 @@ def make_modify_script(spot_data_path, lst_proc, modif_script):
                                + backup_path + '\n')
                 cmd_file.write('cp ' + '`which '+pipeline_command + '` '
                                + backup_path_all + '\n')
-                cmd_file.write('cp ' + modif_script + ' `which ' +
+                cmd_file.write('cp ' + wrapper_script + ' `which ' +
                                pipeline_command + '`' + '\n')
 
                 if 'wb_command' in pipeline_command:
@@ -261,10 +260,10 @@ def copytree(src, dst, symlinks=False, ignore=None):
 
 
 def capture(descriptor, invocation, output_dir,
-            commands, modif_script, ref_cond, process_list):
+            commands, wrapper_script, ref_cond, process_list):
     tag_name = '000'
     image_name = json_file_editor(descriptor)
-    make_modify_script(output_dir, commands, modif_script)
+    make_modify_script(output_dir, commands, wrapper_script)
     modify_docker_image(descriptor, output_dir, tag_name, ref_cond,
                         ref_cond, process_list)
     log_info("Docker is modified on the First condition "
@@ -286,14 +285,14 @@ def capture(descriptor, invocation, output_dir,
 
 
 def modify(descriptor, invocation, output_dir,
-           sqlite_db, modif_script, from_path, to_path, process_list):
+           sqlite_db, wrapper_script, from_path, to_path, process_list):
     tag_name = '999'
     log_info("Pipeline executed, "
              "going to find new process that create error!")
     lst_proc = get_processes_list(sqlite_db)
     image_name = json_file_editor(descriptor)
 
-    make_modify_script(output_dir, lst_proc, modif_script)
+    make_modify_script(output_dir, lst_proc, wrapper_script)
     modify_docker_image(descriptor, output_dir, tag_name, from_path,
                         to_path, process_list)
     log_info("Docker is modified on the Reference condition"
@@ -335,7 +334,7 @@ def main(args=None):
                              "parsing the files and directories")
     parser.add_argument("-s", "--sqlite_db",
                         help="sqlite file created by reprozip")
-    parser.add_argument("-m", "--modif_script",
+    parser.add_argument("-m", "--wrapper_script",
                         help="the python script that should be replaced "
                              "by the original pipeline execution files")
     parser.add_argument("-o", "--spot_output",
@@ -380,6 +379,9 @@ def main(args=None):
     spot_capture_file = (os.path.splitext(spot_classify_file)[0] +
                          '_captured.json')
     commands = {}
+    wrapper_script = op.basename(args.wrapper_script)
+    shutil.copyfile(args.wrapper_script, op.join(args.output_directory,
+                                                 wrapper_script))
     with open(spot_capture_file, 'r') as tmp_cmd:
         data = json.load(tmp_cmd)
 
@@ -404,7 +406,7 @@ def main(args=None):
                 args.ref_invocation,
                 op.abspath(args.output_directory),
                 commands,
-                op.abspath(args.modif_script),
+                op.abspath(wrapper_script),
                 reference_cond, spot_classify_file)
 
         log_info("temp and multi-write processes are captured on "
@@ -418,7 +420,7 @@ def main(args=None):
            args.base_invocation,
            op.abspath(args.output_directory),
            op.abspath(args.sqlite_db),
-           op.abspath(args.modif_script),
+           op.abspath(wrapper_script),
            reference_cond,
            base_cond, spot_classify_file)
     log_info("All the pipeline rocesses are classified through modifications!")

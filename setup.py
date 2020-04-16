@@ -7,14 +7,11 @@ DEPS = [
          "graphviz",
          "pandas",
          "matplotlib==2.2.3",
-         "plotly",
          "boutiques",
          "docker",
          "zss",
          "scipy",
-         "sklearn",
-         "seaborn",
-         "scikit-learn"
+         "sklearn"
        ]
 
 setup(name="spot",
