@@ -1,4 +1,4 @@
-![PyPI](https://img.shields.io/pypi/v/reprotools)
+![PyPI](https://img.shields.io/pypi/v/spottool)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3553132.svg)](https://doi.org/10.5281/zenodo.3553132)
 [![Build Status](https://travis-ci.org/ali4006/spot.svg?branch=develop)](https://travis-ci.org/ali4006/spot)
 [![Coverage Status](https://coveralls.io/repos/github/big-data-lab-team/spot/badge.svg?branch=develop)](https://coveralls.io/github/big-data-lab-team/spot?branch=develop)
@@ -19,7 +19,7 @@ A set of tools to evaluate the reproducibility of computations.
 
 Simply install the package with `pip`
 
-    $ pip install reprotools
+    $ pip install spottool
 
 ## Spot tool
 

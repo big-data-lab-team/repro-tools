@@ -2,7 +2,7 @@ import sys
 from setuptools import setup
 import sys
 
-VERSION = "0.0.2"
+VERSION = "0.0.1"
 DEPS = [
          "pandas",
          "matplotlib==2.2.3",
@@ -13,7 +13,7 @@ DEPS = [
          "sklearn"
        ]
 
-setup(name="spot",
+setup(name="spottool",
       version=VERSION,
       description=(" A set of tools to evaluate the reproducibility "
                    "of computations "),
