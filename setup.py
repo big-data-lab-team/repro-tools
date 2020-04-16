@@ -8,7 +8,7 @@ DEPS = [
          "pandas",
          "matplotlib==2.2.3",
          "plotly",
-         "boutiques",
+         "boutiques==0.5.5",
          "docker",
          "zss",
          "scipy",
