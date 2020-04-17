@@ -753,11 +753,11 @@ def main(args=None):
                         help='.Json output file includes all commandlines of'
                               'the processes that create differences')
     parser.add_argument('-c', '--capture_mode', action='store_true',
-                        help='includes two values (true and false) which indicate'
-                              'capturing intransient files (true)'
+                        help='includes two values (true and false) which '
+                              'indicate capturing intransient files (true)'
                               'or labelling processes (false)')
     parser.add_argument('-a', '--command_line',
-                        help='pass a single command-line executed in the pipeline'
+                        help='pass a single command executed in the pipeline'
                               'to capture files that write differences')
     args = parser.parse_args(args)
     logging.basicConfig(format='%(asctime)s:%(message)s', level=logging.INFO)
