@@ -242,7 +242,7 @@ def classify_process(verify_cond, exclude_items, output_dir, sqlite_db,
           exclude_items,
           "-c"
           ])
-    log_info("Processes are classified in JSON file!")
+    log_info("Processes are labeled in JSON file!")
 
 
 def copytree(src, dst, symlinks=False, ignore=None):
@@ -267,7 +267,7 @@ def capture(descriptor, invocation, output_dir,
     modify_docker_image(descriptor, output_dir, tag_name, ref_cond,
                         ref_cond, process_list)
     log_info("Docker is modified on the First condition "
-             "to capture all the temporary and multi-write files")
+             "to capture transient files")
     # (2-1) Execute pipeline to persist the temporary
     # and mnulti-write processes
     pipeline_executor(descriptor, invocation)  # CENTOS6
@@ -352,7 +352,7 @@ def main(args=None):
                         help="Boutiques invocation of the reference condition")
     parser.add_argument("-r", "--reference_cond",
                         help="path directory to the output files of reference "
-                             "condition to capture temp and multi-write files."
+                             "condition to capture transient files."
                              "Also, it make copies FROM this directory.")
     parser.add_argument("-b", "--base_cond",
                         help="path directory to the output files of base "
@@ -409,7 +409,7 @@ def main(args=None):
                 op.abspath(wrapper_script),
                 reference_cond, spot_classify_file)
 
-        log_info("temp and multi-write processes are captured on "
+        log_info("transient files are captured on "
                  "base conditions!")
         os.rename(spot_capture_file,
                   spot_capture_file.replace('.json', '_c.json'))
@@ -423,7 +423,7 @@ def main(args=None):
            op.abspath(wrapper_script),
            reference_cond,
            base_cond, spot_classify_file)
-    log_info("All the pipeline rocesses are classified through modifications!")
+    log_info("The pipeline processes are labeled!")
 
 
 if __name__ == '__main__':

@@ -2,10 +2,10 @@
 
 """Wrapper Script.
 
-This script is renamed and relocated by the executable process
-that we are going to label. This script would check the command line
-arguments whenever it triggers and make copy files that are creating
-differences. In this way we can pinpoint the origin of differences.
+This wrapper script will be replaced by the pipelie executables 
+that we are going to label. This script checks the command line
+argument whenever it is triggered and copies files that are
+different. In this way we can pinpoint the origin of differences.
 """
 
 import subprocess
@@ -266,7 +266,7 @@ def replace_multi_write_file(from_dir, to_dir, mw_cmd, cmd_key, original_cp):
 
 def capture_files(subject_dir1, total_temp_commands,
                   total_multi_commands, input_arg_cmd):
-    """Capture intermediate files with differences."""
+    """Capture transient files with differences."""
     to_temp = op.join(subject_dir1, "spot_temp")
     to_multi = op.join(subject_dir1, "multi_version")
 

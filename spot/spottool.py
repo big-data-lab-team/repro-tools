@@ -742,25 +742,23 @@ def main(args=None):
                         type=lambda x: check_file(parser, x),
                         help='sqlite file created by reprozip, '
                              'includes all pipeline processes')
-    parser.add_argument("matrix",
+    parser.add_argument("diff_file",
                         type=lambda x: check_file(parser, x),
-                        help="matrix file produced by verify_files")
+                        help="difference file produced by verify_files")
     parser.add_argument('-i', '--ignore',
                         type=lambda x: check_file(parser, x),
                         help='file containing process '
                              'names to ignore (one process name per line).')
     parser.add_argument('-o', '--output_file',
-                        help='.Json output file include all commandlines of'
-                              'uncertain, unknown, and certain red processes')
+                        help='.Json output file includes all commandlines of'
+                              'the processes that create differences')
     parser.add_argument('-c', '--capture_mode', action='store_true',
-                        help='include two values (true and false) to indicate'
-                              'capture mode of the script'
-                              'modification steps (false)'
-                              'capturing temp and multi-write files'
-                              'or making graph file (true)')
+                        help='includes two values (true and false) which indicate'
+                              'capturing intransient files (true)'
+                              'or labelling processes (false)')
     parser.add_argument('-a', '--command_line',
-                        help='pass the command line executed in the pipeline'
-                              'to capture data that write differences')
+                        help='pass a single command-line executed in the pipeline'
+                              'to capture files that write differences')
     args = parser.parse_args(args)
     logging.basicConfig(format='%(asctime)s:%(message)s', level=logging.INFO)
     # INITIALIZE THE PROGRAM
@@ -770,12 +768,11 @@ def main(args=None):
 
     capture_mode = args.capture_mode
     if capture_mode:
-        log_info("Capturing intermediate files...")
+        log_info("Capturing transient files...")
     else:
         log_info("Labeling processes...")
 
     db_path = args.sqlite_db
-    read_matrix_file = args.matrix
     write_total_tmp = ['000']
     command_lines = {}
     multi_commands = {}
@@ -783,7 +780,7 @@ def main(args=None):
     info_ = {}
     old_multi_commands, ignored_multi = read_old_multiwrite(args.output_file)
     # read the pipeline files
-    pipeline_files, subj_name = diff_matrix_format(read_matrix_file)
+    pipeline_files, subj_name = diff_matrix_format(args.diff_file)
     list_of_files = [op.basename(str(f.split(' ')[0])) for f in pipeline_files]
     info_['subject_name'] = subj_name
     # CREATE PROCESS TREE
@@ -826,7 +823,7 @@ def main(args=None):
     origin = flist_multi_write(pipeline_files, written_files_list,
                                pipeline_graph, subj_name)
     log_info("Start to finding file dependencies in Read and Write mode\
-             and then classifying process..")
+             and then labelling process..")
 
     if args.command_line:
         cmd = args.command_line
@@ -903,7 +900,7 @@ def main(args=None):
     else:
         write_json_file(args.output_file, command_lines, multi_commands)
 
-    log_info("files captured and classified")
+    log_info("files captured and labeled")
 
 
 if __name__ == '__main__':
