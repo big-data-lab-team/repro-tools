@@ -34,7 +34,7 @@ sqlite3 , boutiques, docker, pandas, and numpy packages.
 ### Usage
 
 You must:
-* build Docker images for the pipelines in different conditions 
+* Build Docker images for the pipelines in different conditions 
 (e.g. CentOS6 and CentOS7) 
 * Create Boutiques descriptor files 
 for each condition (See [Boutiques](https://boutiques.github.io/) website)

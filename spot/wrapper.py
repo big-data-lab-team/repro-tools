@@ -2,7 +2,7 @@
 
 """Wrapper Script.
 
-This wrapper script will be replaced by the pipelie executables 
+This wrapper script will be replaced by the pipelie executables
 that we are going to label. This script checks the command line
 argument whenever it is triggered and copies files that are
 different. In this way we can pinpoint the origin of differences.
