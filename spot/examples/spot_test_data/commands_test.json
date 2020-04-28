@@ -1,0 +1,36 @@
+{
+    "certain_cmd": {}, 
+    "execution_info": {
+        "captured_list": "./commands_captured.json", 
+        "conditions": "./conditions.txt", 
+        "exclude_items": "./exclude_items.txt", 
+        "sqlite_db": "./trace_test.sqlite3", 
+        "subject_name": "subject1"
+    }, 
+    "ignored_multi": [
+        8
+    ], 
+    "multiWrite_cmd": {}, 
+    "total_commands": {
+        "grep\u00006.8\u0000./f1.out\u0000": {
+            "files": [
+                "./centos6/subject1/./f3.out"
+            ], 
+            "id": 9
+        }, 
+        "/home/travis/build/ali4006/spot/spot/make_copy.py\u0000": {
+            "files": [
+                "./centos6/subject1/./f1.out"
+            ], 
+            "id": 6
+        }
+    }, 
+    "total_commands_multi": {
+        "/home/travis/build/ali4006/spot/spot/make_copy.py\u0000": {
+            "files": [
+                "./centos6/subject1/f2.out"
+            ], 
+            "id": 10
+        }
+    }
+}

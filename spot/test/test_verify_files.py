@@ -6,13 +6,13 @@ import json
 
 import os.path as op
 
-from reprotools.verify_files import get_dir_dict, read_metrics_file
-from reprotools.verify_files import checksum
-from reprotools.verify_files import read_file_contents
-from reprotools.verify_files import get_conditions_dict
-from reprotools.verify_files import get_conditions_checksum_dict
-from reprotools.verify_files import main as verify_files
-from reprotools import __file__ as base_file
+from spot.verify_files import get_dir_dict, read_metrics_file
+from spot.verify_files import checksum
+from spot.verify_files import read_file_contents
+from spot.verify_files import get_conditions_dict
+from spot.verify_files import get_conditions_checksum_dict
+from spot.verify_files import main as verify_files
+from spot import __file__ as base_file
 
 
 def repopath(file_path):

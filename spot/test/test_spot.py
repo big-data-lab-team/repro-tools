@@ -1,12 +1,12 @@
 import subprocess
 import os
 import json
-from reprotools.peds import main as peds
-from reprotools.auto_peds import main as auto_peds
-from reprotools.make_copy import main as make_copy
-from reprotools.subj_clustering import main as subject_clustering
-from reprotools.verify_files import main as verify_files
-from reprotools import __file__ as repo_init_file_path
+from spot.spottool import main as spot
+from spot.auto_spot import main as auto_spot
+from spot.wrapper import main as wrapper
+from spot.subj_clustering import main as subject_clustering
+from spot.verify_files import main as verify_files
+from spot import __file__ as repo_init_file_path
 from os import path as op
 from os.path import join as opj
 
@@ -15,37 +15,30 @@ def repopath():
     return op.dirname(repo_init_file_path)
 
 
-def test_make_copy():
-    peds_data_path = op.join(repopath(), 'test', 'peds_test_data')
+def test_wrapper():
+    spot_data_path = op.join(repopath(), 'examples', 'spot_test_data')
     from_path = op.join(op.abspath("centos6"), "subject1")
     to_path = op.join(op.abspath("centos7"), "subject1")
-    os.chdir(peds_data_path)
-    os.environ["REPRO_TOOLS_PATH"] = os.getcwd()
-    os.environ["NURM_OUTPUT_PATH"] = peds_data_path
-    os.environ["PROCESS_LIST"] = op.join(peds_data_path, "commands_test.json")
+    os.chdir(spot_data_path)
+    os.environ["SPOT_TOOLS_PATH"] = os.getcwd()
+    os.environ["SPOT_OUTPUT_PATH"] = spot_data_path
+    os.environ["PROCESS_LIST"] = op.join(spot_data_path, "commands_test.json")
     os.environ["FROM_PATH"] = from_path
     os.environ["TO_PATH"] = to_path
-    make_copy()
+    wrapper()
 
 
-def test_make_copy_cap():
-    peds_data_path = op.join(repopath(), 'test', 'peds_test_data')
+def test_wrapper_cap():
+    spot_data_path = op.join(repopath(), 'examples', 'spot_test_data')
     from_path = op.join(op.abspath("centos6"), "subject1")
     to_path = op.join(op.abspath("centos7"), "subject1")
-    os.chdir(peds_data_path)
-    os.environ["REPRO_TOOLS_PATH"] = os.getcwd()
-    os.environ["NURM_OUTPUT_PATH"] = peds_data_path
-    os.environ["PROCESS_LIST"] = op.join(peds_data_path, "commands_cap_test.json")
+    os.chdir(spot_data_path)
+    os.environ["SPOT_TOOLS_PATH"] = os.getcwd()
+    os.environ["SPOT_OUTPUT_PATH"] = spot_data_path
+    os.environ["PROCESS_LIST"] = op.join(spot_data_path, "commands_cap_test.json")
     os.environ["FROM_PATH"] = from_path
     os.environ["TO_PATH"] = to_path
-    make_copy()
-
-
-def test_subj_clustering():
-    os.chdir(op.join(repopath(), 'test'))
-    subject_clustering(["-p", "true",
-          "subject-type-test/in_test_subjects/",
-          "subject-type-test/out_test_plots/"])
+    wrapper()
 
 
 def test_subj_clustering2():
@@ -57,17 +50,17 @@ def test_subj_clustering2():
 #            == open("subject-type-test/output-trees/clusters.txt", "r").read())
 
 
-def test_auto_peds():
+def test_auto_spot():
     # ~ test_capture_first_cond()
     # ~ test_capture_second_cond()
-    os.chdir(op.join(repopath(), 'test', 'peds_test_data'))
-    wrapper_script = op.join(repopath(), 'make_copy.py')
-    auto_peds([".",
+    os.chdir(op.join(repopath(), 'examples', 'spot_test_data'))
+    wrapper_script = op.join(repopath(), 'wrapper.py')
+    auto_spot([".",
                "-c", "conditions.txt",
                "-e", "exclude_items.txt",
                "-s", "trace_test.sqlite3",
                "-o", "commands.json",
-               "-m", "make_copy.py",
+               "-m", wrapper_script,
                "-d", "descriptor.json",
                "-i", "invocation.json",
                "-d2", "descriptor_cond2.json",
@@ -79,18 +72,17 @@ def test_auto_peds():
 #            == open("result_test.json", "r").read())
 
 
-def test_peds():
-    os.chdir(op.join(repopath(), 'test', 'peds_test_data'))
-    peds(["trace_test.sqlite3",
+def test_spot():
+    os.chdir(op.join(repopath(), 'examples', 'spot_test_data'))
+    spot(["trace_test.sqlite3",
           "ref_diff_file.json",
           "-i", "toremove.txt",
           "-o", "commands_test2.json"])
-#     assert(open("graph.dot", "r").read() == open("graph_test.dot", "r").read())
 
 
-def test_peds2():
-    os.chdir(op.join(repopath(), 'test', 'peds_test_data'))
-    peds(["trace_test.sqlite3",
+def test_spot2():
+    os.chdir(op.join(repopath(), 'examples', 'spot_test_data'))
+    spot(["trace_test.sqlite3",
           "ref_diff_file.json",
           "-i", "toremove.txt",
           "-o", "commands_test2.json",

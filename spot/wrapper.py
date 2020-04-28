@@ -2,10 +2,10 @@
 
 """Wrapper Script.
 
-This script is renamed and relocated by the executable process
-that we are going to label. This script would check the command line
-arguments whenever it triggers and make copy files that are creating
-differences. In this way we can pinpoint the origin of differences.
+This wrapper script will be replaced by the pipelie executables
+that we are going to label. This script checks the command line
+argument whenever it is triggered and copies files that are
+different. In this way we can pinpoint the origin of differences.
 """
 
 import subprocess
@@ -21,9 +21,9 @@ import platform
 import hashlib
 import logging
 import pipes
-from reprotools import __file__ as repro_path
-from reprotools.verify_files import main as verify_files
-from reprotools.peds import main as peds
+from spot import __file__ as spot_path
+from spot.verify_files import main as verify_files
+from spot.spottool import main as spot
 
 
 def log_info(message):
@@ -88,33 +88,12 @@ def csv_parser(command_dic, subj_name):
     return command_parsed, command_parsed_id
 
 
-# def check_arguments(pipe_com, input_arg_cmd):
-#     check = False
-#     pipeline_commad = pipe_com.split(' ')
-#     msg = ('\ncommand from cmd json file: ' + str(pipeline_commad) +
-#            ' \nCurrent command: ' + str(sys.argv))
-#     log_info(msg)
-#     if which(pipeline_commad[0]) == which(input_arg_cmd):
-#         if len(pipeline_commad)-1 == len(sys.argv):
-#             check = True
-#             i = 1
-#             while i < len(sys.argv):
-#                 if (op.basename(pipeline_commad[i]) !=
-#                         op.basename(sys.argv[i]) and
-#                         is_intstring(sys.argv[i])):
-#                     check = False
-#                     break
-#                 i += 1
-#     log_info("Argument comparison is: " + str(check))
-#     return check
-
-
 def make_copies(pipe_com, pipe_files, WD_ref, WD_dest, val, original_cp):
     for file in pipe_files:
         if val == 'normal':
             from_path = op.join(WD_ref, file)
-            if 'peds_temp/' in file:
-                file2 = file.replace('peds_temp/', '')
+            if 'spot_temp/' in file:
+                file2 = file.replace('spot_temp/', '')
                 To_path = op.join(WD_dest, file2)
             else:
                 To_path = op.join(WD_dest, file)
@@ -227,28 +206,28 @@ def read_to_capture_files(captured_list, subj_name):
     return capturing, total_temp_cmd, total_multi_cmd
 
 
-def classify_process(nurm_output, verify_condition, exclude_items,
+def classify_process(spot_output, verify_condition, exclude_items,
                      sqlite_db, process_list, cmd_key):
     diff_flag = False
     try:
-        with open(op.join(nurm_output, 'test_diff_file.json'), 'r') as o_file:
+        with open(op.join(spot_output, 'test_diff_file.json'), 'r') as o_file:
             old_diff = json.load(o_file)
     except Exception:
         old_diff = {}
         # lst_old = []
     # (1) Run VerifyFiles script to make diff matrix file
     verify_files([verify_condition,
-                  op.join(nurm_output, 'test_diff_file.json'),
+                  op.join(spot_output, 'test_diff_file.json'),
                   "-e",
                   exclude_items
                   ])
-    with open(op.join(nurm_output, 'test_diff_file.json'), 'r') as n_file:
+    with open(op.join(spot_output, 'test_diff_file.json'), 'r') as n_file:
         new_diff = json.load(n_file)
     if old_diff != new_diff:
         diff_flag = True
-        # (2) Run PEDS script to label processes
-        peds([sqlite_db,
-              op.join(nurm_output, 'test_diff_file.json'),
+        # (2) Run spot script to label processes
+        spot([sqlite_db,
+              op.join(spot_output, 'test_diff_file.json'),
               "-o", process_list,
               "-i", exclude_items,
               "-a", cmd_key
@@ -287,8 +266,8 @@ def replace_multi_write_file(from_dir, to_dir, mw_cmd, cmd_key, original_cp):
 
 def capture_files(subject_dir1, total_temp_commands,
                   total_multi_commands, input_arg_cmd):
-    """Capture intermediate files with differences."""
-    to_temp = op.join(subject_dir1, "peds_temp")
+    """Capture transient files with differences."""
+    to_temp = op.join(subject_dir1, "spot_temp")
     to_multi = op.join(subject_dir1, "multi_version")
 
     # Capture the temporary files
@@ -311,22 +290,22 @@ def add_to_ignored_multi(cmd_id, process_list):
 
 
 def main(args=None):
-    repro_path = os.getenv('REPRO_TOOLS_PATH')
-    assert(repro_path), 'REPRO_TOOLS_PATH is not defined'
-    nurm_output = os.getenv('NURM_OUTPUT_PATH')
+    spot_path = os.getenv('SPOT_TOOLS_PATH')
+    assert(spot_path), 'SPOT_TOOLS_PATH is not defined'
+    spot_output = os.getenv('SPOT_OUTPUT_PATH')
     from_path = os.getenv("FROM_PATH")
     to_path = os.getenv("TO_PATH")
     process_list = os.getenv("PROCESS_LIST")
-    logging.basicConfig(filename=op.join(nurm_output, 'peds_commands.log'),
+    logging.basicConfig(filename=op.join(spot_output, 'spot_commands.log'),
                         format='%(asctime)s:%(message)s', level=logging.INFO)
     OS_release = platform.linux_distribution()[1]
-    original_cp = op.join(nurm_output, 'backup_scripts/usr/bin/cp')
+    original_cp = op.join(spot_output, 'backup_scripts/usr/bin/cp')
     current_script_name = __file__
     cmd_name = current_script_name.split('/')[-1:][0]
-    command = op.join(nurm_output, 'backup_scripts',
+    command = op.join(spot_output, 'backup_scripts',
                       current_script_name.strip("/"))
     if not op.exists(command):
-        command = op.join(nurm_output, 'backup_scripts', cmd_name)
+        command = op.join(spot_output, 'backup_scripts', cmd_name)
 
     cmdline = " ".join(map(pipes.quote, sys.argv[1:]))
     command = command + " " + cmdline
@@ -340,7 +319,7 @@ def main(args=None):
     sqlite_db = info_["execution_info"]["sqlite_db"]
     captured_list = info_["execution_info"]["captured_list"]
 
-    if cmd_name != 'make_copy':
+    if cmd_name != 'wrapper':
         capturing, total_temp_cmd, total_multi_cmd = \
                                 read_to_capture_files(captured_list, subj_name)
 
@@ -362,7 +341,7 @@ def main(args=None):
                           from_path, from_path, total_multi_cmd, cmd_key,
                           original_cp)
             if cp_flag or (cmd_name != 'cp'):
-                check = classify_process(nurm_output, verify_condition,
+                check = classify_process(spot_output, verify_condition,
                                          exclude_items, sqlite_db,
                                          process_list, cmd_key)
                 ignore = False

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""NURM-tool.
+"""Spot-tool.
 
 This is the automation of labeling pipeline processes:
 (1) Running pipeline in condition 1 using reprozip trace.
@@ -19,9 +19,8 @@ import shutil
 import boutiques
 import docker
 import sqlite3
-from reprotools import __file__ as repro_path
-from reprotools.verify_files import main as verify_files
-from reprotools.peds import main as peds
+from spot.verify_files import main as verify_files
+from spot.spottool import main as spot
 
 
 # The procedure of labeling pipeline is as following steps:
@@ -75,8 +74,8 @@ def get_processes_list(db_path):
     return execp_cursor.fetchall()
 
 
-def make_modify_script(peds_data_path, lst_proc, modif_script):
-    cmd_file = open(op.join(peds_data_path, 'cmd.sh'), 'w+')
+def make_modify_script(spot_data_path, lst_proc, wrapper_script):
+    cmd_file = open(op.join(spot_data_path, 'cmd.sh'), 'w+')
     cmd_file.write('#!/usr/bin/env bash \n')
     cmd_list = []
     cwd = op.abspath(os.getcwd())
@@ -95,11 +94,11 @@ def make_modify_script(peds_data_path, lst_proc, modif_script):
         if pipeline_command not in cmd_list:
             cmd_list.append(pipeline_command)
             # Make a copy of process to backup folder if doesn't exist
-            backup_path = op.join(peds_data_path,
+            backup_path = op.join(spot_data_path,
                                   'backup_scripts',
                                   pipeline_command.strip('/'))
             backup_path_all = op.join(
-                                       peds_data_path,
+                                       spot_data_path,
                                        'backup_scripts',
                                        pipeline_command.split('/')[-1:][0])
 
@@ -110,44 +109,44 @@ def make_modify_script(peds_data_path, lst_proc, modif_script):
                 if not op.exists(op.dirname(backup_path)):
                     os.makedirs(op.dirname(backup_path))
                 if pipeline_command == '/usr/bin/cp':
-                    cmd_file.write('cp ' + op.join(peds_data_path,
+                    cmd_file.write('cp ' + op.join(spot_data_path,
                                    'license.txt ')
                                    + ' /usr/local/src/freesurfer/ ' + '\n')
                     cmd_file.write('cp ' + '`which '+pipeline_command + '` '
-                                   + op.join(peds_data_path, 'backup_scripts/')
+                                   + op.join(spot_data_path, 'backup_scripts/')
                                    + '\n')
 
                 cmd_file.write('cp ' + '`which '+pipeline_command + '` '
                                + backup_path + '\n')
                 cmd_file.write('cp ' + '`which '+pipeline_command + '` '
                                + backup_path_all + '\n')
-                cmd_file.write('cp ' + modif_script + ' `which ' +
+                cmd_file.write('cp ' + wrapper_script + ' `which ' +
                                pipeline_command + '`' + '\n')
 
                 if 'wb_command' in pipeline_command:
                     if not op.exists(op.join(
-                                         peds_data_path, 'backup_scripts',
+                                         spot_data_path, 'backup_scripts',
                                          'usr/local/src/freesurfer/mni/share')
                                      ):
                         if not op.exists(op.join(
-                                             peds_data_path,
+                                             spot_data_path,
                                              'backup_scripts',
                                              'usr/local/src/freesurfer/mni')
                                          ):
                             os.makedirs(op.join(
-                                                peds_data_path,
+                                                spot_data_path,
                                                 'backup_scripts',
                                                 'usr/local/src/freesurfer/mni')
                                         )
                         cmd_file.write(
                             'cp -r /usr/local/src/freesurfer/mni/share ' +
                             op.join(
-                                peds_data_path, 'backup_scripts',
+                                spot_data_path, 'backup_scripts',
                                 'usr/local/src/freesurfer/mni/') +
                             '\n')
                         cmd_file.write(
                             'chmod -R 757 ' + op.join(
-                                peds_data_path,
+                                spot_data_path,
                                 'backup_scripts',
                                 'usr/local/src/freesurfer/mni/share') +
                             '\n')
@@ -155,20 +154,20 @@ def make_modify_script(peds_data_path, lst_proc, modif_script):
                     cmd_file.write(
                         'cp -r /usr/local/src/tools/workbench/libs_rh_linux64 '
                         + op.join(
-                            peds_data_path, 'backup_scripts',
+                            spot_data_path, 'backup_scripts',
                             'usr/local/src/tools/workbench/libs_rh_linux64') +
                         '\n')
                     cmd_file.write(
                         'chmod -R 757 ' +
                         op.join(
-                            peds_data_path,
+                            spot_data_path,
                             'backup_scripts',
                             'usr/local/src/tools/workbench/libs_rh_linux64'
                             ) +
                         '\n')
 
 
-def modify_docker_image(descriptor, peds_data_path, tag_name, from_path,
+def modify_docker_image(descriptor, spot_data_path, tag_name, from_path,
                         to_path, process_list):
     with open(descriptor, 'r') as jsonFile:
         data = json.load(jsonFile)
@@ -177,7 +176,7 @@ def modify_docker_image(descriptor, peds_data_path, tag_name, from_path,
     # print("Running command: {}".format(cmd_list))
     # ~ cwd = op.abspath(op.join(os.getcwd(), '../..'))
     cwd = op.abspath(os.getcwd())
-    cmd_file_path = op.join(peds_data_path, 'cmd.sh')
+    cmd_file_path = op.join(spot_data_path, 'cmd.sh')
     # with open(cmd_file_path, 'r') as cmdFile:
     #    cmd = cmdFile.readlines()
     container = client.containers.run(image_name,
@@ -187,10 +186,10 @@ def modify_docker_image(descriptor, peds_data_path, tag_name, from_path,
                                                 'mode': 'rw'}},
                                       environment=(["PYTHONPATH=$PYTHONPATH:"
                                                    + cwd,
-                                                   "REPRO_TOOLS_PATH=" +
+                                                   "SPOT_TOOLS_PATH=" +
                                                     os.getcwd(),
-                                                    "NURM_OUTPUT_PATH=" +
-                                                    peds_data_path,
+                                                    "SPOT_OUTPUT_PATH=" +
+                                                    spot_data_path,
                                                     "PROCESS_LIST=" +
                                                     process_list,
                                                     "FROM_PATH=" +
@@ -224,7 +223,7 @@ def json_file_editor(descriptor, new_param=None, act=None):
 
 
 def classify_process(verify_cond, exclude_items, output_dir, sqlite_db,
-                     peds_classify_file, reference_cond):
+                     spot_classify_file, reference_cond):
     # (2) Get the difference matrix file
     verify_files([verify_cond,
                   op.join(output_dir, 'test_diff_file.json'),
@@ -236,14 +235,14 @@ def classify_process(verify_cond, exclude_items, output_dir, sqlite_db,
     log_info("JSON difference file is created!")
 
     # (3) Get processes that create differences
-    peds([sqlite_db,
+    spot([sqlite_db,
           op.join(output_dir, 'test_diff_file.json'),
-          "-o", peds_classify_file,
+          "-o", spot_classify_file,
           "-i",
           exclude_items,
           "-c"
           ])
-    log_info("Processes are classified in JSON file!")
+    log_info("Processes are labeled in JSON file!")
 
 
 def copytree(src, dst, symlinks=False, ignore=None):
@@ -261,14 +260,14 @@ def copytree(src, dst, symlinks=False, ignore=None):
 
 
 def capture(descriptor, invocation, output_dir,
-            commands, modif_script, ref_cond, process_list):
+            commands, wrapper_script, ref_cond, process_list):
     tag_name = '000'
     image_name = json_file_editor(descriptor)
-    make_modify_script(output_dir, commands, modif_script)
+    make_modify_script(output_dir, commands, wrapper_script)
     modify_docker_image(descriptor, output_dir, tag_name, ref_cond,
                         ref_cond, process_list)
     log_info("Docker is modified on the First condition "
-             "to capture all the temporary and multi-write files")
+             "to capture transient files")
     # (2-1) Execute pipeline to persist the temporary
     # and mnulti-write processes
     pipeline_executor(descriptor, invocation)  # CENTOS6
@@ -280,20 +279,20 @@ def capture(descriptor, invocation, output_dir,
     shutil.rmtree(backup_path)
 
     # move temp captured files from backup directory into the original path
-    src = op.join(ref_cond, "peds_temp")
+    src = op.join(ref_cond, "spot_temp")
     copytree(src, ref_cond, symlinks=False, ignore=None)
 #    sys.exit(1)
 
 
 def modify(descriptor, invocation, output_dir,
-           sqlite_db, modif_script, from_path, to_path, process_list):
+           sqlite_db, wrapper_script, from_path, to_path, process_list):
     tag_name = '999'
     log_info("Pipeline executed, "
              "going to find new process that create error!")
     lst_proc = get_processes_list(sqlite_db)
     image_name = json_file_editor(descriptor)
 
-    make_modify_script(output_dir, lst_proc, modif_script)
+    make_modify_script(output_dir, lst_proc, wrapper_script)
     modify_docker_image(descriptor, output_dir, tag_name, from_path,
                         to_path, process_list)
     log_info("Docker is modified on the Reference condition"
@@ -335,11 +334,11 @@ def main(args=None):
                              "parsing the files and directories")
     parser.add_argument("-s", "--sqlite_db",
                         help="sqlite file created by reprozip")
-    parser.add_argument("-m", "--modif_script",
+    parser.add_argument("-m", "--wrapper_script",
                         help="the python script that should be replaced "
                              "by the original pipeline execution files")
-    parser.add_argument("-o", "--peds_output",
-                        help=".json output file of peds")
+    parser.add_argument("-o", "--spot_output",
+                        help=".json output file of spot")
     #  parser.add_argument("-r", "--reference_cond", action='store_true',
     #                      help="Insert path of reference condition to "
     #                            "capture temp and multi-write files")
@@ -353,7 +352,7 @@ def main(args=None):
                         help="Boutiques invocation of the reference condition")
     parser.add_argument("-r", "--reference_cond",
                         help="path directory to the output files of reference "
-                             "condition to capture temp and multi-write files."
+                             "condition to capture transient files."
                              "Also, it make copies FROM this directory.")
     parser.add_argument("-b", "--base_cond",
                         help="path directory to the output files of base "
@@ -363,8 +362,8 @@ def main(args=None):
                         level=logging.INFO)
     args = parser.parse_args(args)
 
-    peds_classify_file = op.join(op.abspath(args.output_directory),
-                                 args.peds_output)
+    spot_classify_file = op.join(op.abspath(args.output_directory),
+                                 args.spot_output)
     # (1) First pipeline execution in Condition 1
     # (reference condition-CENTOS6) to produce
     # process tree and result files
@@ -375,21 +374,24 @@ def main(args=None):
                      op.abspath(args.exclude_items),
                      op.abspath(args.output_directory),
                      op.abspath(args.sqlite_db),
-                     peds_classify_file,
+                     spot_classify_file,
                      op.abspath(args.reference_cond))
-    peds_capture_file = (os.path.splitext(peds_classify_file)[0] +
+    spot_capture_file = (os.path.splitext(spot_classify_file)[0] +
                          '_captured.json')
     commands = {}
-    with open(peds_capture_file, 'r') as tmp_cmd:
+    wrapper_script = op.basename(args.wrapper_script)
+    shutil.copyfile(args.wrapper_script, op.join(args.output_directory,
+                                                 wrapper_script))
+    with open(spot_capture_file, 'r') as tmp_cmd:
         data = json.load(tmp_cmd)
 
     subj_name = data["execution_info"]["subject_name"]
-    # write arguments on json file to read from make_copy file
+    # write arguments on json file to read from wrapper file
     write_arguments(subj_name, op.abspath(args.verify_condition),
                     op.abspath(args.exclude_items),
                     op.abspath(args.sqlite_db),
-                    peds_capture_file,
-                    peds_classify_file)
+                    spot_capture_file,
+                    spot_classify_file)
 
     reference_cond = op.join(op.abspath(args.reference_cond), subj_name)
     base_cond = op.join(op.abspath(args.base_cond), subj_name)
@@ -404,13 +406,13 @@ def main(args=None):
                 args.ref_invocation,
                 op.abspath(args.output_directory),
                 commands,
-                op.abspath(args.modif_script),
-                reference_cond, peds_classify_file)
+                op.abspath(wrapper_script),
+                reference_cond, spot_classify_file)
 
-        log_info("temp and multi-write processes are captured on "
+        log_info("transient files are captured on "
                  "base conditions!")
-        os.rename(peds_capture_file,
-                  peds_capture_file.replace('.json', '_c.json'))
+        os.rename(spot_capture_file,
+                  spot_capture_file.replace('.json', '_c.json'))
 
     # (3) Third pipeline execution in Condition 2
     # (based condition - CENTOS7) to label process graph
@@ -418,10 +420,10 @@ def main(args=None):
            args.base_invocation,
            op.abspath(args.output_directory),
            op.abspath(args.sqlite_db),
-           op.abspath(args.modif_script),
+           op.abspath(wrapper_script),
            reference_cond,
-           base_cond, peds_classify_file)
-    log_info("All the pipeline rocesses are classified through modifications!")
+           base_cond, spot_classify_file)
+    log_info("The pipeline processes are labeled!")
 
 
 if __name__ == '__main__':

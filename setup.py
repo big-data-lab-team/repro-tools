@@ -2,26 +2,22 @@ import sys
 from setuptools import setup
 import sys
 
-VERSION = "0.0.2"
+VERSION = "0.0.1"
 DEPS = [
-         "graphviz",
          "pandas",
          "matplotlib==2.2.3",
-         "plotly",
          "boutiques",
          "docker",
          "zss",
          "scipy",
-         "sklearn",
-         "seaborn",
-         "scikit-learn"
+         "sklearn"
        ]
 
-setup(name="reprotools",
+setup(name="spottool",
       version=VERSION,
       description=(" A set of tools to evaluate the reproducibility "
                    "of computations "),
-      url="https://github.com/big-data-lab-team/repro-tools",
+      url="https://github.com/big-data-lab-team/spot",
       author="Big Data Infrastructures for Neuroinformatics lab",
       classifiers=[
                 "Programming Language :: Python",
@@ -32,17 +28,17 @@ setup(name="reprotools",
                 "Natural Language :: English"
                   ],
       license="MIT",
-      packages=["reprotools"],
+      packages=["spot"],
       include_package_data=True,
       test_suite="pytest",
       tests_require=["pytest"],
       entry_points={
         "console_scripts": [
-            "verify_files=reprotools:verify_files",
-            "peds=reprotools:peds",
-            "auto_peds=reprotools:auto_peds",
-            "make_copy=reprotools:make_copy",
-            "subject_clustering=reprotools:subject_clustering"
+            "verify_files=spot:verify_files",
+            "spottool=spot:spottool",
+            "auto_spot=spot:auto_spot",
+            "wrapper=spot:wrapper",
+            "subject_clustering=spot:subject_clustering",
 
         ]
       },
