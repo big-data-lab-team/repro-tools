@@ -326,22 +326,6 @@ def main(args=None):
                                                  ' error detection')
     parser.add_argument("output_directory", help='directory where to '
                                                  'store the outputs')
-    parser.add_argument("-c", "--verify_condition",
-                        help="input the text file containing the path "
-                             "to the verify_file condition folders")
-    parser.add_argument("-e", "--exclude_items",
-                        help="The list of items to be ignored while "
-                             "parsing the files and directories")
-    parser.add_argument("-s", "--sqlite_db",
-                        help="sqlite file created by reprozip")
-    parser.add_argument("-m", "--wrapper_script",
-                        help="the python script that should be replaced "
-                             "by the original pipeline execution files")
-    parser.add_argument("-o", "--spot_output",
-                        help=".json output file of spot")
-    #  parser.add_argument("-r", "--reference_cond", action='store_true',
-    #                      help="Insert path of reference condition to "
-    #                            "capture temp and multi-write files")
     parser.add_argument("-d", "--base_descriptor",
                         help="Boutiques descriptor")
     parser.add_argument("-i", "--base_invocation",
@@ -357,6 +341,19 @@ def main(args=None):
     parser.add_argument("-b", "--base_cond",
                         help="path directory to the output files of base "
                              "condition that make copies TO this directory.")
+    parser.add_argument("-s", "--sqlite_db",
+                        help="sqlite file created by reprozip")
+    parser.add_argument("-c", "--verify_condition",
+                        help="input the text file containing the path "
+                             "to the verify_file condition folders")
+    parser.add_argument("-e", "--exclude_items",
+                        help="The list of items to be ignored while "
+                             "parsing the files and directories")
+    parser.add_argument("-m", "--wrapper_script",
+                        help="the python script that should be replaced "
+                             "by the original pipeline execution files")
+    parser.add_argument("-o", "--spot_output",
+                        help=".json output file of spot")
 
     logging.basicConfig(format='%(asctime)s:%(message)s',
                         level=logging.INFO)
