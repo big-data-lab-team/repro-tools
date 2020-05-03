@@ -10,8 +10,7 @@ DEPS = [
          "docker",
          "zss",
          "scipy",
-         "sklearn",
-         "sqlite3"
+         "sklearn"
        ]
 
 setup(name="spottool",
