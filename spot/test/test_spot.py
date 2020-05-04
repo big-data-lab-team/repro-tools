@@ -16,7 +16,7 @@ def repopath():
 
 
 def test_wrapper():
-    spot_data_path = op.join(repopath(), 'examples', 'spot_test_data')
+    spot_data_path = op.join(repopath(), 'test', 'spot_test_data')
     from_path = op.join(op.abspath("centos6"), "subject1")
     to_path = op.join(op.abspath("centos7"), "subject1")
     os.chdir(spot_data_path)
@@ -29,7 +29,7 @@ def test_wrapper():
 
 
 def test_wrapper_cap():
-    spot_data_path = op.join(repopath(), 'examples', 'spot_test_data')
+    spot_data_path = op.join(repopath(), 'test', 'spot_test_data')
     from_path = op.join(op.abspath("centos6"), "subject1")
     to_path = op.join(op.abspath("centos7"), "subject1")
     os.chdir(spot_data_path)
@@ -53,7 +53,7 @@ def test_subj_clustering2():
 def test_auto_spot():
     # ~ test_capture_first_cond()
     # ~ test_capture_second_cond()
-    os.chdir(op.join(repopath(), 'examples', 'spot_test_data'))
+    os.chdir(op.join(repopath(), 'test', 'spot_test_data'))
     wrapper_script = op.join(repopath(), 'wrapper.py')
     auto_spot([".",
                "-c", "conditions.txt",
@@ -73,7 +73,7 @@ def test_auto_spot():
 
 
 def test_spot():
-    os.chdir(op.join(repopath(), 'examples', 'spot_test_data'))
+    os.chdir(op.join(repopath(), 'test', 'spot_test_data'))
     spot(["trace_test.sqlite3",
           "ref_diff_file.json",
           "-i", "toremove.txt",
@@ -81,7 +81,7 @@ def test_spot():
 
 
 def test_spot2():
-    os.chdir(op.join(repopath(), 'examples', 'spot_test_data'))
+    os.chdir(op.join(repopath(), 'test', 'spot_test_data'))
     spot(["trace_test.sqlite3",
           "ref_diff_file.json",
           "-i", "toremove.txt",
