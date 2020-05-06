@@ -1,5 +1,10 @@
 {
+    "certain_cmd": {},
     "execution_info": {
+        "captured_list": "./commands_cap_test.json",
+        "conditions": "./conditions.txt",
+        "exclude_items": "./exclude_items.txt",
+        "sqlite_db": "./trace_test.sqlite3",
         "subject_name": "subject1"
     },
     "total_multi_write_proc": {

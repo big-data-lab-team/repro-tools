@@ -44,7 +44,7 @@ This creates a json file contains of all the processes that create differences.
 Example of usage:
 ```
 clone repository https://github.com/big-data-lab-team/spot.git
-cd `spot/spot/example/`
+cd spot/spot/example/
 
 docker build -t spot_centos7_latest centos7/subject1/
 docker build -t spot_centos6_latest centos6/subject1/
