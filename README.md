@@ -35,7 +35,6 @@ You must:
 * Create Boutiques descriptor files 
 for each condition (See [Boutiques](https://boutiques.github.io/) website)
 * Get provenance information using ReproZip tool in one condition (Check [ReproZip](http://docs.reprozip.org/en/1.0.x/packing.html) docs)
-* Refer to output directory of one condition as reference and the other one as base
 * Set `output_directory` path including all the above mentioned files
 
 To automatically find processes that create differences you must run the `auto_spot` command.
@@ -43,16 +42,14 @@ This creates a json file contains of all the processes that create differences.
 
 
 Example of usage:
-Run:
 ```
 clone repository https://github.com/big-data-lab-team/spot.git
-docker build -t spot_centos7_latest ./spot/example/centos7/subject1/
-docker build -t spot_centos6_latest ./spot/example/centos6/subject1/
+cd `spot/spot/example/`
 
-cd `./spot/example/`
-auto_spot -d descriptor.json -i invocation.json -d2 descriptor_cond2.json
-          -i2 invocation_cond2.json -s trace_test.sqlite3 -c conditions.txt -e exclude_items.txt
-          -o commands.json <PATH_TO_OUTPUT>
+docker build -t spot_centos7_latest centos7/subject1/
+docker build -t spot_centos6_latest centos6/subject1/
+
+auto_spot -d descriptor.json -i invocation.json -d2 descriptor_cond2.json -i2 invocation_cond2.json -s trace_test.sqlite3 -c conditions.txt -e exclude_items.txt -o commands.json <PATH_TO_OUTPUT>
 ```
 You can now look at `commands.json` to see the processes that introduce differences in this example pipeline.
 
