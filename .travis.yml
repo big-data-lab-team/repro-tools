@@ -24,7 +24,7 @@ install:
 - pip install coveralls pytest==5.2.0 pytest-runner pycodestyle
 - pip install .
 - docker build $TRAVIS_BUILD_DIR/spot/example/centos7/subject1/Dockerfile -t spot_centos7_latest
-- docker build $TRAVIS_BUILD_DIR -t spot_centos6_latest
+- docker build $TRAVIS_BUILD_DIR/spot/example/centos6/subject1/Dockerfile -t spot_centos6_latest
 script:
 - pycodestyle --max-line-length=80 *.py */*.py
 - coverage run --source spot setup.py pytest
