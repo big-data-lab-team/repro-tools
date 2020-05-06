@@ -345,13 +345,6 @@ def main(args=None):
                         help="Boutiques descriptor of the reference condition")
     parser.add_argument("-i2", "--ref_invocation",
                         help="Boutiques invocation of the reference condition")
-    # parser.add_argument("-r", "--reference_cond",
-    #                     help="path directory to the output files of reference "
-    #                          "condition to capture transient files."
-    #                          "Also, it make copies FROM this directory.")
-    # parser.add_argument("-b", "--base_cond",
-    #                     help="path directory to the output files of base "
-    #                          "condition that make copies TO this directory.")
     parser.add_argument("-s", "--sqlite_db",
                         help="sqlite file created by reprozip")
     parser.add_argument("-c", "--verify_condition",
@@ -360,9 +353,6 @@ def main(args=None):
     parser.add_argument("-e", "--exclude_items",
                         help="The list of items to be ignored while "
                              "parsing the files and directories")
-    # parser.add_argument("-m", "--wrapper_script",
-    #                     help="the python script that should be replaced "
-    #                          "by the original pipeline execution files")
     parser.add_argument("-o", "--spot_output",
                         help=".json output file of spot")
 
@@ -388,10 +378,9 @@ def main(args=None):
     spot_capture_file = (os.path.splitext(spot_classify_file)[0] +
                          '_captured.json')
     commands = {}
-    wrapper_script = op.join(op.dirname(spot_path), 'wrapper.py')
-    #wrapper_script = op.basename(args.wrapper_script)
-    shutil.copyfile(wrapper_script, op.join(args.output_directory,
-                                            op.basename(wrapper_script)))
+    wrapper_script = 'wrapper.py'
+    shutil.copyfile(op.join(op.dirname(spot_path), wrapper_script),
+                    op.join(args.output_directory, wrapper_script))
     with open(spot_capture_file, 'r') as tmp_cmd:
         data = json.load(tmp_cmd)
 

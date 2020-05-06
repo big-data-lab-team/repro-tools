@@ -18,4 +18,7 @@ RUN  cd /tmp/ && \
 
 RUN  pip3 install /tmp/spot/
 
+RUN rm /usr/bin/python
+RUN ln -s /usr/local/bin/python3.5 /usr/bin/python
+
 ADD  test_script.sh /bin

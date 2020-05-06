@@ -82,4 +82,4 @@ def test_spot2():
           "ref_diff_file.json",
           "-i", "toremove.txt",
           "-o", "commands_test2.json",
-          "-a", "grep 6.8 input_file.txt"])
+          "-a", "grep 6.1 input_file.txt"])
