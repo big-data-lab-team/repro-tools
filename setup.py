@@ -6,7 +6,7 @@ VERSION = "0.0.1"
 DEPS = [
          "numpy",
          "pandas",
-         "boutiques",
+         "boutiques==0.5.11",
          "docker",
          "zss",
          "scipy",
