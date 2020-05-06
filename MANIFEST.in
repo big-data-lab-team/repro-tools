@@ -1,1 +1,1 @@
-recursive-include reprotools/test/ *
+recursive-include spottools/test/ *

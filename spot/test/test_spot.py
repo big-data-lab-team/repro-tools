@@ -54,19 +54,15 @@ def test_auto_spot():
     # ~ test_capture_first_cond()
     # ~ test_capture_second_cond()
     os.chdir(op.join(repopath(), 'test', 'spot_test_data'))
-    wrapper_script = op.join(repopath(), 'wrapper.py')
     auto_spot([".",
-               "-c", "conditions.txt",
-               "-e", "exclude_items.txt",
-               "-s", "trace_test.sqlite3",
-               "-o", "commands.json",
-               "-m", wrapper_script,
                "-d", "descriptor.json",
                "-i", "invocation.json",
                "-d2", "descriptor_cond2.json",
                "-i2", "invocation_cond2.json",
-               "-r", "centos6",
-               "-b", "centos7"
+               "-c", "conditions.txt",
+               "-e", "exclude_items.txt",
+               "-s", "trace_test.sqlite3",
+               "-o", "commands.json"
                ])
 #     assert(open("commands.json", "r").read()
 #            == open("result_test.json", "r").read())

@@ -4,8 +4,8 @@ import sys
 
 VERSION = "0.0.1"
 DEPS = [
+         "numpy",
          "pandas",
-         "matplotlib==2.2.3",
          "boutiques",
          "docker",
          "zss",
