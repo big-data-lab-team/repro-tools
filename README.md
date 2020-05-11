@@ -31,8 +31,8 @@ execution conditions.
 Pre-requisites:
 * Install and start [Docker](http://www.docker.com)
 * Build Docker images for the pipelines in different conditions (e.g. CentOS6 and CentOS7) 
-* Create Boutiques descriptors for the pipeline, in each condition (see [Boutiques](https://boutiques.github.io/) website)
-* Get provenance information using ReproZip tool in one condition (check [ReproZip](http://docs.reprozip.org/en/1.0.x/packing.html) docs)
+* Create [Boutiques](https://boutiques.github.io) descriptors for the pipeline, in each condition
+* Get provenance information using [ReproZip](http://docs.reprozip.org/en/1.0.x/packing.html) tool in one condition
 
 The `auto_spot` command finds processes that create differences in results obtained in different conditions and reports them in a JSON file.
 
