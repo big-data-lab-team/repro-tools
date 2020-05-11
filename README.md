@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/ali4006/spot.svg?branch=develop)](https://travis-ci.org/big-data-lab-team/spot)
 [![Coverage Status](https://coveralls.io/repos/github/big-data-lab-team/spot/badge.svg?branch=develop)](https://coveralls.io/github/big-data-lab-team/spot?branch=develop)
 
-# Spot-tool
+# Spot
 A set of tools to evaluate the reproducibility of computations.
 
 <!-- TABLE OF CONTENTS -->
@@ -23,27 +23,22 @@ Simply install the package with `pip`
 
 ## Spot
 
-Spot identifies the components in a pipeline, at the resolution
-level of a system process, that produce different results in different
+Spot identifies the processes in a pipeline that produce different results in different
 execution conditions.
 
 ### Usage
 
-You must:
-* Build Docker images for the pipelines in different conditions 
-(e.g. CentOS6 and CentOS7) 
-* Create Boutiques descriptor files 
-for each condition (See [Boutiques](https://boutiques.github.io/) website)
-* Get provenance information using ReproZip tool in one condition (Check [ReproZip](http://docs.reprozip.org/en/1.0.x/packing.html) docs)
-* Set `output_directory` path including all the above mentioned files
+Pre-requisites:
+* Install and start [Docker](http://www.docker.com)
+* Build Docker images for the pipelines in different conditions (e.g. CentOS6 and CentOS7) 
+* Create Boutiques descriptors for the pipeline, in each condition (see [Boutiques](https://boutiques.github.io/) website)
+* Get provenance information using ReproZip tool in one condition (check [ReproZip](http://docs.reprozip.org/en/1.0.x/packing.html) docs)
 
-To automatically find processes that create differences you must run the `auto_spot` command.
-This creates a json file contains of all the processes that create differences.
-
+The `auto_spot` command finds processes that create differences in results obtained in different conditions and reports them in a JSON file.
 
 Example of usage:
 ```
-clone repository https://github.com/big-data-lab-team/spot.git
+git clone https://github.com/big-data-lab-team/spot.git
 cd spot/spot/example/
 
 docker build -t spot_centos7_latest centos7/subject1/
