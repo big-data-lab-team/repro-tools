@@ -39,12 +39,14 @@ The `auto_spot` command finds processes that create differences in results obtai
 Example of usage:
 ```
 git clone https://github.com/big-data-lab-team/spot.git
-cd spot/spot/example/
+cd spot
+pip install .
+cd spot/example/
 
 docker build -t spot_centos7_latest centos7/subject1/
 docker build -t spot_centos6_latest centos6/subject1/
 
-auto_spot -d descriptor.json -i invocation.json -d2 descriptor_cond2.json -i2 invocation_cond2.json -s trace_test.sqlite3 -c conditions.txt -e exclude_items.txt -o commands.json <PATH_TO_OUTPUT>
+auto_spot -d descriptor.json -i invocation.json -d2 descriptor_cond2.json -i2 invocation_cond2.json -s trace_test.sqlite3 -c conditions.txt -e exclude_items.txt -o commands.json .
 ```
 You can now look at `commands.json` to see the processes that introduce differences in this example pipeline.
 
