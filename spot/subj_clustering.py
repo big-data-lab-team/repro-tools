@@ -15,9 +15,9 @@ from sqlite3 import Error
 from scipy.cluster.hierarchy import fcluster, dendrogram, linkage, fclusterdata
 from sklearn.preprocessing import LabelEncoder
 import numpy as np
-import matplotlib
-matplotlib.use('Agg')  # noqa
-import matplotlib.pyplot as plt
+# import matplotlib
+# matplotlib.use('Agg')  # noqa
+# import matplotlib.pyplot as plt
 
 
 def check_file(parser, x):
@@ -78,13 +78,14 @@ def clustering_process_trees(db_file_list, threshold, output_folder):
         print(out_str)
         clusterfiles.writelines(out_str)
     # label_list = range(1, 101)
-    plt.figure(figsize=(10, 7))
-    dendrogram(linked,
-               orientation='top',
-               labels=label_list,
-               distance_sort='descending',
-               show_leaf_counts=True)
-    plt.savefig(output_folder+'hclusters.png')
+
+    # plt.figure(figsize=(10, 7))
+    # dendrogram(linked,
+    #            orientation='top',
+    #            labels=label_list,
+    #            distance_sort='descending',
+    #            show_leaf_counts=True)
+    # plt.savefig(output_folder+'hclusters.png')
     # plt.show()
 
 

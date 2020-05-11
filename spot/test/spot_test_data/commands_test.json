@@ -18,7 +18,7 @@
             ], 
             "id": 9
         }, 
-        "/home/travis/build/ali4006/spot/spot/make_copy.py\u0000": {
+        "grep\u00006.8\u0000input_file.txt\u0000": {
             "files": [
                 "./centos6/subject1/./f1.out"
             ], 
@@ -26,7 +26,7 @@
         }
     }, 
     "total_commands_multi": {
-        "/home/travis/build/ali4006/spot/spot/make_copy.py\u0000": {
+        "grep\u00006.8\u0000./temp.out\u0000": {
             "files": [
                 "./centos6/subject1/f2.out"
             ], 

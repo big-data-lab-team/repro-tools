@@ -23,10 +23,9 @@ install:
 - pip install --upgrade setuptools
 - pip install coveralls pytest==5.2.0 pytest-runner pycodestyle
 - pip install .
-- docker pull salari/reprotools_project:spot_centos7_latest
-- docker tag salari/reprotools_project:spot_centos7_latest spot_centos7_latest
-- docker pull salari/reprotools_project:spot_centos6_latest
-- docker tag salari/reprotools_project:spot_centos6_latest spot_centos6_latest
+- docker build spot/example/centos7/subject1/ -t spot_centos7_latest
+- docker build spot/example/centos6/subject1/ -t spot_centos6_latest
+
 script:
 - pycodestyle --max-line-length=80 *.py */*.py
 - coverage run --source spot setup.py pytest
