@@ -17,7 +17,7 @@ def repopath():
 
 def test_wrapper():
     spot_data_path = op.join(repopath(), 'test', 'spot_test_data')
-    from_path = op.join(op.abspath("centos6"), "subject1")
+    from_path = op.join(op.abspath("debian"), "subject1")
     to_path = op.join(op.abspath("centos7"), "subject1")
     os.chdir(spot_data_path)
     os.environ["SPOT_TOOLS_PATH"] = os.getcwd()
@@ -30,7 +30,7 @@ def test_wrapper():
 
 def test_wrapper_cap():
     spot_data_path = op.join(repopath(), 'test', 'spot_test_data')
-    from_path = op.join(op.abspath("centos6"), "subject1")
+    from_path = op.join(op.abspath("debian"), "subject1")
     to_path = op.join(op.abspath("centos7"), "subject1")
     os.chdir(spot_data_path)
     os.environ["SPOT_TOOLS_PATH"] = os.getcwd()
@@ -82,4 +82,4 @@ def test_spot2():
           "ref_diff_file.json",
           "-i", "toremove.txt",
           "-o", "commands_test2.json",
-          "-a", "grep 6.1 input_file.txt"])
+          "-a", "grep 67890 input_file.txt"])
