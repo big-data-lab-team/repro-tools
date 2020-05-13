@@ -1,20 +1,11 @@
-FROM centos:7
+FROM centos:centos7
 
-RUN  yum install -y \
-     which \
-     python \
-     python-devel \
-     gcc \
-     sqlite-devel \
-     openssl-devel \
-     libffi-devel \
-     git
+RUN yum -y update; yum clean all &&\
+    yum -y install epel-release which; yum clean all &&\
+    yum -y install python3-pip; yum clean all
 
-RUN curl https://bootstrap.pypa.io/get-pip.py | python
-RUN pip install -U reprozip
-
-RUN  cd /tmp/ && \
-     git clone https://github.com/ali4006/spot.git
-RUN  pip install /tmp/spot/
-
-ADD test_script.sh /bin
+ADD lightspot /tmp/spot
+RUN pip3 install --no-cache-dir /tmp/spot/ &&\
+    rm /usr/bin/python &&\
+    ln -s /usr/bin/python3.6 /usr/bin/python
+ADD  test_script.sh /bin

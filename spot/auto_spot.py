@@ -260,6 +260,12 @@ def copytree(src, dst, symlinks=False, ignore=None):
                 shutil.copy2(s, d)
 
 
+def remove_docker_image(image_name, tag_name):
+    nimg_name = image_name.split(':')[0] + "_" + tag_name
+    client = docker.from_env()
+    client.images.remove(nimg_name)
+
+
 def capture(descriptor, invocation, output_dir,
             commands, wrapper_script, ref_cond, process_list):
     tag_name = '000'
@@ -273,6 +279,8 @@ def capture(descriptor, invocation, output_dir,
     # and mnulti-write processes
     pipeline_executor(descriptor, invocation)  # CENTOS6
     log_info("all the files are captured")
+    # remove docker images
+    remove_docker_image(image_name, tag_name)
     # restart to the default parameters and clean backup directory
     json_file_editor(descriptor, image_name, 'image')
     backup_path = op.join(output_dir, 'backup_scripts')
@@ -282,7 +290,6 @@ def capture(descriptor, invocation, output_dir,
     # move temp captured files from backup directory into the original path
     src = op.join(ref_cond, "spot_temp")
     copytree(src, ref_cond, symlinks=False, ignore=None)
-#    sys.exit(1)
 
 
 def modify(descriptor, invocation, output_dir,
@@ -301,7 +308,8 @@ def modify(descriptor, invocation, output_dir,
     # (3-1) Execute pipeline to capture all the processes with differences
     pipeline_executor(descriptor, invocation)  # CENTOS7
     log_info("Pipeline executed!!")
-
+    # remove docker images
+    remove_docker_image(image_name, tag_name)
     json_file_editor(descriptor, image_name, 'image')
     backup_path = op.join(output_dir, 'backup_scripts')
     shutil.rmtree(backup_path)

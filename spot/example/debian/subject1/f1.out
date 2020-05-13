@@ -1,3 +1,4 @@
 line: this is in both OSes including 12345 and 67890
 line1: this is mytemp line on both OSes 12345 and 67890
-line4: this is only on 67890
+line2: the temp line on 12345
+line3: this is only on 12345 

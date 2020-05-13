@@ -1,5 +1,3 @@
-line: we are in 6.1centos7.8
-line1: mytemp line on 6.1centos7.8
-7.8line2:
-7.8line4:
-7.8line5:
+line: this is in both OSes including 12345 and 67890
+line1: this is mytemp line on both OSes 12345 and 67890
+line4: this is only on 67890
