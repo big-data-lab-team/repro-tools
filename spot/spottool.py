@@ -197,9 +197,9 @@ class linked_list:
 
 def convert_to_key(cmd):
     lst = []
-    ss = cmd.split(' ')
-    for l in ss:
-        lst.append(l.split('/')[-1])
+    splited = cmd.split(' ')
+    for path_ in splited:
+        lst.append(path_.split('/')[-1])
     cmd = ' '.join(lst)
     cmd = cmd.strip(' ')
     cmd = re.sub(r"fsl_......_tmp", "fsl_X_tmp", cmd)
