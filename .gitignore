@@ -6,3 +6,6 @@ env
 .*
 \#*
 *.pyc
+venv
+build
+*.egg-info
