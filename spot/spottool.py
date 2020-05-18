@@ -736,8 +736,8 @@ def log_error(message):
 
 
 def main(args=None):
-    parser = argparse.ArgumentParser(description='Classification of the nodes'
-                                                 ' in the pipeline graph.')
+    parser = argparse.ArgumentParser(description='Labeling of the processes'
+                                                 ' in the provenance graph')
     parser.add_argument("sqlite_db",
                         type=lambda x: check_file(parser, x),
                         help='sqlite file created by reprozip, '

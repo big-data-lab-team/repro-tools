@@ -233,8 +233,8 @@ def get_processes_list(db_path):
 
 
 def main(args=None):
-    parser = argparse.ArgumentParser(description='Classification of the nodes'
-                                                 ' in the pipeline graph.')
+    parser = argparse.ArgumentParser(description='Clusters subjects'
+                                                 'base on the process trees')
     parser.add_argument("input_folder",
                         help='input folder of sqlite databases ')
     parser.add_argument("output_folder",
