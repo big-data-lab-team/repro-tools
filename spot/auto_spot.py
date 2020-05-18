@@ -342,9 +342,9 @@ def read_conditions(file_name):
 
 def main(args=None):
     parser = argparse.ArgumentParser(description="The Spot is a tool "
-                        "to identify processes in the pipeline that "
-                        " create differences automatically"
-                                                 ' error detection')
+                                     "to identify processes in the "
+                                     "pipeline that create differences "
+                                     "automatically")
     parser.add_argument("output_directory", help='directory where to '
                                                  'store the outputs')
     parser.add_argument("-d", "--base_descriptor",
