@@ -8,4 +8,4 @@ ADD lightspot /tmp/spot
 RUN pip3 install --no-cache-dir /tmp/spot/ &&\
     rm /usr/bin/python &&\
     ln -s /usr/bin/python3.6 /usr/bin/python
-ADD  test_script.sh /bin
+ADD  spot/example/test_script.sh /bin

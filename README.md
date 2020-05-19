@@ -36,22 +36,38 @@ Pre-requisites:
 
 The `auto_spot` command finds processes that create differences in results obtained in different conditions and reports them in a JSON file.
 
-Example of usage:
+Usage example:
 
-There is a simple example of how Spot tool works. In this example, we created docker images and descriptors for the distributions of Linux (CentOS 7 VS. Debian 10 (buster)), which run a bash script containing different lines of `grep` command. This script creates different output files depending on the OS name. Also, we acquired ReproZip traced file in CentOS 7.
-If you follow the below instruction, you will produce two JSON files. One is `commands_captured_c.json` that stores processes with transient files. The other one is `commands.json` that stores processes that create differences in two attributes: multi-write processes (in `total_commands_multi`) and single write processes (in `total_commands`).
+In this example, we run a bash script that calls the `grep` command
+multiple times, creating different output files when run on different 
+OSes. We use `spot` to compare the outputs obtained in CentOS 7 and Debian 10.
 
+The example can be run using the following commands:
 ```
 git clone https://github.com/big-data-lab-team/spot.git
 cd spot
 pip install .
-cd spot/example/
 
-docker build -t spot_centos_latest centos7/subject1/
-docker build -t spot_debian_latest debian/subject1/
+docker build . -f spot/example/centos7/Dockerfile -t spot_centos_latest
+docker build . -f spot/example/debian/Dockerfile -t spot_debian_latest
 
-auto_spot -d descriptor.json -i invocation.json -d2 descriptor_cond2.json -i2 invocation_cond2.json -s trace_test.sqlite3 -c conditions.txt -e exclude_items.txt -o commands.json .
+cd spot/example 
+
+auto_spot -d descriptor_centos7.json -i invocation_centos7.json -d2 descriptor_debian10.json -i2 invocation_debian10.json -s trace_test.sqlite3 -c conditions.txt -e exclude_items.txt -o commands.json .
 ```
+
+In this command:
+* `descriptor_`<distro>`.json` is the Boutiques descriptor of the application executed in OS `<distro>`.
+* `invocation_`<distro>`.json` is the Boutiques invocation of the application executed in OS `<distro>`, containing the input files an
+* `trace_test.sqlite3` is a ReproZip trace of the application, acquired in CentOS 7.
+* `condition.txt` is [... Ali to fill this...]
+* `exclude_items.txt` is [... Ali to fill this...]
+
+The command produces the following outputs:
+*  `commands_captured_c.json` contains the list of processes with transient files. 
+*  `commands.json` contains the list of processes that create differences in two attributes: multi-write
+processes (in `total_commands_multi`) and single write processes (in
+`total_commands`).
 
 ## How to Contribute
 

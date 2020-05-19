@@ -23,8 +23,8 @@ install:
 - pip install --upgrade setuptools
 - pip install coveralls pytest==5.2.0 pytest-runner pycodestyle
 - pip install .
-- docker build spot/example/centos7/subject1/ -t spot_centos_latest
-- docker build spot/example/debian/subject1/ -t spot_debian_latest
+- docker build . -f spot/example/centos7/Dockerfile -t spot_centos_latest
+- docker build . -f spot/example/debian/Dockerfile -t spot_debian_latest
 
 script:
 - pycodestyle --max-line-length=80 *.py */*.py

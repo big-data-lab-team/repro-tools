@@ -714,7 +714,9 @@ def check_file(parser, x):
 
 
 def main(args=None):
-    parser = argparse.ArgumentParser(description="verifyFiles.py",
+    parser = argparse.ArgumentParser(description="verifyfiles is a tool "
+                                     "to compute differences between results "
+                                     "obtained in different conditions",
                                      formatter_class=argparse
                                      .RawTextHelpFormatter)
     parser.add_argument("file_in",
