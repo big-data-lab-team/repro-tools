@@ -18,7 +18,6 @@ import logging
 import csv
 import sqlite3
 import re
-import pandas as pd
 import random
 import json
 

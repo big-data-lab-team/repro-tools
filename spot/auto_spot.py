@@ -44,7 +44,7 @@ def pipeline_executor(descriptor, invocation):
 
     try:
         print("Launching Boutiques tool")
-        output_object = boutiques.execute("launch", '-x',
+        output_object = boutiques.execute("launch", '-x', '-u',
                                           descriptor, invocation)
     except SystemExit as e:
         return(e.code)
@@ -376,7 +376,7 @@ def main(args=None):
     # (1) First pipeline execution in Condition 1
     # (reference condition-CENTOS6) to produce
     # process tree and result files
-    # pipeline_executor(args.ref_descriptor, args.ref_invocation)
+    pipeline_executor(args.ref_descriptor, args.ref_invocation)
     log_info("pipelines executed on Condition 1")
 
     classify_process(op.abspath(args.verify_condition),

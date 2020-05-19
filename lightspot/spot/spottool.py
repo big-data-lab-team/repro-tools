@@ -14,7 +14,6 @@ import sqlite3
 import json
 import logging
 import sys
-import pandas as pd
 from sqlite3 import Error
 try:
     import cPickle as pickle

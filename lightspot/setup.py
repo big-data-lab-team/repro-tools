@@ -4,7 +4,6 @@ import sys
 
 VERSION = "0.0.1"
 DEPS = [
-         "pandas",
        ]
 
 setup(name="spottool",

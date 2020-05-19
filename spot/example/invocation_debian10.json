@@ -1,4 +1,4 @@
 {
-    "output_file": "debian",
+    "output_file": "debian/run1/",
     "input_file": "input_file.txt"
 }
