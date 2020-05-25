@@ -4,7 +4,9 @@
 [![Coverage Status](https://coveralls.io/repos/github/big-data-lab-team/spot/badge.svg?branch=develop)](https://coveralls.io/github/big-data-lab-team/spot?branch=develop)
 
 # Spot
-A set of tools to evaluate the reproducibility of computations.
+
+Spot identifies the processes in a pipeline that produce different results in different
+execution conditions.
 
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
@@ -21,14 +23,8 @@ Simply install the package with `pip`
 
     $ pip install spottool
 
-## Spot
+## Pre-requisites
 
-Spot identifies the processes in a pipeline that produce different results in different
-execution conditions.
-
-### Usage
-
-Pre-requisites:
 * Install and start [Docker](http://www.docker.com)
 * Build Docker images for the pipelines in different conditions (e.g. Debian10 and CentOS7) 
 * Create [Boutiques](https://boutiques.github.io) descriptors for the pipeline, in each condition
@@ -36,7 +32,7 @@ Pre-requisites:
 
 The `auto_spot` command finds processes that create differences in results obtained in different conditions and reports them in a JSON file.
 
-Usage example:
+## Usage example
 
 In this example, we run a bash script that calls the `grep` command
 multiple times, creating different output files when run on different 
