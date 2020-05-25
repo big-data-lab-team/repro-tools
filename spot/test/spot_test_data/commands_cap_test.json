@@ -8,26 +8,25 @@
         "subject_name": "subject1"
     },
     "total_multi_write_proc": {
-        "grep\u00006.8\u0000./temp.out\u0000": {
+        "grep\u000067890\u0000./temp.out\u0000": {
             "files": [
-                "./centos6/subject1/f2.out"
+                "./centos7/subject1/f2.out"
             ],
-            "id": 10
+            "id": 8
         },
         "grep\u0000line3\u0000./f1.out\u0000": {
             "files": [
-                "./centos6/subject1/f2.out"
+                "./centos7/subject1/f2.out"
             ],
-            "id": 8
+            "id": 7
         }
     },
     "total_temp_proc": {
         "grep\u0000line\u0000./f1.out\u0000": {
             "files": [
-                "./centos6/subject1/./temp.out"
+                "./centos7/subject1/./temp.out"
             ],
-            "id": 7
+            "id": 6
         }
     }
 }
-

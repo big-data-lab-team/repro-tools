@@ -192,11 +192,11 @@ def get_the_processes_args(executed_cursor, pid):
     return process_args
 
 
-def convert_to_key(k):
+def convert_to_key(key):
     lst = []
-    ss = k.split('\x00')
-    for l in ss:
-        lst.append(l.split('/')[-1])
+    splited = key.split('\x00')
+    for path_ in splited:
+        lst.append(path_.split('/')[-1])
     return ' '.join(lst)
 
 
@@ -233,8 +233,8 @@ def get_processes_list(db_path):
 
 
 def main(args=None):
-    parser = argparse.ArgumentParser(description='Classification of the nodes'
-                                                 ' in the pipeline graph.')
+    parser = argparse.ArgumentParser(description='Clusters subjects'
+                                                 'base on the process trees')
     parser.add_argument("input_folder",
                         help='input folder of sqlite databases ')
     parser.add_argument("output_folder",

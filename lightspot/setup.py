@@ -4,13 +4,6 @@ import sys
 
 VERSION = "0.0.1"
 DEPS = [
-         "numpy",
-         "pandas",
-         "boutiques",
-         "docker",
-         "zss",
-         "scipy",
-         "sklearn"
        ]
 
 setup(name="spottool",
@@ -36,9 +29,7 @@ setup(name="spottool",
         "console_scripts": [
             "verify_files=spot:verify_files",
             "spottool=spot:spottool",
-            "auto_spot=spot:auto_spot",
             "wrapper=spot:wrapper",
-            "subject_clustering=spot:subject_clustering",
 
         ]
       },

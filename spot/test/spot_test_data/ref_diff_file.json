@@ -1,127 +1,85 @@
 {
     "condition1 vs condition2": {
         "conditions": [
-            "centos6", 
-            "centos6"
-        ], 
+            "centos7",
+            "debian"
+        ],
         "files": {
             "Dockerfile": {
                 "subjects": {
                     "subject1": {
-                        "MD5": "d0b766646642506bb857f20770ea2bb6", 
-                        "checksum": 0
+                        "MD5": "528aca7abaadfb106087607fd6b1e35d",
+                        "MD5-cond1": "528aca7abaadfb106087607fd6b1e35d",
+                        "MD5-cond2": "bdfd888f936833d287933d3c23ae7fc4",
+                        "checksum": 1
                     }
-                }, 
+                },
                 "sum": {
-                    "checksum": 0
+                    "checksum": 1
                 }
-            }, 
+            },
             "f1.out": {
                 "subjects": {
                     "subject1": {
-                        "MD5": "daa0656d9064eacdd5a40cf73c0a13d4", 
-                        "checksum": 1
+                        "MD5": "625713437ed919a4247e1e97bb09890e",
+                        "checksum": 0
                     }
-                }, 
+                },
                 "sum": {
-                    "checksum": 1
+                    "checksum": 0
                 }
-            }, 
+            },
             "f2.out": {
                 "subjects": {
                     "subject1": {
-                        "MD5": "daa0656d9064eacdd5a40cf73c0a13d4", 
-                        "checksum": 1
+                        "MD5": "625713437ed919a4247e1e97bb09890e",
+                        "checksum": 0
                     }
-                }, 
+                },
                 "sum": {
-                    "checksum": 1
+                    "checksum": 0
                 }
-            }, 
+            },
             "f3.out": {
                 "subjects": {
                     "subject1": {
-                        "MD5": "daa0656d9064eacdd5a40cf73c0a13d4", 
-                        "checksum": 1
+                        "MD5": "60c573f764eabf129acb8dde48247a66",
+                        "checksum": 0
                     }
-                }, 
+                },
                 "sum": {
-                    "checksum": 1
+                    "checksum": 0
                 }
-            }, 
-            "f4.out": {
-                "subjects": {
-                    "subject1": {
-                        "MD5": "daa0656d9064eacdd5a40cf73c0a13d4", 
-                        "checksum": 1
-                    }
-                }, 
-                "sum": {
-                    "checksum": 1
-                }
-            }, 
+            },
             "input_file.txt": {
                 "subjects": {
                     "subject1": {
-                        "MD5": "095faa1de38ef944c6fbc8cc68bc22ba", 
+                        "MD5": "3eaf4f2c12b9d7d157aaa4390fbe89cd",
                         "checksum": 0
                     }
-                }, 
+                },
                 "sum": {
                     "checksum": 0
                 }
-            }, 
-            "multi_version/52a8dd61bb3245cd04641a33bf2a4e43d1593692_f2.out": {
-                "subjects": {
-                    "subject1": {
-                        "MD5": "174354c51f1b58bc232c77d415e19cef", 
-                        "checksum": 0
-                    }
-                }, 
-                "sum": {
-                    "checksum": 0
-                }
-            }, 
-            "multi_version/df0290d397ecacbfc385ba2eec425ceed06dc3dc_f2.out": {
-                "subjects": {
-                    "subject1": {
-                        "MD5": "daa0656d9064eacdd5a40cf73c0a13d4", 
-                        "checksum": 0
-                    }
-                }, 
-                "sum": {
-                    "checksum": 0
-                }
-            }, 
-            "spot_temp/temp.out": {
-                "subjects": {
-                    "subject1": {
-                        "MD5": "daa0656d9064eacdd5a40cf73c0a13d4", 
-                        "checksum": 0
-                    }
-                }, 
-                "sum": {
-                    "checksum": 0
-                }
-            }, 
+            },
             "temp.out": {
                 "subjects": {
                     "subject1": {
-                        "MD5": "daa0656d9064eacdd5a40cf73c0a13d4", 
-                        "checksum": 1
+                        "MD5": "625713437ed919a4247e1e97bb09890e",
+                        "checksum": 0
                     }
-                }, 
+                },
                 "sum": {
-                    "checksum": 1
+                    "checksum": 0
                 }
-            }, 
+            },
             "test_script.sh": {
                 "subjects": {
                     "subject1": {
-                        "MD5": "2b79de79284434deb99a37bc37bbe7c8", 
+                        "MD5": "54f20c0629d3765833d1d3366cdfe550",
                         "checksum": 0
                     }
-                }, 
+                },
                 "sum": {
                     "checksum": 0
                 }

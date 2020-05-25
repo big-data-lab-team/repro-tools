@@ -1,10 +1,10 @@
 {
-    "command-line": "mkdir -p [OUTPUT_FILE]; rm [OUTPUT_FILE]/*.out; sh test_script.sh [INPUT_FILES] [OUTPUT_FILE]",
+    "command-line": "mkdir -p [OUTPUT_FILE];rm -f [OUTPUT_FILE]/*.out; test_script.sh [INPUT_FILES] [OUTPUT_FILE]",
     "container-image": {
-        "image": "spot_centos7_latest",
+        "image": "spot_debian_latest",
         "type": "docker"
     },
-    "description": "Test Script for auto spot",
+    "description": "Test script for the Spot tool",
     "inputs": [
         {
             "description": "input files",
@@ -27,7 +27,7 @@
         "$schema": "http://json-schema.org/draft-04/schema#",
         "additionalProperties": false,
         "dependencies": {},
-        "description": "Invocation schema for test script for auto spot.",
+        "description": "Invocation schema for test script for the Spot tool.",
         "properties": {
             "input_file": {
                 "type": "string"
@@ -40,10 +40,10 @@
             "input_file",
             "output_file"
         ],
-        "title": "Test Script for auto spot.invocationSchema",
+        "title": "Test script for the Spot tool.invocationSchema",
         "type": "object"
     },
-    "name": "Test Script for auto spot",
+    "name": "Test script for the Spot tool",
     "output-files": [
         {
             "description": "output folder path",
@@ -53,6 +53,5 @@
             "path-template": "[OUTPUT_FILE]"
         }
     ],
-    "schema-version": "0.5",
-    "tool-version": "3.19.0-centos7"
+    "tool-version": "Debian10"
 }
