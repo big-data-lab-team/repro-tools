@@ -1,0 +1,32 @@
+{
+    "certain_cmd": {},
+    "execution_info": {
+	"captured_list": "./commands_cap_test.json",
+        "conditions": "./conditions.txt",
+        "exclude_items": "./exclude_items.txt",
+        "sqlite_db": "./trace_test.sqlite3",
+        "subject_name": "run1"
+    },
+    "total_multi_write_proc": {
+        "grep\u000067890\u0000./temp.out\u0000": {
+            "files": [
+                "./centos7/run1/f2.out"
+            ],
+            "id": 8
+        },
+        "grep\u0000line3\u0000./f1.out\u0000": {
+            "files": [
+                "./centos7/run1/f2.out"
+            ],
+            "id": 7
+        }
+    },
+    "total_temp_proc": {
+        "grep\u0000line\u0000./f1.out\u0000": {
+            "files": [
+                "./centos7/run1/./temp.out"
+            ],
+            "id": 6
+        }
+    }
+}

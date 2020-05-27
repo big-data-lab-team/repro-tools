@@ -15,33 +15,6 @@ def repopath():
     return op.dirname(repo_init_file_path)
 
 
-def test_wrapper():
-    spot_data_path = op.join(repopath(), 'test', 'spot_test_data')
-    from_path = op.join(op.abspath("debian"), "subject1")
-    to_path = op.join(op.abspath("centos7"), "subject1")
-    os.chdir(spot_data_path)
-    os.environ["SPOT_TOOLS_PATH"] = os.getcwd()
-    os.environ["SPOT_OUTPUT_PATH"] = spot_data_path
-    os.environ["PROCESS_LIST"] = op.join(spot_data_path, "commands_test.json")
-    os.environ["FROM_PATH"] = from_path
-    os.environ["TO_PATH"] = to_path
-    wrapper()
-
-
-def test_wrapper_cap():
-    spot_data_path = op.join(repopath(), 'test', 'spot_test_data')
-    from_path = op.join(op.abspath("debian"), "subject1")
-    to_path = op.join(op.abspath("centos7"), "subject1")
-    os.chdir(spot_data_path)
-    os.environ["SPOT_TOOLS_PATH"] = os.getcwd()
-    os.environ["SPOT_OUTPUT_PATH"] = spot_data_path
-    os.environ["PROCESS_LIST"] = op.join(spot_data_path,
-                                         "commands_cap_test.json")
-    os.environ["FROM_PATH"] = from_path
-    os.environ["TO_PATH"] = to_path
-    wrapper()
-
-
 def test_subj_clustering2():
     os.chdir(op.join(repopath(), 'test'))
     subject_clustering(["-t", "1.0",
@@ -70,8 +43,35 @@ def test_auto_spot():
     assert(data['total_commands'])
 
 
+def test_wrapper():
+    spot_data_path = op.join(repopath(), 'example')
+    from_path = op.join(op.abspath("debian"), "run1")
+    to_path = op.join(op.abspath("centos7"), "run1")
+    os.chdir(spot_data_path)
+    os.environ["SPOT_TOOLS_PATH"] = os.getcwd()
+    os.environ["SPOT_OUTPUT_PATH"] = spot_data_path
+    os.environ["PROCESS_LIST"] = op.join(spot_data_path, "commands_test.json")
+    os.environ["FROM_PATH"] = from_path
+    os.environ["TO_PATH"] = to_path
+    wrapper()
+
+
+def test_wrapper_cap():
+    spot_data_path = op.join(repopath(), 'example')
+    from_path = op.join(op.abspath("debian"), "run1")
+    to_path = op.join(op.abspath("centos7"), "run1")
+    os.chdir(spot_data_path)
+    os.environ["SPOT_TOOLS_PATH"] = os.getcwd()
+    os.environ["SPOT_OUTPUT_PATH"] = spot_data_path
+    os.environ["PROCESS_LIST"] = op.join(spot_data_path,
+                                         "commands_cap_test.json")
+    os.environ["FROM_PATH"] = from_path
+    os.environ["TO_PATH"] = to_path
+    wrapper()
+
+
 def test_spot():
-    os.chdir(op.join(repopath(), 'test', 'spot_test_data'))
+    os.chdir(op.join(repopath(), 'example'))
     spot(["trace_test.sqlite3",
           "ref_diff_file.json",
           "-i", "toremove.txt",
@@ -79,7 +79,7 @@ def test_spot():
 
 
 def test_spot2():
-    os.chdir(op.join(repopath(), 'test', 'spot_test_data'))
+    os.chdir(op.join(repopath(), 'example'))
     spot(["trace_test.sqlite3",
           "ref_diff_file.json",
           "-i", "toremove.txt",
