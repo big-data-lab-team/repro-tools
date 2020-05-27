@@ -4,7 +4,6 @@
         "image": "spot_centos_latest",
         "type": "docker"
     },
-    "schema-version": "0.5",
     "description": "Test script for the Spot tool",
     "inputs": [
         {
@@ -54,5 +53,6 @@
             "path-template": "[OUTPUT_FILE]"
         }
     ],
+    "schema-version": "0.5",
     "tool-version": "CentOS7"
 }

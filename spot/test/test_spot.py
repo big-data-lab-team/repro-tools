@@ -35,7 +35,8 @@ def test_wrapper_cap():
     os.chdir(spot_data_path)
     os.environ["SPOT_TOOLS_PATH"] = os.getcwd()
     os.environ["SPOT_OUTPUT_PATH"] = spot_data_path
-    os.environ["PROCESS_LIST"] = op.join(spot_data_path, "commands_cap_test.json")
+    os.environ["PROCESS_LIST"] = op.join(spot_data_path,
+                                         "commands_cap_test.json")
     os.environ["FROM_PATH"] = from_path
     os.environ["TO_PATH"] = to_path
     wrapper()
@@ -44,28 +45,29 @@ def test_wrapper_cap():
 def test_subj_clustering2():
     os.chdir(op.join(repopath(), 'test'))
     subject_clustering(["-t", "1.0",
-          "subject-type-test/in_test_subjects/",
-          "subject-type-test/out_test_plots/"])
-#     assert(open("subject-type-test/clusters_test.txt", "r").read() 
-#            == open("subject-type-test/output-trees/clusters.txt", "r").read())
+                        "subject-type-test/in_test_subjects/",
+                        "subject-type-test/out_test_plots/"])
+#     assert(open("subject-type-test/clusters_test.txt", "r").read()
+#            == open("subject-type-test/outputs/clusters.txt", "r").read())
 
 
 def test_auto_spot():
     # ~ test_capture_first_cond()
     # ~ test_capture_second_cond()
-    os.chdir(op.join(repopath(), 'test', 'spot_test_data'))
+    os.chdir(op.join(repopath(), 'example'))
     auto_spot([".",
-               "-d", "descriptor.json",
-               "-i", "invocation.json",
-               "-d2", "descriptor_cond2.json",
-               "-i2", "invocation_cond2.json",
+               "-d", "descriptor_centos7.json",
+               "-i", "invocation_centos7.json",
+               "-d2", "descriptor_debian10.json",
+               "-i2", "invocation_debian10.json",
                "-c", "conditions.txt",
                "-e", "exclude_items.txt",
                "-s", "trace_test.sqlite3",
                "-o", "commands.json"
                ])
-#     assert(open("commands.json", "r").read()
-#            == open("result_test.json", "r").read())
+    with open('commands.json', 'r') as jsonFile:
+        data = json.load(jsonFile)
+    assert(data['total_commands'])
 
 
 def test_spot():
