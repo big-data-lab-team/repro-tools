@@ -56,8 +56,8 @@ In this command:
 * `descriptor_<distro>.json` is the Boutiques descriptor of the application executed in OS `<distro>`.
 * `invocation_<distro>.json` is the Boutiques invocation of the application executed in OS `<distro>`, containing the input files.
 * `trace_test.sqlite3` is a ReproZip trace of the application, acquired in CentOS 7.
-* `condition.txt` is a text file where each line is the path to the output folder for each condition.
-* `exclude_items.txt` is a text file, containing the list of items to be ignored while parsing the files and directories.
+* `condition.txt` contains the result folder for each condition.
+* `exclude_items.txt` contains the list of items to be ignored while parsing the files and directories.
 
 The command produces the following outputs:
 *  `commands_captured_c.json` contains the list of processes with transient files. 
