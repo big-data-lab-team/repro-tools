@@ -38,7 +38,7 @@ In this example, we run a bash script that calls the `grep` command
 multiple times, creating different output files when run on different 
 OSes. We use `spot` to compare the outputs obtained in CentOS 7 and Debian 10.
 
-The example can be run using the following commands:
+The example can be run in this Git repository as follows:
 ```
 git clone https://github.com/big-data-lab-team/spot.git
 cd spot
