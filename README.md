@@ -60,7 +60,7 @@ In this command:
 * `exclude_items.txt` contains the list of items to be ignored while parsing the files and directories.
 
 The command produces the following outputs:
-*  `commands_captured_c.json` contains the list of processes with transient files. 
+*  `commands_captured_c.json` contains the list of processes with temporary files and files written by multiple processes. 
 *  `commands.json` contains the list of processes that create differences in two attributes: multi-write
 processes (in `total_commands_multi`) and single write processes (in
 `total_commands`).
