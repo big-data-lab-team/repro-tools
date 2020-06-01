@@ -61,9 +61,7 @@ In this command:
 
 The command produces the following outputs:
 *  `commands_captured_c.json` contains the list of processes with temporary files and files written by multiple processes. 
-*  `commands.json` contains the list of processes that create differences in two attributes: multi-write
-processes (in `total_commands_multi`) and single write processes (in
-`total_commands`).
+*  `commands.json` contains the list of processes that create differences in two conditions. Attribute `total_commands_multi` contains processes that write files written by multiple processes and `total_commands` contains the other processes.
 
 ## How to Contribute
 
