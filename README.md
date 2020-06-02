@@ -1,5 +1,5 @@
-![PyPI](https://img.shields.io/pypi/v/spottool)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3553132.svg)](https://doi.org/10.5281/zenodo.3553132)
+[![PyPI](https://img.shields.io/pypi/v/spottool)](https://pypi.python.org/pypi/spottool)
+[![DOI](https://zenodo.org/badge/212620019.svg)](https://zenodo.org/badge/latestdoi/212620019)
 [![Build Status](https://travis-ci.org/ali4006/spot.svg?branch=develop)](https://travis-ci.org/big-data-lab-team/spot)
 [![Coverage Status](https://coveralls.io/repos/github/big-data-lab-team/spot/badge.svg?branch=develop)](https://coveralls.io/github/big-data-lab-team/spot?branch=develop)
 
