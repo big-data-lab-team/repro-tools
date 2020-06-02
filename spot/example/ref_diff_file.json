@@ -1,0 +1,54 @@
+{
+    "condition1 vs condition2": {
+        "conditions": [
+            "centos7",
+            "debian"
+        ],
+        "files": {
+            "f1.out": {
+                "subjects": {
+                    "run1": {
+                        "MD5": "625713437ed919a4247e1e97bb09890e",
+                        "checksum": 0
+                    }
+                },
+                "sum": {
+                    "checksum": 0
+                }
+            },
+            "f2.out": {
+                "subjects": {
+                    "run1": {
+                        "MD5": "625713437ed919a4247e1e97bb09890e",
+                        "checksum": 0
+                    }
+                },
+                "sum": {
+                    "checksum": 0
+                }
+            },
+            "f3.out": {
+                "subjects": {
+                    "run1": {
+                        "MD5": "60c573f764eabf129acb8dde48247a66",
+                        "checksum": 0
+                    }
+                },
+                "sum": {
+                    "checksum": 0
+                }
+            },
+            "temp.out": {
+                "subjects": {
+                    "run1": {
+                        "MD5": "625713437ed919a4247e1e97bb09890e",
+                        "checksum": 0
+                    }
+                },
+                "sum": {
+                    "checksum": 0
+                }
+            }
+        }
+    }
+}

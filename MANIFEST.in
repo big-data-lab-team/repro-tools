@@ -1,0 +1,2 @@
+recursive-include spot/test/ *
+recursive-include spot/example/ *

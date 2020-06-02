@@ -1,83 +1,75 @@
-[![CircleCI](https://circleci.com/gh/big-data-lab-team/repro-tools.svg?style=svg)](https://circleci.com/gh/big-data-lab-team/repro-tools)
-[![codecov](https://codecov.io/gh/big-data-lab-team/repro-tools/branch/master/graph/badge.svg)](https://codecov.io/gh/big-data-lab-team/repro-tools)
+![PyPI](https://img.shields.io/pypi/v/spottool)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3553132.svg)](https://doi.org/10.5281/zenodo.3553132)
+[![Build Status](https://travis-ci.org/ali4006/spot.svg?branch=develop)](https://travis-ci.org/big-data-lab-team/spot)
+[![Coverage Status](https://coveralls.io/repos/github/big-data-lab-team/spot/badge.svg?branch=develop)](https://coveralls.io/github/big-data-lab-team/spot?branch=develop)
 
-# repro-tools
-A set of tools to evaluate the reproducibility of computations.
+# Spot
 
-## verifyFiles
+Spot identifies the processes in a pipeline that produce different results in different
+execution conditions.
 
-verifyFiles.py compares the output files produced by pipelines in different conditions. It identifies the files that are common to all conditions, and for these files, it compares them based on their checksums and other metrics configurable by file type.
+<!-- TABLE OF CONTENTS -->
+## Table of Contents
 
-### Prerequisites
+* [Installation](#installation)
+* [Spot](#spot)
+* [How to Contribute](#how-to-contribute)
+* [License](#license)
 
-Python 2.7.5
 
-## Running the verifyFiles.py script
+## Installation
 
+Simply install the package with `pip`
+
+    $ pip install spottool
+
+## Pre-requisites
+
+* Install and start [Docker](http://www.docker.com)
+* Build Docker images for the pipelines in different conditions (e.g. Debian10 and CentOS7) 
+* Create [Boutiques](https://boutiques.github.io) descriptors for the pipeline, in each condition
+* Get provenance information using [ReproZip](http://docs.reprozip.org/en/1.0.x/packing.html) tool in one condition
+
+The `auto_spot` command finds processes that create differences in results obtained in different conditions and reports them in a JSON file.
+
+## Usage example
+
+In this example, we run a bash script that calls the `grep` command
+multiple times, creating different output files when run on different 
+OSes. We use `spot` to compare the outputs obtained in CentOS 7 and Debian 10.
+
+The example can be run in this Git repository as follows:
 ```
-usage:verifyFiles.py result_base_name [-h] [-c CHECKSUMFILE] [-d FILEDIFF] [-m METRICSFILE] [-e EXCLUDEITEMS] [-k CHECKCORRUPTION] [-s SQLITEFILE] [-x EXECFILE] [-t TRACKPROCESSES]
-                     [-i FILEWISEMETRICVALUE] file_in
+git clone https://github.com/big-data-lab-team/spot.git
+cd spot
+pip install .
 
-file_in,                                          Mandatory parameter.Directory path to the file containing the conditions.
-results_base_name,                                Base name to use in output file names.
--c,CHECKSUM FILE,       --checksumFile            Reads checksum from files. Doesn't compute checksums locally if this parameter is set.
--m METRICSFILE,         --metricsFile             CSV file containing metrics definition. Every line contains 4 elements: metric_name,file_extension,command_to_run,output_file_name
--e EXCLUDEITEMS,        --excludeItems            The path to the file containing the folders and files that should be excluded from creating checksums.
--k CHECKCORRUPTION,     --checkCorruption         The script verifies if any files are corrupted ,when this flag is set as true
--s SQLITEFILE,          --sqLiteFile              The path to the SQLITE file,having the reprozip trace details.
--x EXECFILE ,           --execFile                Writes the executable details to a file.
--t TRACK PROCESSES,     --trackProcesses          If this flag is set, it traces all the processes using reprozip to record the details and writes it into a csv with with the given name
--i FILEWISEMETRICVALUE, --filewiseMetricValue     Folder name on to which the individual filewise metric values are written to a csv file
+docker build . -f spot/example/centos7/Dockerfile -t spot_centos_latest
+docker build . -f spot/example/debian/Dockerfile -t spot_debian_latest
+
+cd spot/example 
+
+auto_spot -d descriptor_centos7.json -i invocation_centos7.json -d2 descriptor_debian10.json -i2 invocation_debian10.json -s trace_test.sqlite3 -c conditions.txt -e exclude_items.txt -o commands.json .
 ```
-### Test Cases
-__Pytest syntax__
->pytest --cov=./ ./test_verifyFiles.py
-## plot_matrix
 
-`plot_matrix.py` plot heatmaps of difference matrices produced by
-`verifyFiles.py`. For instance, `./plot_matrix.py
-test/test_differences_plot.txt output.png` will produce the following
-plot:
+In this command:
+* `descriptor_<distro>.json` is the Boutiques descriptor of the application executed in OS `<distro>`.
+* `invocation_<distro>.json` is the Boutiques invocation of the application executed in OS `<distro>`, containing the input files.
+* `trace_test.sqlite3` is a ReproZip trace of the application, acquired in CentOS 7.
+* `condition.txt` contains the result folder for each condition.
+* `exclude_items.txt` contains the list of items to be ignored while parsing the files and directories.
 
-![Alt text](./test/test_differences_plot.png?raw=true "Title")
+The command produces the following outputs:
+*  `commands_captured_c.json` contains the list of processes with temporary files and files written by multiple processes. 
+*  `commands.json` contains the list of processes that create differences in two conditions. Attribute `total_commands_multi` contains processes that write files written by multiple processes and `total_commands` contains the other processes.
 
-`-t` argument gives the possibility to superimpose the predicted matrices achived by `predict.py` over the difference matrices produced by `verifyFiles.py`. For example, `python plot_matrix.py test/predict_test/test_differences.txt -t test/predict_test/triangular-S_0.6_test_data_matrix.txt test_plot_matrix.png` will make the following plot:  
+## How to Contribute
 
-![Alt text](./test/test_plot_matrix.png?raw=true "Title")
-## Pipelines Error Detection Script (PEDS)
+1. Clone repo and create a new branch: `$ git checkout https://github.com/big-data-lab-team/spot -b name_for_new_branch`.
+2. Make changes and test
+3. Submit Pull Request with comprehensive description of changes
 
-The aim of `PEDS` is clustering processes and creating a graph model representation for the all processes which introduce errors in the pipeline
-based on the reprozip trace file (trace.sqlite3) and matrix-file created by `veryfyFiles.py` that specify the pipeline output files with defferences.
 
-### Prerequisites:
+## License
 
-Python 2.7.5, graphviz module
-
-### Running the script:
-
-  * `peds.py [-db: database file from reprozip trace] [-ofile: the matrix-file from veryfyFiles.py]`
-
-    *Note: The output would be a dot format file which requiers to create appropriate representing file formats such as: svg, png and etc.
-
-  * `dot -Tpng Graphmodel.dot -o Figure.png`
-___
-## Predict
-
-`predict.py` can be used to predict the elements of utility matrix M ij when following the sequential generating of elements is a concern.
-(Ex. a comparison matrix of generated files from a same pipeline process in two different versions of an operating system) 
-
-The sampling method options for fitting the training sets of the Alternating Least Square (ALS) are consist of:  
-	- columns  
-	- rows,random-real  
-	- random-unreal  
-	- diagonal (random picking of j from a uniform distribution)  
-	- triangular-L (Random-triangle-L: fewer i, more j)  
-	- triangular-S (Random-triangular-S: more i, fewer j)  
-	- Bias 
-
-### Prerequisites: 
-Spark 2.2.0, Python 2.7.13
-
-### Running the script:
-  * `predict.py [utility matrix file][training ratio][training sampling method]`
-___
+[MIT](LICENSE) © /bin Lab

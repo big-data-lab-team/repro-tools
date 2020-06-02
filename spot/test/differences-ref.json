@@ -1,0 +1,40 @@
+{
+    "condition4 vs condition5": {
+        "conditions": [
+            "condition4",
+            "condition5"
+        ],
+        "files": {
+            "a.txt": {
+                "subjects": {
+                    "subject1": {
+                        "checksum": 1,
+                        "mtime": 1536110772.0
+                    },
+                    "subject2": {
+                        "checksum": 0,
+                        "mtime": 1536110772.0
+                    }
+                },
+                "sum": {
+                    "checksum": 1
+                }
+            },
+            "checksums-after.txt": {
+                "subjects": {
+                    "subject1": {
+                        "checksum": 1,
+                        "mtime": 1536110772.0
+                    },
+                    "subject2": {
+                        "checksum": 1,
+                        "mtime": 1536110772.0
+                    }
+                },
+                "sum": {
+                    "checksum": 2
+                }
+            }
+        }
+    }
+}

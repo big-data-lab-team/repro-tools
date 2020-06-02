@@ -1,0 +1,11 @@
+*.txt
+*.nii.gz
+env
+*.out
+*~
+.*
+\#*
+*.pyc
+venv
+build
+*.egg-info
