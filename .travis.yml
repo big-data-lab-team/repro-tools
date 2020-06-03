@@ -1,0 +1,33 @@
+dist: trusty
+sudo: required
+language: python
+
+python:
+- 3.5
+- 3.6
+- nightly
+
+jdk:
+  - openjdk7
+      
+before_install:
+- sudo apt-get install graphviz
+- sudo apt-get update -qq
+- sudo apt-get install -y -qq python dh-autoreconf squashfs-tools build-essential
+- cd ${TRAVIS_BUILD_DIR}
+
+install:
+- pip install --upgrade setuptools
+- pip install coveralls pytest==5.2.0 pytest-runner pycodestyle
+- pip install .
+- docker build . -f spot/example/centos7/Dockerfile -t spot_centos_latest
+- docker build . -f spot/example/debian/Dockerfile -t spot_debian_latest
+
+script:
+- pycodestyle --max-line-length=80 *.py */*.py
+- coverage run --source spot setup.py pytest
+
+after_success:
+- coveralls
+
+deploy:
