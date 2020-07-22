@@ -146,24 +146,24 @@ def make_modify_script(spot_data_path, lst_proc, wrapper_script):
                                 'usr/local/src/freesurfer/mni/') +
                             '\n')
                         cmd_file.write(
-                            'chmod -R 757 ' + op.join(
+                            'chmod -R 777 ' + op.join(
                                 spot_data_path,
                                 'backup_scripts',
                                 'usr/local/src/freesurfer/mni/share') +
                             '\n')
 
                     cmd_file.write(
-                        'cp -r /usr/local/src/tools/workbench/libs_rh_linux64 '
+                        'cp -r /usr/local/src/tools/workbench '
                         + op.join(
                             spot_data_path, 'backup_scripts',
-                            'usr/local/src/tools/workbench/libs_rh_linux64') +
+                            'usr/local/src/tools/') +
                         '\n')
                     cmd_file.write(
-                        'chmod -R 757 ' +
+                        'chmod -R 777 ' +
                         op.join(
                             spot_data_path,
                             'backup_scripts',
-                            'usr/local/src/tools/workbench/libs_rh_linux64'
+                            'usr/local/src/tools/workbench'
                             ) +
                         '\n')
 
@@ -289,7 +289,8 @@ def capture(descriptor, invocation, output_dir,
 
     # move temp captured files from backup directory into the original path
     src = op.join(ref_cond, "spot_temp")
-    copytree(src, ref_cond, symlinks=False, ignore=None)
+    if op.exists(src):
+        copytree(src, ref_cond, symlinks=False, ignore=None)
 
 
 def modify(descriptor, invocation, output_dir,
