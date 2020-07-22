@@ -20,6 +20,7 @@ import sqlite3
 import re
 import random
 import json
+from shutil import which
 
 
 # Returns a dictionary where the keys are the paths in 'directory'
@@ -131,7 +132,7 @@ def read_metrics_file(file_name):
 # Returns the checksum of path 'path_name'
 def checksum(path_name):
     hasher = hashlib.md5()
-    assert((os.path.exists(path_name)),
+    assert(os.path.exists(path_name)), (
            "File {} doesn't exist".format(path_name))
     if os.path.isfile(path_name):
         md5_sum = file_hash(hasher, path_name)
@@ -211,6 +212,9 @@ def txt_check_file(abs_path_c, abs_path_d):
 
 def mri_check_file(abs_path_c, abs_path_d):
     # mri_diff
+    if which('mri_diff') is None:
+        log_info("Install mri_diff tool for better comparison")
+        return False
     cmd = 'mri_diff {} {}'.format(abs_path_c, abs_path_d)
     out, err = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.STDOUT).communicate()
@@ -221,6 +225,9 @@ def mri_check_file(abs_path_c, abs_path_d):
 
 def mris_check_file(abs_path_c, abs_path_d):
     # mris_diff
+    if which('mris_diff') is None:
+        log_info("Install mris_diff tool for better comparison")
+        return False
     cmd = 'mris_diff {} {}'.format(abs_path_c, abs_path_d)
     out, err = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.STDOUT).communicate()
@@ -232,6 +239,9 @@ def mris_check_file(abs_path_c, abs_path_d):
 
 def lta_check_file(abs_path_c, abs_path_d):
     # lta_diff
+    if which('lta_diff') is None:
+        log_info("Install lta_diff tool for better comparison")
+        return False
     cmd = 'lta_diff {} {}'.format(abs_path_c, abs_path_d)
     out, err = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.STDOUT).communicate()
