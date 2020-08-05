@@ -426,7 +426,7 @@ def main(args=None):
     # if args.capture_mode:
     if commands:
         # (2) Second pipeline execution in Condition 1
-        to capture multi-write and temporary files
+        # to capture multi-write and temporary files
         capture(args.ref_descriptor,
                 args.ref_invocation,
                 op.abspath(args.output_directory),
