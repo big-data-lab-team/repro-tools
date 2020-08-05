@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """Wrapper Script.
 
@@ -117,12 +117,17 @@ def persist_temp(pipe_files, WD_ref, WD_dest):
         To_path = op.abspath(op.join(WD_dest, file))
         if not op.exists(To_path):
             if not op.exists(op.dirname(To_path)):
-                os.makedirs(op.dirname(To_path))
-
+                try:
+                    os.makedirs(op.dirname(To_path))
+                except OSError:
+                    pass
         cp_command = "cp " + from_path + " " + To_path
         log_info("copy commands inside the pipeline script: \n" + cp_command)
-        subprocess.Popen(cp_command, shell=True,
-                         stderr=subprocess.PIPE)
+        try:
+            subprocess.Popen(cp_command, shell=True,
+                             stderr=subprocess.PIPE)
+        except OSError:
+            pass
 
 
 def capture_multi_version(pipe_com, pipe_files, WD_ref, WD_dest):

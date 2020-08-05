@@ -22,6 +22,7 @@ import sqlite3
 from spot import __file__ as spot_path
 from spot.verify_files import main as verify_files
 from spot.spottool import main as spot
+from datetime import datetime
 
 
 # The procedure of labeling pipeline is as following steps:
@@ -44,8 +45,11 @@ def pipeline_executor(descriptor, invocation):
 
     try:
         print("Launching Boutiques tool")
+        start_time = datetime.now()
         output_object = boutiques.execute("launch", '-x', '-u',
                                           descriptor, invocation)
+        end_time = datetime.now()
+        log_info('Pipeline Duration: {}'.format(end_time - start_time))
     except SystemExit as e:
         return(e.code)
     print(output_object)
@@ -66,11 +70,11 @@ def get_processes_list(db_path):
             FROM executed_files
             WHERE (name like '%/usr/local/src/fsl/%'
             or name like '%/usr/local/src/freesurfer/%'
-            or name like '%/usr/local/src/tools/%'
-            or name like '%/bin/grep%')
+            or name like '%/usr/local/src/tools/%')
             and name <> '/usr/local/src/fsl/bin/imtest'
             and name <> '/usr/local/src/fsl/bin/imcp'
             '''
+    # or name like '%/bin/grep%')
     execp_cursor.execute(process_name_query)
     return execp_cursor.fetchall()
 
@@ -79,17 +83,20 @@ def make_modify_script(spot_data_path, lst_proc, wrapper_script):
     cmd_file = open(op.join(spot_data_path, 'cmd.sh'), 'w+')
     cmd_file.write('#!/usr/bin/env bash \n')
     cmd_list = []
-    cwd = op.abspath(os.getcwd())
+    user_ = os.getuid()
     list_ = []
     if type(lst_proc) == dict:
         for cmd in lst_proc.keys():
-            # if op.basename(cmd.split('\x00')[0]) != "cp":
-            list_.append(cmd.split('\x00')[0])
+            if op.basename(cmd.split('\x00')[0]) not in ['cp', 'sh', 'grep',
+                                                         'awk', 'cat', 'mkdir',
+                                                         'touch', 'uname']:
+                list_.append(cmd.split('\x00')[0])
+            list_.append('cp')
     else:
         for cmd in lst_proc:
-            # if op.basename(cmd[0]) != "cp":
-            list_.append(cmd[0])
-        list_.append('/usr/bin/cp')
+            if op.basename(cmd[0]) not in ['cp', 'sh']:
+                list_.append(cmd[0])
+        list_.append('cp')
 
     for ind, pipeline_command in enumerate(list_):
         if pipeline_command not in cmd_list:
@@ -109,13 +116,19 @@ def make_modify_script(spot_data_path, lst_proc, wrapper_script):
             if not op.exists(backup_path):
                 if not op.exists(op.dirname(backup_path)):
                     os.makedirs(op.dirname(backup_path))
-                if pipeline_command == '/usr/bin/cp':
+                if pipeline_command == 'cp':
+                    cp1 = op.join(op.dirname(backup_path), 'usr/bin')
+                    cp2 = op.join(op.dirname(backup_path), 'bin')
+                    for cp_ in [cp1, cp2]:
+                        if not op.exists(cp_):
+                            os.makedirs(cp_)
+                        cmd_file.write('cp ' + '`which ' + pipeline_command
+                                       + '` ' + cp_ + '\n')
                     cmd_file.write('cp ' + op.join(spot_data_path,
                                    'license.txt ')
                                    + ' /usr/local/src/freesurfer/ ' + '\n')
-                    cmd_file.write('cp ' + '`which '+pipeline_command + '` '
-                                   + op.join(spot_data_path, 'backup_scripts/')
-                                   + '\n')
+                    cmd_file.write('chown {} -R {} \n'.format(user_,
+                                   '/usr/local/src/freesurfer/license.txt'))
 
                 cmd_file.write('cp ' + '`which '+pipeline_command + '` '
                                + backup_path + '\n')
@@ -145,27 +158,29 @@ def make_modify_script(spot_data_path, lst_proc, wrapper_script):
                                 spot_data_path, 'backup_scripts',
                                 'usr/local/src/freesurfer/mni/') +
                             '\n')
-                        cmd_file.write(
-                            'chmod -R 757 ' + op.join(
-                                spot_data_path,
-                                'backup_scripts',
-                                'usr/local/src/freesurfer/mni/share') +
-                            '\n')
 
                     cmd_file.write(
-                        'cp -r /usr/local/src/tools/workbench/libs_rh_linux64 '
+                        'cp -r /usr/local/src/tools/workbench '
                         + op.join(
                             spot_data_path, 'backup_scripts',
-                            'usr/local/src/tools/workbench/libs_rh_linux64') +
+                            'usr/local/src/tools/') +
                         '\n')
-                    cmd_file.write(
-                        'chmod -R 757 ' +
-                        op.join(
-                            spot_data_path,
-                            'backup_scripts',
-                            'usr/local/src/tools/workbench/libs_rh_linux64'
-                            ) +
-                        '\n')
+                    # cmd_file.write(
+                    #     'cp -r src/tools/workbench/libs_rh_linux64 '
+                    #     + op.join(
+                    #         spot_data_path, 'backup_scripts',
+                    #         'src/tools/workbench/libs_rh_linux64') +
+                    #     '\n')
+                    # cmd_file.write(
+                    #     'chmod -R 757 ' +
+                    #     op.join(
+                    #         spot_data_path,
+                    #         'backup_scripts',
+                    #         'usr/local/src/tools/workbench/libs_rh_linux64'
+                    #         ) +
+                    #     '\n')
+    cmd_file.write('chown {} -R {}'.format(user_,
+                   op.join(spot_data_path, 'backup_scripts')))
 
 
 def modify_docker_image(descriptor, spot_data_path, tag_name, from_path,
@@ -280,7 +295,7 @@ def capture(descriptor, invocation, output_dir,
     pipeline_executor(descriptor, invocation)  # CENTOS6
     log_info("all the files are captured")
     # remove docker images
-    remove_docker_image(image_name, tag_name)
+    # remove_docker_image(image_name, tag_name)
     # restart to the default parameters and clean backup directory
     json_file_editor(descriptor, image_name, 'image')
     backup_path = op.join(output_dir, 'backup_scripts')
@@ -289,7 +304,8 @@ def capture(descriptor, invocation, output_dir,
 
     # move temp captured files from backup directory into the original path
     src = op.join(ref_cond, "spot_temp")
-    copytree(src, ref_cond, symlinks=False, ignore=None)
+    if op.exists(src):
+        copytree(src, ref_cond, symlinks=False, ignore=None)
 
 
 def modify(descriptor, invocation, output_dir,
@@ -309,7 +325,7 @@ def modify(descriptor, invocation, output_dir,
     pipeline_executor(descriptor, invocation)  # CENTOS7
     log_info("Pipeline executed!!")
     # remove docker images
-    remove_docker_image(image_name, tag_name)
+    # remove_docker_image(image_name, tag_name)
     json_file_editor(descriptor, image_name, 'image')
     backup_path = op.join(output_dir, 'backup_scripts')
     shutil.rmtree(backup_path)
@@ -410,7 +426,7 @@ def main(args=None):
     # if args.capture_mode:
     if commands:
         # (2) Second pipeline execution in Condition 1
-        # to capture multi-write and temporary files
+        to capture multi-write and temporary files
         capture(args.ref_descriptor,
                 args.ref_invocation,
                 op.abspath(args.output_directory),
