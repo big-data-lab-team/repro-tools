@@ -198,7 +198,7 @@ def txt_check_file(abs_path_c, abs_path_d):
                     "AnnotationFileTimeStamp", "cmdline", "surfacefile ",
                     "cmd[0]: ", "cmd[1]: ", "cmd[2]: ", "cmd[3]: ", "cmd[4]: ",
                     "cmd[5]: "]
-    for line in out.splitlines():
+    for line in str(out).splitlines():
         flag = False
         for key in list_of_keys:
             if key in line:
@@ -213,12 +213,12 @@ def txt_check_file(abs_path_c, abs_path_d):
 def mri_check_file(abs_path_c, abs_path_d):
     # mri_diff
     if which('mri_diff') is None:
-        log_info("Install mri_diff tool for better comparison")
+        # log_info("Install mri_diff tool for better comparison")
         return False
     cmd = 'mri_diff {} {}'.format(abs_path_c, abs_path_d)
     out, err = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.STDOUT).communicate()
-    if 'Volumes differ' in out:
+    if 'Volumes differ' in str(out):
         return False
     return True
 
@@ -226,26 +226,26 @@ def mri_check_file(abs_path_c, abs_path_d):
 def mris_check_file(abs_path_c, abs_path_d):
     # mris_diff
     if which('mris_diff') is None:
-        log_info("Install mris_diff tool for better comparison")
+        # log_info("Install mris_diff tool for better comparison")
         return False
     cmd = 'mris_diff {} {}'.format(abs_path_c, abs_path_d)
     out, err = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.STDOUT).communicate()
-    if 'Surfaces are the same' in out:
+    if 'Surfaces are the same' in str(out):
         return True
-    elif 'Surfaces differ' in out:
+    elif 'Surfaces differ' in str(out):
         return False
 
 
 def lta_check_file(abs_path_c, abs_path_d):
     # lta_diff
     if which('lta_diff') is None:
-        log_info("Install lta_diff tool for better comparison")
+        # log_info("Install lta_diff tool for better comparison")
         return False
     cmd = 'lta_diff {} {}'.format(abs_path_c, abs_path_d)
     out, err = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.STDOUT).communicate()
-    for line in out.splitlines():
+    for line in str(out).splitlines():
         if line == '0':
             return True
         elif line == '1':
