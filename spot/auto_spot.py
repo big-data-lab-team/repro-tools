@@ -70,7 +70,9 @@ def get_processes_list(db_path):
             FROM executed_files
             WHERE (name like '%/usr/local/src/fsl/%'
             or name like '%/usr/local/src/freesurfer/%'
-            or name like '%/usr/local/src/tools/%')
+            or name like '%/usr/local/src/tools/%'
+            or name like '%/bin/grep%'
+            or name like '%/bin/egrep%')
             and name <> '/usr/local/src/fsl/bin/imtest'
             and name <> '/usr/local/src/fsl/bin/imcp'
             '''
