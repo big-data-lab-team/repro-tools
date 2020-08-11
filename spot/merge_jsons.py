@@ -23,7 +23,7 @@ def merge_processes(input1_, input2_, output_):
     data1_ = json.load(cfile1)
     cfile2 = open(input2_, 'r')
     data2_ = json.load(cfile2)
-    #data1_.update(data2_)
+    # data1_.update(data2_)
     data1_["total_commands"].update(data2_["total_commands"])
     data1_["total_commands_multi"].update(data2_["total_commands_multi"])
     with open(output_, 'w') as wfile:
@@ -55,6 +55,7 @@ def main():
     print("The merged processes: {}".format(mgd))
     # if sorted(mgd) != sorted(total_proc_diff):
     #     print("This is different")
+
 
 if __name__ == '__main__':
     main()
