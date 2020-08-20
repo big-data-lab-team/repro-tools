@@ -198,7 +198,7 @@ def txt_check_file(abs_path_c, abs_path_d):
                     "AnnotationFileTimeStamp", "cmdline", "surfacefile ",
                     "cmd[0]: ", "cmd[1]: ", "cmd[2]: ", "cmd[3]: ", "cmd[4]: ",
                     "cmd[5]: "]
-    for line in str(out).splitlines():
+    for line in str(out, 'utf-8').splitlines():
         flag = False
         for key in list_of_keys:
             if key in line:
@@ -218,7 +218,7 @@ def mri_check_file(abs_path_c, abs_path_d):
     cmd = 'mri_diff {} {}'.format(abs_path_c, abs_path_d)
     out, err = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.STDOUT).communicate()
-    if 'Volumes differ' in str(out):
+    if 'Volumes differ' in str(out, 'utf-8'):
         return False
     return True
 
@@ -231,9 +231,9 @@ def mris_check_file(abs_path_c, abs_path_d):
     cmd = 'mris_diff {} {}'.format(abs_path_c, abs_path_d)
     out, err = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.STDOUT).communicate()
-    if 'Surfaces are the same' in str(out):
+    if 'Surfaces are the same' in str(out, 'utf-8'):
         return True
-    elif 'Surfaces differ' in str(out):
+    elif 'Surfaces differ' in str(out, 'utf-8'):
         return False
 
 
@@ -245,10 +245,10 @@ def lta_check_file(abs_path_c, abs_path_d):
     cmd = 'lta_diff {} {}'.format(abs_path_c, abs_path_d)
     out, err = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.STDOUT).communicate()
-    for line in str(out).splitlines():
+    for line in str(out, 'utf-8').splitlines():
         if line == '0':
             return True
-        elif line == '1':
+        else:
             return False
 
 
