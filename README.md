@@ -1,5 +1,5 @@
-![PyPI](https://img.shields.io/pypi/v/spottool)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3553132.svg)](https://doi.org/10.5281/zenodo.3553132)
+[![PyPI](https://img.shields.io/pypi/v/spottool)](https://pypi.python.org/pypi/spottool)
+[![DOI](https://zenodo.org/badge/212620019.svg)](https://zenodo.org/badge/latestdoi/212620019)
 [![Build Status](https://travis-ci.org/ali4006/spot.svg?branch=develop)](https://travis-ci.org/big-data-lab-team/spot)
 [![Coverage Status](https://coveralls.io/repos/github/big-data-lab-team/spot/badge.svg?branch=develop)](https://coveralls.io/github/big-data-lab-team/spot?branch=develop)
 
@@ -26,17 +26,17 @@ Simply install the package with `pip`
 ## Pre-requisites
 
 * Install and start [Docker](http://www.docker.com)
-* Build Docker images for the pipelines in different conditions (e.g. Debian10 and CentOS7) 
-* Create [Boutiques](https://boutiques.github.io) descriptors for the pipeline, in each condition
+* Build Docker images for the pipelines in different conditions (see [Dockerfile](spot/pfs-example/centos7/Dockerfile) as an example of PreFreeSurfer pipeline in CentOS7)
+* Create [Boutiques](https://boutiques.github.io) descriptors for the pipeline, in each condition (see [descriptor.json](spot/pfs-example/descriptor_centos7.json) and [invocation.json](spot/pfs-example/invocation_centos7.json) as an example of PreFreeSurfer pipeline)
 * Get provenance information using [ReproZip](http://docs.reprozip.org/en/1.0.x/packing.html) tool in one condition
+by running: ```reprozip trace <CMD>```
 
 The `auto_spot` command finds processes that create differences in results obtained in different conditions and reports them in a JSON file.
 
 ## Usage example
 
-In this example, we run a bash script that calls the `grep` command
-multiple times, creating different output files when run on different 
-OSes. We use `spot` to compare the outputs obtained in CentOS 7 and Debian 10.
+In this example, we run a short PreFreeSurfer pipeline that includes only the ACPC-Alignment step 
+to process only the T1w-image of one subject. The results will show the `FLIRT` tool as the non-reproducible process in the pipeline when running on different versions of CentOS. We use `spot` to compare the outputs obtained in CentOS 7 and CentOS 6.
 
 The example can be run in this Git repository as follows:
 ```
@@ -44,24 +44,31 @@ git clone https://github.com/big-data-lab-team/spot.git
 cd spot
 pip install .
 
-docker build . -f spot/example/centos7/Dockerfile -t spot_centos_latest
-docker build . -f spot/example/debian/Dockerfile -t spot_debian_latest
+docker build . -f spot/pfs-example/centos7/Dockerfile -t short-pfs-spot-centos7
+docker build . -f spot/pfs-example/centos6/Dockerfile -t short-pfs-spot-centos6
 
-cd spot/example 
+cd spot/pfs-example 
 
-auto_spot -d descriptor_centos7.json -i invocation_centos7.json -d2 descriptor_debian10.json -i2 invocation_debian10.json -s trace_test.sqlite3 -c conditions.txt -e exclude_items.txt -o commands.json .
+auto_spot -d descriptor_centos7.json -i invocation_centos7.json -d2 descriptor_centos6.json -i2 invocation_centos6.json -s trace.sqlite3 -c conditions.txt -e exclude_items.txt -o commands.json .
 ```
 
 In this command:
 * `descriptor_<distro>.json` is the Boutiques descriptor of the application executed in OS `<distro>`.
 * `invocation_<distro>.json` is the Boutiques invocation of the application executed in OS `<distro>`, containing the input files.
-* `trace_test.sqlite3` is a ReproZip trace of the application, acquired in CentOS 7.
+* `trace.sqlite3` is a ReproZip trace of the application, acquired in CentOS 7.
 * `condition.txt` contains the result folder for each condition.
 * `exclude_items.txt` contains the list of items to be ignored while parsing the files and directories.
 
 The command produces the following outputs:
 *  `commands_captured_c.json` contains the list of processes with temporary files and files written by multiple processes. 
 *  `commands.json` contains the list of processes that create differences in two conditions. Attribute `total_commands_multi` contains processes that write files written by multiple processes and `total_commands` contains the other processes.
+
+Furthermore, we can reorder the executions and then merge the identified processes in two different orders by running:
+```
+auto_spot -d2 descriptor_centos7.json -i2 invocation_centos7.json -d descriptor_centos6.json -i invocation_centos6.json -s trace.sqlite3 -c conditions2.txt -e exclude_items.txt -o commands2.json .
+
+python ../merge_jsons.py commands.json commands2.json merged.json
+```
 
 ## How to Contribute
 

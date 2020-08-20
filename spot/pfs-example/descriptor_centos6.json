@@ -1,0 +1,50 @@
+{
+    "command-line": "cd [SUBJECT_PATH];rm -rf exec [NAME]-[NAME]; command-line-script.sh [SUBJECT_FOLDER] [NAME]",
+    "container-image": {
+        "image": "short-pfs-spot-centos6",
+        "type": "docker"
+    },
+    "description": "PreFreeSurferPipelineBatch HCP pipeline",
+    "inputs": [
+        {
+            "description": "HCP subject folder",
+            "id": "subject_folder",
+            "name": "HCP subject folder",
+            "optional": false,
+            "type": "File",
+            "value-key": "[SUBJECT_FOLDER]"
+        },
+        {
+            "description": "HCP subject folder directory",
+            "id": "subject_path",
+            "name": "HCP subject path",
+            "optional": false,
+            "type": "String",
+            "value-key": "[SUBJECT_PATH]"
+        },
+        {
+            "default-value": "Exec-CentOS-[X]-FSLbuild-CentOS-[Y]",
+            "description": "Use this parameter to give a name to the execution. Example: \"Exec-CentOS5-FSLbuild-CentOS5\". The results will be written in a folder named [SUBJECT]-[EXECUTION-NAME] (a unique identifier will be appended in case a file with the same name already exists).",
+            "id": "execution_name",
+            "name": "Execution name",
+            "optional": false,
+            "type": "String",
+            "value-key": "[NAME]"
+        }
+    ],
+    "name": "PreFreeSurferPipelineBatch",
+    "output-files": [
+        {
+            "description": "This directory will contain 3 directories (T1w, T2w and MNINonLinear), a monitoring file (monitor.txt) and the input data.",
+            "id": "results",
+            "name": "Results",
+            "optional": false,
+            "path-template": "[SUBJECT_FOLDER]-[NAME]"
+        }
+    ],
+    "schema-version": "0.5",
+    "suggested-resources": {
+        "walltime-estimate": 25200
+    },
+    "tool-version": "3.19.0-centos6"
+}
