@@ -97,7 +97,7 @@ The command produces the following output:
 *  `merged.json` contains the list of processes that create differences in each order of executions.
 
 ### Expected output
-The `merged.json` file should be similar to the `merged_reference.json`. 
+The `merged.json` file should be similar to the [merged_reference.json](spot/pfs-example/merged_reference.json). 
 In this file, the `flirt` process is identified under the attribute `total_commands` as a process that creates different result files, `roi2std.mat` and `acpc_final.nii.gz`.
 
 ## How to Contribute
