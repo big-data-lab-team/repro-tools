@@ -69,7 +69,8 @@ In this example, we run a short PreFreeSurfer pipeline that includes only the AC
 to process only the T1w-image of one subject. The results will show the `FLIRT` tool as the non-reproducible process in the pipeline when running on different versions of CentOS. We use `spot` to compare the outputs obtained in CentOS 7 and CentOS 6.
 
 This example takes ~12 mins running and needs ~500 MB space in total.
-Before running the example, make sure `git-lfs` is installed on your operating system.
+Before running the example, make sure `git-lfs` is installed on your operating system
+(See the [link](https://github.com/git-lfs/git-lfs/wiki/Installation) ).
 
 The example can be run in this Git repository as follows:
 ```
