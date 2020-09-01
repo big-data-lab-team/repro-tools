@@ -25,7 +25,10 @@ def merge_processes(input1_, input2_, output_):
     data2_ = json.load(cfile2)
     # data1_.update(data2_)
     data1_["total_commands"].update(data2_["total_commands"])
-    data1_["total_commands_multi"].update(data2_["total_commands_multi"])
+    try:
+        data1_["total_commands_multi"].update(data2_["total_commands_multi"])
+    except Exception:
+        data1_["total_commands_multi"] = {}
     with open(output_, 'w') as wfile:
         json.dump(data1_, wfile, indent=4, sort_keys=True)
     multi_write_t = data1_["total_commands_multi"]

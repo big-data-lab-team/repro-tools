@@ -19,5 +19,6 @@ RUN chown 1000:1000 /tmp
  
 ADD spot/pfs-example/PreFreeSurferPipeline.sh \
     ${HOME}/pipelines/PreFreeSurfer/PreFreeSurferPipeline.sh
-
+ADD spot/pfs-example/command-line-script.sh \
+    /bin/command-line-script.sh
 

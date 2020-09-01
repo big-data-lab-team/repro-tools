@@ -33,15 +33,6 @@
         }
     ],
     "name": "PreFreeSurferPipelineBatch",
-    "output-files": [
-        {
-            "description": "This directory will contain 3 directories (T1w, T2w and MNINonLinear), a monitoring file (monitor.txt) and the input data.",
-            "id": "results",
-            "name": "Results",
-            "optional": false,
-            "path-template": "[SUBJECT_FOLDER]-[NAME]"
-        }
-    ],
     "schema-version": "0.5",
     "suggested-resources": {
         "walltime-estimate": 25200
