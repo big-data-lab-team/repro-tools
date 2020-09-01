@@ -1,0 +1,22 @@
+{
+    "certain_cmd": {},
+    "execution_info": {
+        "captured_list": "/home/Ali/Desktop/git_repo/repo/revision-tests/spot/spot/pfs-example/commands_captured.json",
+        "conditions": "/home/Ali/Desktop/git_repo/repo/revision-tests/spot/spot/pfs-example/conditions.txt",
+        "exclude_items": "/home/Ali/Desktop/git_repo/repo/revision-tests/spot/spot/pfs-example/exclude_items.txt",
+        "sqlite_db": "/home/Ali/Desktop/git_repo/repo/revision-tests/spot/spot/pfs-example/trace.sqlite3",
+        "subject_name": "101309"
+    },
+    "ignored_multi": [],
+    "multiWrite_cmd": {},
+    "total_commands": {
+        "/usr/local/src/fsl/bin/flirt\u0000-interp\u0000spline\u0000-in\u0000/home/Ali/Desktop/git_repo/repo/revision-tests/pfs-short-test/centos6/exec/101309/T1w/ACPCAlignment/robustroi.nii.gz\u0000-ref\u0000/usr/local/src/projects/Pipelines/global/templates/MNI152_T1_0.7mm.nii.gz\u0000-omat\u0000/home/Ali/Desktop/git_repo/repo/revision-tests/pfs-short-test/centos6/exec/101309/T1w/ACPCAlignment/roi2std.mat\u0000-out\u0000/home/Ali/Desktop/git_repo/repo/revision-tests/pfs-short-test/centos6/exec/101309/T1w/ACPCAlignment/acpc_final.nii.gz\u0000-searchrx\u0000-30\u000030\u0000-searchry\u0000-30\u000030\u0000-searchrz\u0000-30\u000030\u0000": {
+            "files": [
+                "/home/Ali/Desktop/git_repo/repo/revision-tests/pfs-short-test/centos6/exec/101309/T1w/ACPCAlignment/roi2std.mat",
+                "/home/Ali/Desktop/git_repo/repo/revision-tests/pfs-short-test/centos6/exec/101309/T1w/ACPCAlignment/acpc_final.nii.gz"
+            ],
+            "id": 2600
+        }
+    },
+    "total_commands_multi": {}
+}
