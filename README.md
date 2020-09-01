@@ -12,7 +12,9 @@ execution conditions.
 ## Table of Contents
 
 * [Installation](#installation)
-* [Spot](#spot)
+* [Pre-requisites](#pre-requisites)
+* [First example](#first-example)
+* [HCP example](#hcp-example)
 * [How to Contribute](#how-to-contribute)
 * [License](#license)
 
@@ -33,13 +35,45 @@ by running: ```reprozip trace <CMD>```
 
 The `auto_spot` command finds processes that create differences in results obtained in different conditions and reports them in a JSON file.
 
-## Usage example
+## First example
+
+In this example, we run a bash script that calls the grep command multiple times, creating different output files when run on different OSes. We use spot to compare the outputs obtained in CentOS 7 and Debian 10.
+
+The example can be run in this Git repository as follows:
+```
+git clone https://github.com/big-data-lab-team/spot.git
+cd spot
+pip install .
+
+docker build . -f spot/example/centos7/Dockerfile -t spot_centos_latest
+docker build . -f spot/example/debian/Dockerfile -t spot_debian_latest
+
+cd spot/example 
+
+auto_spot -d descriptor_centos7.json -i invocation_centos7.json -d2 descriptor_debian10.json -i2 invocation_debian10.json -s trace_test.sqlite3 -c conditions.txt -e exclude_items.txt -o commands.json .
+```
+In this command:
+* `descriptor_<distro>.json` is the Boutiques descriptor of the application executed in OS `<distro>`.
+* `invocation_<distro>.json` is the Boutiques invocation of the application executed in OS `<distro>`, containing the input files.
+* `trace.sqlite3` is a ReproZip trace of the application, acquired in CentOS 7.
+* `condition.txt` contains the result folder for each condition.
+* `exclude_items.txt` contains the list of items to be ignored while parsing the files and directories.
+
+The command produces the following outputs:
+*  `commands_captured_c.json` contains the list of processes with temporary files and files written by multiple processes. 
+*  `commands.json` contains the list of processes that create differences in two conditions. Attribute `total_commands_multi` contains processes that write files written by multiple processes and `total_commands` contains the other processes.
+
+## HCP example
 
 In this example, we run a short PreFreeSurfer pipeline that includes only the ACPC-Alignment step 
 to process only the T1w-image of one subject. The results will show the `FLIRT` tool as the non-reproducible process in the pipeline when running on different versions of CentOS. We use `spot` to compare the outputs obtained in CentOS 7 and CentOS 6.
 
+This example takes ~12 mins running and needs ~500 MB space in total.
+Before running the example, make sure `git-lfs` is installed on your operating system.
+
 The example can be run in this Git repository as follows:
 ```
+git lfs install
 git clone https://github.com/big-data-lab-team/spot.git
 cd spot
 pip install .
@@ -52,23 +86,19 @@ cd spot/pfs-example
 auto_spot -d descriptor_centos7.json -i invocation_centos7.json -d2 descriptor_centos6.json -i2 invocation_centos6.json -s trace.sqlite3 -c conditions.txt -e exclude_items.txt -o commands.json .
 ```
 
-In this command:
-* `descriptor_<distro>.json` is the Boutiques descriptor of the application executed in OS `<distro>`.
-* `invocation_<distro>.json` is the Boutiques invocation of the application executed in OS `<distro>`, containing the input files.
-* `trace.sqlite3` is a ReproZip trace of the application, acquired in CentOS 7.
-* `condition.txt` contains the result folder for each condition.
-* `exclude_items.txt` contains the list of items to be ignored while parsing the files and directories.
-
-The command produces the following outputs:
-*  `commands_captured_c.json` contains the list of processes with temporary files and files written by multiple processes. 
-*  `commands.json` contains the list of processes that create differences in two conditions. Attribute `total_commands_multi` contains processes that write files written by multiple processes and `total_commands` contains the other processes.
-
 Furthermore, we can reorder the executions and then merge the identified processes in two different orders by running:
 ```
 auto_spot -d2 descriptor_centos7.json -i2 invocation_centos7.json -d descriptor_centos6.json -i invocation_centos6.json -s trace.sqlite3 -c conditions2.txt -e exclude_items.txt -o commands2.json .
 
 python ../merge_jsons.py commands.json commands2.json merged.json
 ```
+
+The command produces the following output:
+*  `merged.json` contains the list of processes that create differences in each order of executions.
+
+### Expected output
+The `merged.json` file should be similar to the `merged_reference.json`. 
+In this file, the `flirt` process is identified under the attribute `total_commands` as a process that creates different result files, `roi2std.mat` and `acpc_final.nii.gz`.
 
 ## How to Contribute
 
